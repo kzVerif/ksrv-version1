@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     siteName: "KSRV",
     images: [
       {
-        url: "https://img.rdcw.co.th/images/a8788de04c5f464a32dc10e4527a2d12d0e92ab26cfbbf36f2831a700eac2ee6.png",
+        url: "https://img.rdcw.co.th/images/98cf018c3cb93cff9a350642fb8edb7ee1cb3e67686b1104514440a3eeb3c8bb.png",
         width: 1050,
         height: 1050,
       },
