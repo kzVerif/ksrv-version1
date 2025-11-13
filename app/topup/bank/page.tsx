@@ -1,0 +1,14 @@
+import BankTopup from "@/components/Topup/BankTopup";
+import React from "react";
+
+export default function page() {
+  return (
+    <div className="header container">
+        <div className="mb-4">
+        <h1 className="text-2xl font-bold text">เติมเงินเข้าสู่ระบบ</h1>
+        <h2 className="text-sm text-gray-500">เติมเงินผ่านธนาคาร</h2>
+      </div>
+      <BankTopup />
+    </div>
+  );
+}
