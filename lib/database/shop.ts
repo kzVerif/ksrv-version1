@@ -169,13 +169,19 @@ export async function buyProducts(
     });
 
     if (!user || !product) {
-      throw new Error("ไม่พบผู้ใช้หรือสินค้าที่ระบุ");
+      return {
+        status: false,
+        message: "ไม่พบผู้ใช้หรือสินค้าที่ระบุ",
+      };
     }
 
     const totalPrice = Number(product.price) * quantity;
 
     if (totalPrice > Number(user.points)) {
-      throw new Error("ยอดเงินของคุณไม่เพียงพอ กรุณาเติมเงิน");
+      return {
+        status: false,
+        message: "ยอดเงินของคุณไม่เพียงพอ กรุณาเติมเงิน",
+      };
     }
 
     // 1️⃣ ดึง stocks ที่ว่าง
@@ -188,7 +194,10 @@ export async function buyProducts(
     });
 
     if (stocks.length < quantity) {
-      throw new Error("จำนวนสินค้าที่ต้องการซื้อมีไม่เพียงพอ");
+      return {
+        status: false,
+        message: "จำนวนสินค้าที่ต้องการซื้อมีไม่เพียงพอ",
+      };
     }
 
     // 2️⃣ อัปเดต stocks เป็น SOLD
@@ -236,6 +245,9 @@ export async function buyProducts(
     revalidatePath("/admin/users");
   } catch (error: any) {
     console.log("buyProducts Error:", error.message || error);
-    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+    return {
+      status: false,
+      message: "เกิดข้อผิดพลากจากระบบ",
+    };
   }
 }

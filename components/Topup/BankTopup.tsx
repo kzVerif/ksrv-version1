@@ -31,11 +31,16 @@ export default function BankTopup() {
       return;
     }
 
-    toast.promise(TopupByBank(session?.user.id, file), {
-      loading: "กำลังเติมเงิน...",
-      success: "เติมเงินสำเร็จ",
-      error: (error: any) => error.message ?? "เติมเงินไม่สำเร็จ",
-    });
+    toast.loading("กำลังเติมเงิน...")
+
+    const status = await TopupByBank(session?.user.id, file)
+
+    if (!status?.status) {
+      toast.dismiss()
+      toast.error(status?.message)
+      return
+    }
+    toast.success("เติมเงินสำเร็จ")
     await refreshUser();
   };
 

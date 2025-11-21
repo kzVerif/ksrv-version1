@@ -13,7 +13,7 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password != confirm) {
@@ -28,11 +28,21 @@ export default function RegisterForm() {
       password,
     };
 
-    toast.promise(createUser(data), {
-      loading: "กำลังสมัครสมาชิก...",
-      success: "สมัครสมาชิกเรียบร้อยแล้ว!",
-      error: (err) => err.message || "เกิดข้อผิดพลาด",
-    });
+    toast.loading("กำลังสมัครสมาชิก...");
+    const status = await createUser(data);
+    if (!status.success) {
+      toast.dismiss()
+      toast.error(status.message ?? "เกิดข้อผิดพลาดจากระบบ");
+      return;
+    }
+    toast.success("สมัครสมาชิกเรียบร้อยแล้ว!");
+    toast.dismiss();
+
+    // toast.promise(createUser(data), {
+    //   loading: "กำลังสมัครสมาชิก...",
+    //   success: "สมัครสมาชิกเรียบร้อยแล้ว!",
+    //   error: (err) => err.message || "เกิดข้อผิดพลาด",
+    // });
   };
 
   return (

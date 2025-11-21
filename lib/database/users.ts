@@ -52,7 +52,7 @@ export async function createUser(userData: authData) {
     return { success: true, user: plainUser };
   } catch (error: any) {
     if (error.code === "P2002" && error.meta?.target?.includes("username")) {
-      throw new Error("มีผู้ใช้นี้อยู่ในระบบแล้ว");
+      return { success: false, message: "มีผู้ใช้นี้แล้วในระบบ" };
     }
 
     console.error("Create user error:", error);
@@ -212,7 +212,11 @@ export async function TopupByWallet(id: string | undefined, url: string) {
   const topupStatus = await walletTopup(url);
   try {
     if (!topupStatus.status || !id) {
-      throw new Error(topupStatus.reason);
+      return {
+        status: false,
+        message: topupStatus.reason,
+      };
+      // throw new Error(topupStatus.reason);
     }
 
     const user = await prisma.users.update({
@@ -263,7 +267,10 @@ export async function TopupByWallet(id: string | undefined, url: string) {
     });
   } catch (error) {
     console.log("Topup Error: ", error);
-    throw new Error(topupStatus.reason ?? "เกิดข้อผิดพลากจากระบบ");
+    return {
+      status: false,
+      message: topupStatus.reason ?? "เกิดข้อผิดพลาดจากระบบ",
+    };
   }
 }
 
@@ -275,7 +282,10 @@ export async function TopupByBank(id: string | undefined, file: File) {
   }
 
   if (res.code !== "200000") {
-    throw new Error(res.message); // ใช้ message จาก API ตรง ๆ
+    return {
+      status: false,
+      message: res.message,
+    };
   }
 
   try {
@@ -325,7 +335,10 @@ export async function TopupByBank(id: string | undefined, file: File) {
     });
   } catch (error) {
     console.log("TopupByBank DB Error:", error);
-    throw new Error("เกิดข้อผิดพลาดจากระบบ"); // เฉพาะ DB error
+    return {
+      status: false,
+      message: res.message ?? "เกิดข้อผิดพลาดจากระบบ",
+    };
   }
 }
 
