@@ -1,3 +1,4 @@
+"use client";
 import { Users } from "@/app/(admin)/admin/users/columns";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,21 +12,32 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { updateUser } from "@/lib/database/users";
 import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { SelectTrigger } from "@radix-ui/react-select";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 export function EditButton({ user }: { user: Users }) {
+  const [selectedRole, setSelectedRole] = useState<"USER" | "ADMIN">(user.role);
   async function handleEdit(formData: FormData) {
     const point = Number(formData.get("points") || 0);
-    const totalTopup = Number(formData.get("totalPoints")|| 0);
+    const totalTopup = Number(formData.get("totalPoints") || 0);
+    const role = selectedRole;
     toast.promise(
       updateUser({
         id: user.id,
         points: point,
         totalPoints: totalTopup,
+        role
       }),
       {
         loading: "กำลังอัพเดทผู็ใช้...",
@@ -81,6 +93,37 @@ export function EditButton({ user }: { user: Users }) {
               defaultValue={user.totalPoints}
               type="number"
             />
+          </div>
+
+          <div className="grid gap-3">
+            <Label htmlFor="category">ตำแหน่งของผู้ใช้</Label>
+            <Select
+              defaultValue={user.role}
+              onValueChange={(value) =>
+                setSelectedRole(value as "USER" | "ADMIN")
+              }
+            >
+              <SelectTrigger
+                className="
+    w-full
+    bg-gray-100
+    rounded-xl
+    p-1
+    border
+    border-gray-300
+    cursor-pointer
+    transition
+    hover:bg-gray-200
+    shadow-sm
+  "
+              >
+                <SelectValue placeholder="เลือกตำแหน่งผู้ใช้" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ADMIN">แอดมิน</SelectItem>
+                <SelectItem value="USER">ผู้ใช้</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <DialogFooter>

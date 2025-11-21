@@ -178,6 +178,7 @@ interface updateUser {
   id: string;
   points: number;
   totalPoints: number;
+  role: "ADMIN" | "USER"
 }
 
 export async function updateUser(data: updateUser) {
@@ -187,6 +188,7 @@ export async function updateUser(data: updateUser) {
       data: {
         points: data.points,
         totalPoints: data.totalPoints,
+        role: data.role
       },
     });
     revalidatePath("/admin/users");
@@ -278,7 +280,10 @@ export async function TopupByBank(id: string | undefined, file: File) {
   const res = await TopupBank(file);
 
   if (!res || !id) {
-    throw new Error("เกิดข้อผิดพลาด");
+    return {
+      status: false,
+      message: res.message,
+    };
   }
 
   if (res.code !== "200000") {

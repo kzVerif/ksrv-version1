@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Image as ImageIcon } from "lucide-react";
-import toast from "react-hot-toast";;
+import toast from "react-hot-toast";
 import { TopupByBank } from "@/lib/database/users";
 import { useSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
@@ -14,6 +14,12 @@ export default function BankTopup() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
+      // ❗ เช็คขนาดไฟล์ (1MB = 1 * 1024 * 1024 bytes)
+      if (selected.size > 1 * 1024 * 1024) {
+        toast.error("ไฟล์มีขนาดใหญ่เกิน 1MB กรุณาอัปโหลดไฟล์ที่เล็กกว่านี้");
+        return;
+      }
+
       setFile(selected);
     }
   };
@@ -21,9 +27,9 @@ export default function BankTopup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-     if (!session) {
-      toast.error("กรุณาเข้าสู่ระบบก่อนทำรายการ")
-      return
+    if (!session) {
+      toast.error("กรุณาเข้าสู่ระบบก่อนทำรายการ");
+      return;
     }
 
     if (!file) {
@@ -31,16 +37,16 @@ export default function BankTopup() {
       return;
     }
 
-    toast.loading("กำลังเติมเงิน...")
+    toast.loading("กำลังเติมเงิน...");
 
-    const status = await TopupByBank(session?.user.id, file)
+    const status = await TopupByBank(session?.user.id, file);
 
     if (!status?.status) {
-      toast.dismiss()
-      toast.error(status?.message)
-      return
+      toast.dismiss();
+      toast.error(status?.message);
+      return;
     }
-    toast.success("เติมเงินสำเร็จ")
+    toast.success("เติมเงินสำเร็จ");
     await refreshUser();
   };
 
