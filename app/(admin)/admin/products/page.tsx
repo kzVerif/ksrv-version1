@@ -2,8 +2,7 @@ import { getAllProducts } from "@/lib/database/shop";
 import { columns, Products } from "./columns";
 import { DataTable } from "./data-table";
 import { AddProductButton } from "@/components/Admin/Products/AddProductButton";
-import { Categories } from "@/src/generated/client";
-import { getCategories } from "@/lib/database/category";
+import { Categories, getCategories } from "@/lib/database/category";
 
 export default async function page() {
   const data: Products[] = await getAllProducts();
