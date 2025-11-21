@@ -8,7 +8,6 @@
 generator client {
   provider      = "prisma-client"
   output        = "../src/generated" // โฟลเดอร์ที่คุณต้องการให้ Prisma สร้าง client
-  //binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
