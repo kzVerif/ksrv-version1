@@ -22,9 +22,9 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Categories } from "@/src/generated/client";
 import { createProducts } from "@/lib/database/shop";
 import { useState } from "react";
+import { Categories } from "@/lib/database/category";
 
 export function AddProductButton({ categories }: { categories: Categories[] }) {
   const [selectedCategory, setSelectedCategory] = useState("");
