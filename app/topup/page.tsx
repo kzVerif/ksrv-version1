@@ -34,7 +34,7 @@ export default async function Page() {
             </Badge>
 
             <Image
-              src="/img/True-Money.jpg"
+              src="/img/True-money.jpg"
               alt="เติมเงินผ่านทรูวอลเลท"
               width={150}
               height={150}
