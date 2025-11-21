@@ -10,18 +10,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { PencilEdit02Icon, ViewIcon } from "@hugeicons/core-free-icons";
+import { ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-
-import { AdminTopupHis } from "@/app/(admin)/adminhistorytopup/columns";
+import { AdminTopupHis } from "@/app/(admin)/admin/historytopup/columns";
+import { format } from "date-fns";
 
 export function ViewHistoryTopupButton({
   topupHis,
 }: {
   topupHis: AdminTopupHis;
 }) {
+  const date = new Date(topupHis.createdAt);
+  const formattedDate = format(date, "dd/MM/yyyy HH:mm");
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -45,7 +46,7 @@ export function ViewHistoryTopupButton({
             <Input
               id="refId"
               name="refId"
-              defaultValue={topupHis.refId}
+              defaultValue={topupHis.id}
               disabled
             />
           </div>
@@ -55,7 +56,7 @@ export function ViewHistoryTopupButton({
             <Input
               id="owner"
               name="owner"
-              defaultValue={topupHis.owner}
+              defaultValue={topupHis.user.username}
               type="string"
               disabled
             />
@@ -66,7 +67,7 @@ export function ViewHistoryTopupButton({
             <Input
               id="type"
               name="type"
-              defaultValue={topupHis.type}
+              defaultValue={topupHis.topupType}
               type="text"
               disabled
             />
@@ -97,7 +98,7 @@ export function ViewHistoryTopupButton({
             <Input
               id="reason"
               name="reason"
-              defaultValue={topupHis.time}
+              defaultValue={formattedDate}
               disabled
             />
           </div>

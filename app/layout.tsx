@@ -5,61 +5,84 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import NextTopLoader from "nextjs-toploader";
+import { CustomProviders } from "@/components/Auth/Provider";
 
-export const metadata: Metadata = {
-  title: "KSRV | Kanghun Server And Service",
-  description: "บริการให้เช่าเว็บไซต์ E-Commerce",
-  icons: {
-    icon: "https://img.rdcw.co.th/images/98cf018c3cb93cff9a350642fb8edb7ee1cb3e67686b1104514440a3eeb3c8bb.png", // ✅ favicon จากลิงก์ภายนอก
-  },
-  openGraph: {
-    title: "KSRV | Kanghun Server And Service",
-    description: "บริการให้เช่าเว็บไซต์ E-Commerce",
-    siteName: "KSRV",
-    images: [
+import { getShopSettings } from "@/lib/database/setting";
+import { UserProvider } from "@/contexts/UserContext";
+
+export async function generateMetadata(): Promise<Metadata> {
+  // 1. ดึงข้อมูล Setting ภายในนี้เลย
+  const setting = await getShopSettings();
+
+  // 2. สร้างค่าเริ่มต้น (Fallback) เผื่อว่าดึงข้อมูลไม่สำเร็จ
+  const defaultTitle = "KSRV | Kanghun Server And Service";
+  const defaultDesc = "บริการให้เช่าเว็บไซต์ E-Commerce";
+  const defaultIcon =
+    "https://img.rdcw.co.th/images/98cf018c3cb93cff9a350642fb8edb7ee1cb3e67686b1104514440a3eeb3c8bb.png";
+
+  // 3. ตรวจสอบว่ามี setting หรือไม่ ถ้ามี ก็ใช้ค่าจาก DB
+  const title = setting?.shopName || defaultTitle;
+  const description = setting?.detail || defaultDesc;
+  const iconUrl = setting?.icon || defaultIcon;
+  const logoUrl = setting?.logo || iconUrl; // ใช้ logo ถ้ามี, ถ้าไม่มีก็ใช้ icon แทน
+
+  // 4. Return Metadata ที่เป็น Dynamic
+  return {
+    title: title,
+    description: description,
+    icons: [
       {
-        url: "https://img.rdcw.co.th/images/98cf018c3cb93cff9a350642fb8edb7ee1cb3e67686b1104514440a3eeb3c8bb.png",
-        width: 1050,
-        height: 1050,
+        url: iconUrl,
+        href: iconUrl,
       },
     ],
-    locale: "th_TH",
-    type: "website",
-  },
-};
+    openGraph: {
+      title: title,
+      description: description,
+      siteName: title,
+      images: [
+        {
+          url: logoUrl, // ใช้ logo สำหรับ Open Graph
+          width: 1050,
+          height: 1050,
+        },
+      ],
+      locale: "th_TH",
+      type: "website",
+    },
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const setting = await getShopSettings();
+
   return (
-    <html lang="th">
-      <head>
-        {/* ✅ เพิ่ม fallback favicon สำหรับ browser ที่ไม่โหลด metadata.icons */}
-        <link
-          rel="icon"
-          href="https://img.rdcw.co.th/images/98cf018c3cb93cff9a350642fb8edb7ee1cb3e67686b1104514440a3eeb3c8bb.png"
-          type="image/png"
-        />
-      </head>
-      <body className="antialiased">
-        <NextTopLoader
-          color="var(--color-primary)"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={3}
-          crawl={true}
-          showSpinner={true}
-          easing="ease"
-          speed={200}
-          shadow="0 0 10px var(--color-primary),0 0 5px var(--color-primary)"
-          zIndex={1600}
-          showAtBottom={false}
-        />
-        <Navbar />
-        <Toaster position="bottom-center" />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <CustomProviders>
+      <html lang="th">
+        <head>
+          <style>
+            {`
+            :root {
+              --color-primary: ${setting?.primaryColor};
+              --color-primary-light: ${setting?.secondaryColor};
+              --color-primary-hover: ${setting?.hoverColor};
+              --bg-url: url('${setting?.backgroundImage}');
+            }
+          `}
+          </style>
+        </head>
+        <body className="antialiased">
+          <UserProvider>
+            <NextTopLoader color="var(--color-primary)" />
+            <Navbar setting={setting ?? null} />{" "}
+            <Toaster position="bottom-center" />
+            {children}
+            <Footer />
+          </UserProvider>
+        </body>
+      </html>
+    </CustomProviders>
   );
 }

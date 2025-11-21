@@ -2,14 +2,34 @@
 import React, { useState } from "react";
 import { Wallet } from "lucide-react";
 import toast from "react-hot-toast";
+import { TopupByWallet } from "@/lib/database/users";
+import { useSession } from "next-auth/react";
+import { useUser } from "@/contexts/UserContext";
 
 export default function WalletTopup() {
   const [link, setLink] = useState("");
+  const {data: session} = useSession()
+  const { refreshUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("เติมเงินสำเร็จ")
+
+    if (!session) {
+      toast.error("กรุณาเข้าสู่ระบบก่อนทำรายการ")
+      return
+    }
+    if (link === "" || link === undefined || link === null) {
+      toast.error("กรุณากรอกลิงก์")
+      return
+    }    
+    
+    toast.promise(TopupByWallet(session?.user.id, link), {
+      loading: "กำลังเติมเงิน...",
+      success: "เติมเงินสำเร็จ",
+      error: (error: any) => error.message ?? "เติมเงินไม่สำเร็จ"
+    })
     setLink(""); // เคลียร์ช่องหลังส่ง
+    await refreshUser();
   };
 
   return (
@@ -33,7 +53,7 @@ export default function WalletTopup() {
             type="text"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            placeholder="วางลิงก์สลิป หรือเบอร์ TrueMoney ของคุณ"
+            placeholder="วางลิงก์สลิปซองอั่งเปาที่นี่"
             className="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-3 text-gray-800 text-sm  placeholder:text-gray-400"
           />
         </div>

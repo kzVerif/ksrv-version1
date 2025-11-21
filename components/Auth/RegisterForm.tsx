@@ -5,6 +5,8 @@ import { UserIcon, LockIcon, UserAdd02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "../ui/badge";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { createUser } from "@/lib/database/users";
 
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
@@ -14,11 +16,23 @@ export default function RegisterForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Username:", username);
-    console.log("Password:", password);
-    console.log("Confirm:", confirm);
+    if (password != confirm) {
+      return toast.error("รหัสผ่านไม่ตรงกัน");
+    }
 
-    // ตรงนี้สามารถยิง API สมัครสมาชิกได้
+    if (password.length < 6 && confirm.length < 6) {
+      return toast.error("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+    }
+    const data = {
+      username,
+      password,
+    };
+
+    toast.promise(createUser(data), {
+      loading: "กำลังสมัครสมาชิก...",
+      success: "สมัครสมาชิกเรียบร้อยแล้ว!",
+      error: (err) => err.message || "เกิดข้อผิดพลาด",
+    });
   };
 
   return (
@@ -41,6 +55,7 @@ export default function RegisterForm() {
             </div>
             <input
               id="username"
+              required
               name="username"
               type="text"
               placeholder="username"
@@ -67,6 +82,7 @@ export default function RegisterForm() {
               />
             </div>
             <input
+              required
               id="password"
               name="password"
               type="password"
@@ -94,6 +110,7 @@ export default function RegisterForm() {
               />
             </div>
             <input
+              required
               id="confirm"
               name="confirm"
               type="password"
@@ -106,8 +123,11 @@ export default function RegisterForm() {
         </div>
 
         {/* Submit */}
-        <button type="submit" className="w-full btn-main p-2 flex items-center justify-center gap-1">
-            <HugeiconsIcon icon={UserAdd02Icon} />
+        <button
+          type="submit"
+          className="w-full btn-main p-2 flex items-center justify-center gap-1"
+        >
+          <HugeiconsIcon icon={UserAdd02Icon} />
           สมัครสมาชิก
         </button>
       </form>

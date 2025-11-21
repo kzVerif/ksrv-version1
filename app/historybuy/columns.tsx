@@ -1,38 +1,71 @@
-"use client"
+"use client";
+import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 
-import { ColumnDef } from "@tanstack/react-table"
-
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type BuyProduct = {
-  id: string
-  name: string
-  detail: string
-  time: string
-}
+  id: string;
+  productId: string;
+  stockId: string;
+  userId: string;
+  createdAt: Date;
+  product: {
+    categoriesId: string;
+    detail: string | null;
+    id: string;
+    image: string | null;
+    name: string;
+    price: number;
+  };
+  stock: {
+    id: string;
+    detail: string;
+    status: string;
+    productId: string;
+  };
+  user: {
+    id: string;
+    password: string;
+    points: number;
+    role: string;
+    totalPoints: number;
+    username: string;
+  };
+};
 
 export const columns: ColumnDef<BuyProduct>[] = [
   {
     accessorKey: "id",
-    header: "รหัสสินค้า",
+    header: "รหัสคำสั่งซื้อ",
   },
   {
-    accessorKey: "name",
+    accessorFn: (row) => row.product.name,
     header: "ชื่อสินค้า",
   },
   {
-    accessorKey: "detail",
+    accessorFn: (row) => row.stock.detail,
     header: "รายละเอียด",
   },
   {
-    accessorKey: "time",
-    header: ({ column }) => (
+    accessorKey: "createdAt",
+    header: (
+      { column } // 👈 นี่คือส่วน header ที่คุณมีอยู่แล้ว
+    ) => (
       <button
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         className="font-bold cursor-pointer"
       >
-        วันที่ {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : ""}
+        วันที่{" "}
+        {column.getIsSorted() === "asc"
+          ? "↑"
+          : column.getIsSorted() === "desc"
+          ? "↓"
+          : ""}
       </button>
     ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      const formattedDate = format(date, "dd/MM/yyyy HH:mm");
+      return <div className="text-left">{formattedDate}</div>;
+    },
   },
-]
+];

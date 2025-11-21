@@ -1,11 +1,12 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Toaster } from "react-hot-toast";
+import { getShopSettings } from "@/lib/database/setting";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const setting = await getShopSettings()
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar logo={setting?.logo ?? ""} />
 
       <main className="header-admin container">
         {/* Header bar */}

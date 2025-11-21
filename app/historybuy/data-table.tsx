@@ -43,8 +43,8 @@ export function DataTable<TData, TValue>({
     const lower = filterValue.toLowerCase();
     return data.filter((item: any) =>
       item.id.toLowerCase().includes(lower) ||
-      item.name.toLowerCase().includes(lower) ||
-      item.detail.toLowerCase().includes(lower)
+      item.product.name.toLowerCase().includes(lower) ||
+      item.stock.detail.toLowerCase().includes(lower)
     );
   }, [filterValue, data]);
 

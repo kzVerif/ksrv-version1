@@ -14,27 +14,38 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import toast from "react-hot-toast";
+import { Bank, updateBankTopup } from "@/lib/database/banktopup";
 
-export default function BankSettingForm({ data }: { data: any }) {
-  const [enabled, setEnabled] = useState(data.status);
-  const [selectedBank, setSelectedBank] = useState(data.bankCode || "");
+export default function BankSettingForm({ data }: { data:  Bank }) {
+  const [enabled, setEnabled] = useState(data.available);
+  const [selectedBank, setSelectedBank] = useState(data.bankProvider || "");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-    const accountNumber = formData.get("accountNumber");
-    const accountName = formData.get("accountName");
+  const formData = new FormData(e.currentTarget);
 
-    console.log({
-      enabled,
-      bankCode: selectedBank,
-      accountNumber,
-      accountName,
-    });
+  const accountNumber = String(formData.get("accountNumber") || "");
+  const accountName = String(formData.get("accountName") || "");
 
-    toast.success("บันทึกการตั้งค่าการเติมเงินผ่านธนาคารสำเร็จ");
+  const updateData: Bank = {
+    id: data.id,
+    bankAccount: accountNumber,
+    bankName: accountName,
+    bankProvider: selectedBank || data.bankProvider,
+    available: enabled
   };
+
+  toast.promise(
+    updateBankTopup(updateData),
+    {
+      loading: "กำลังบันทึก...",
+      success: "บันทึกการตั้งค่าการเติมเงินผ่านธนาคารสำเร็จ",
+      error:   "บันทึกไม่สำเร็จ กรุณาลองใหม่"
+    }
+  );
+};
+
 
   return (
     <form
@@ -78,7 +89,7 @@ export default function BankSettingForm({ data }: { data: any }) {
         <Input
           id="accountNumber"
           name="accountNumber"
-          defaultValue={data.accountNumber}
+          defaultValue={data.bankAccount}
           placeholder="เช่น 123-456-7890"
         />
       </div>
@@ -89,7 +100,7 @@ export default function BankSettingForm({ data }: { data: any }) {
         <Input
           id="accountName"
           name="accountName"
-          defaultValue={data.accountName}
+          defaultValue={data.bankName}
           placeholder="ชื่อ-นามสกุล"
         />
       </div>
@@ -97,7 +108,7 @@ export default function BankSettingForm({ data }: { data: any }) {
       {/* --- ธนาคาร Selector --- */}
       <div className="grid gap-3">
         <Label htmlFor="bank">ธนาคาร</Label>
-        <Select onValueChange={setSelectedBank} defaultValue={data.bankCode}>
+        <Select onValueChange={setSelectedBank} defaultValue={data.bankProvider}>
           <SelectTrigger id="bank">
             <SelectValue placeholder="เลือกธนาคาร" />
           </SelectTrigger>

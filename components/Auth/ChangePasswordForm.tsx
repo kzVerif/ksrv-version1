@@ -1,23 +1,48 @@
 "use client";
+import { useSession } from "next-auth/react";
 import { Lock } from "lucide-react";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { ChangePassword } from "@/lib/database/users";
 
 export default function ChangePasswordForm() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { data: session } = useSession();
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
+
+    // --- (เพิ่มส่วนนี้) ---
+    if (!session?.user?.id) {
+      toast.error("ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่");
       return;
     }
-    console.log("Old:", oldPassword, "New:", newPassword);
-    alert("เปลี่ยนรหัสผ่านเรียบร้อยแล้ว");
+    // ---
 
-    setOldPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+    if (newPassword !== confirmPassword) {
+      toast.error("รหัสผ่านใหม่ไม่ตรงกัน");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+      return;
+    }
+
+    const data = {
+      userId: session.user.id, // เอา ? ออกได้เลยเพราะเช็คแล้ว
+      oldPassword,
+      newPassword,
+    };
+
+    // ส่วนนี้ไม่ต้องแก้ ใช้งานได้เลยถ้า Backend ถูกแก้ไข
+    await toast.promise(ChangePassword(data), {
+      loading: "กำลังเปลี่ยนรหัสผ่าน...",
+      success: "เปลี่ยนรหัสผ่านสำเร็จ!",
+      error: (err) => err?.message || "เกิดข้อผิดพลาด",
+    });
   };
 
   return (
@@ -64,7 +89,6 @@ export default function ChangePasswordForm() {
             className="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-3 text-gray-800 text-sm placeholder:text-gray-400"
           />
         </div>
-
 
         <button
           type="submit"

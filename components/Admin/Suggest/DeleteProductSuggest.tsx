@@ -12,11 +12,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { DeleteSuggestProduct } from "@/lib/database/suggestproducts";
 
 export function DeleteProductSuggest({ id }: { id: string }) {
   async function handleDelete(id: string) {
     console.log("Delete user:", id);
-    toast.success("ลบสินค้าแนะนำสำเร็จ")
+    toast.promise(DeleteSuggestProduct(id), {
+      loading: "กำลังลยสินค้าแนะนำ...",
+      success: "ลบสินค้าแนะนำสำเร็จ",
+      error: "ไม่สามารถลบสินค้าแนะนำได้"
+    })
   }
 
   return (

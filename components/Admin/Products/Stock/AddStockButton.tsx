@@ -1,4 +1,5 @@
 // 1. แก้ไข Import ให้ถูกต้อง
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,14 +15,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react"; // 2. แก้ไขไอคอน
+import { addStocks } from "@/lib/database/stocks";
 
-export function AddStockButton() {
+export function AddStockButton({ productId }: { productId: string }) {
   // 4. อัปเดตฟังก์ชัน handleEdit
   async function handleEdit(formData: FormData) {
-    const detail = formData.get("detail");
+    const detail = String(formData.get("detail") || "");
+    // แยกบรรทัด (รองรับ Windows + Unix)
+    const lines = detail.split(/\r?\n/).filter((line) => line.trim() !== "");
 
-    toast.success("เพิ่มสต็อกสำเร็จ"); // 6. อัปเดตข้อความ
-    console.log("เพิ่มสต็อกสำเร็จ:", { detail }); // 7. อัปเดต log
+    // สร้าง object สำหรับแต่ละบรรทัด
+    const stockObjects = lines.map((line) => ({
+      detail: line.trim(),
+      status: "AVAILABLE" as const,
+      productId,
+    }));
+
+    if (stockObjects.length === 0) {
+      toast.error("กรุณากรอกข้อมูล");
+      return
+    }
+
+    toast.promise(addStocks(stockObjects), {
+      loading: "กำลังเพิ่มสต็อค...",
+      success: "เพิ่มสต็อคสำเร็จ",
+      error: "เกิดข้อผิดพลาด",
+    });
   }
 
   return (
@@ -50,7 +69,7 @@ export function AddStockButton() {
         <form action={handleEdit} className="grid gap-4">
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
-            <Textarea id="detail" name="detail" />
+            <Textarea id="detail" name="detail" required />
           </div>
 
           <DialogFooter>

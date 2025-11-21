@@ -40,13 +40,12 @@ export function DataTable<TData, TValue>({
 
     const lower = filterValue.toLowerCase();
 
-    return data.filter((item: any) =>
-      item.id.toLowerCase().includes(lower) ||
-      item.refId.toLowerCase().includes(lower) ||
-      item.type.toLowerCase().includes(lower) ||
-      item.status.toLowerCase().includes(lower) ||
-      item.reason.toLowerCase().includes(lower) ||
-      item.time.toLowerCase().includes(lower)
+    return data.filter(
+      (item: any) =>
+        item.id.toLowerCase().includes(lower) ||
+        item.topupType.toLowerCase().includes(lower) ||
+        String(item.amount).toLowerCase().includes(lower) || // ✅ แก้ตรงนี้
+        item.reason.toLowerCase().includes(lower)
     );
   }, [filterValue, data]);
 
@@ -107,7 +106,10 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   ไม่พบข้อมูล
                 </TableCell>
               </TableRow>
@@ -134,7 +136,8 @@ export function DataTable<TData, TValue>({
 
         <div className="flex items-center gap-2">
           <span className="text-sm">
-            หน้าที่ {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+            หน้าที่ {table.getState().pagination.pageIndex + 1}/
+            {table.getPageCount()}
           </span>
 
           <Button

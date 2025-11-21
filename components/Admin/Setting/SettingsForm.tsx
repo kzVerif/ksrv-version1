@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import toast from "react-hot-toast";
+import { updateShopSetting } from "@/lib/database/setting";
 
 export default function SettingsForm({ initialData }: { initialData: any }) {
   const [data, setData] = useState(initialData);
@@ -15,22 +16,17 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
   };
 
   const handleSave = async () => {
-    try {
-      const res = await fetch("/api/shop-settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!res.ok) throw new Error("Save failed");
-      toast.success("บันทึกการตั้งค่าสำเร็จ");
-    } catch (e) {
-      toast.error("เกิดข้อผิดพลาดในการบันทึก");
-    }
+    console.log(data);
+    
+    toast.promise(updateShopSetting(data), {
+      success: "บันทึกการตั้งค่าสำเร็จ",
+      loading: "กำลังบันทึกการตั้งค่า...",
+      error: "เกิดข้อผิดพลาดในการบันทึก"
+    });
   };
 
   return (
-    <div className="space-y-6 p">
+    <div className="space-y-6">
       {/* 🎨 สีร้าน */}
       <Card>
         <CardHeader>
@@ -66,6 +62,9 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
           </div>
         </CardContent>
       </Card>
+      <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
 
       {/* 🌄 พื้นหลัง */}
       <Card>
@@ -78,8 +77,8 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
         <CardContent>
           <Input
             placeholder="https://example.com/background.jpg"
-            value={data.backgroundUrl}
-            onChange={(e) => handleChange("backgroundUrl", e.target.value)}
+            value={data.backgroundImage}
+            onChange={(e) => handleChange("backgroundImage", e.target.value)}
           />
         </CardContent>
       </Card>
@@ -92,8 +91,8 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
         <CardContent>
           <Input
             placeholder="https://discord.com/api/webhooks/..."
-            value={data.discordWebhook}
-            onChange={(e) => handleChange("discordWebhook", e.target.value)}
+            value={data.webhookDiscord}
+            onChange={(e) => handleChange("webhookDiscord", e.target.value)}
           />
         </CardContent>
       </Card>
@@ -134,8 +133,8 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
         <CardContent>
           <Input
             placeholder="https://example.com/icon.png"
-            value={data.iconUrl}
-            onChange={(e) => handleChange("iconUrl", e.target.value)}
+            value={data.icon}
+            onChange={(e) => handleChange("icon", e.target.value)}
           />
         </CardContent>
       </Card>
@@ -148,8 +147,21 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
         <CardContent>
           <Input
             placeholder="https://example.com/logo.png"
-            value={data.logoUrl}
-            onChange={(e) => handleChange("logoUrl", e.target.value)}
+            value={data.logo}
+            onChange={(e) => handleChange("logo", e.target.value)}
+          />
+        </CardContent>
+      </Card>
+      {/* 🧩 Banner ร้าน */}
+      <Card>
+        <CardHeader>
+          <h2 className="font-semibold">ลิงก์ Banner ร้าน</h2>
+        </CardHeader>
+        <CardContent>
+          <Input
+            placeholder="https://example.com/logo.png"
+            value={data.banner}
+            onChange={(e) => handleChange("banner", e.target.value)}
           />
         </CardContent>
       </Card>
@@ -162,11 +174,26 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
         <CardContent>
           <Textarea
             placeholder="เกี่ยวกับร้านของคุณ เช่น สินค้า บริการ หรือสโลแกน"
-            value={data.description}
-            onChange={(e) => handleChange("description", e.target.value)}
+            value={data.detail}
+            onChange={(e) => handleChange("detail", e.target.value)}
           />
         </CardContent>
       </Card>
+
+      {/* 📝 คำอธิบายร้าน */}
+      <Card>
+        <CardHeader>
+          <h2 className="font-semibold">ลิงก์ติดต่อร้าน</h2>
+        </CardHeader>
+        <CardContent>
+          <Input
+            placeholder="ช่องทางการติดต่อร้านค้า"
+            value={data.contact}
+            onChange={(e) => handleChange("contact", e.target.value)}
+          />
+        </CardContent>
+      </Card>
+            </div>
 
       {/* SAVE BUTTON */}
       <div className="flex justify-end gap-2 mb-4">

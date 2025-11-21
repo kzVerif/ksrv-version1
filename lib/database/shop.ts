@@ -1,293 +1,241 @@
+"use server";
+import { revalidatePath } from "next/cache";
+import prisma from "./conn";
+import { sendDiscordWebhook } from "../Discord/discord";
+
+export interface productData {
+  name: string;
+  image: string;
+  detail: string;
+  price: number;
+  categoriesId: string;
+}
+
+export interface updateProduct {
+  id: string;
+  name: string;
+  image: string;
+  detail: string;
+  price: number;
+  categoriesId: string;
+}
+
 export async function getProductByCategory(id: string) {
-  return {
-    success: true,
-    category: {
-      id: 1,
-      name: "VALORANT ACCOUNT",
-    },
-    shop: [
-      {
-        id: 1,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 0,
+  try {
+    const products = await prisma.products.findMany({
+      where: {
+        categoriesId: id,
       },
-      {
-        id: 2,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
+      include: {
+        stocks: {
+          where: {
+            status: "AVAILABLE",
+          },
+          select: {
+            id: true,
+            status: true,
+          },
+        },
       },
-      {
-        id: 3,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 4,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 5,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 6,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 7,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 8,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 9,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 10,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-    ],
-  };
+    });
+    const plainProducts = products.map((item) => ({
+      ...item,
+      price: Number(item.price),
+    }));
+    return plainProducts;
+  } catch (error) {
+    console.log("getProductByCategory Error: ", error);
+    return [];
+  }
 }
 
 export async function getProductById(id: string) {
-  return {
-    success: true,
-    product: {
-      id: 1,
-      image:
-        "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-      name: "ไอดี VALORANT",
-      detail: `รายละเอียด
-▶️ ประกันจะคงอยู่ 24 ชม. หากยังไม่มีการเคลมภายในวันนั้น
-▶️ ประกันสินค้าจะหมดหลังเคลมให้ (สามารถเข้าเล่นได้)
-▶️ ไอดีการันตี , ไอดีสุ่ม ทุกราคา ไม่ได้มีประกันให้ (ในกรณีมีซ้อน)
-▶️ ไอดีที่สุ่มได้กรณีติดแบนเวลาเล่นไม่ได้ ทางเราจะนับว่าได้รับไอดี อาจจะต้องรอไอดีปลดแบนเพื่อเข้าเล่นอีกครั้ง ไม่มีประกันให้นะครับ
-เงื่อนไขการเคลม
-▶️ หากไอดีมีซ้อนเยอะมากจนเกินไป สามารถเคลมให้ได้
-▶️ ทุกการเคลมจะได้ไอดี ที่มีสกินเยอะใกล้เคียงกันแต่จะไม่เหมือนกัน
-▶️ ส่งหลักฐานการโดนซ้อนหรือปัญหาเป็นคลิปหรือวิดิโอ สามารถเคลมได้ตลอดจนกว่าประกันจะหมด
-▶️ ไม่มีการขายซ้ำ เพื่อลดการมีปัญหาภายหลังและการมีซ้อนมากขึ้นของลูกค้า
-แจ้งเคลม`,
-      price: 89,
-      remain: 10,
-    },
-  };
+  try {
+    const product = await prisma.products.findUnique({
+      where: { id },
+      include: {
+        stocks: {
+          where: { status: "AVAILABLE" },
+        },
+      },
+    });
+
+    if (!product) return null;
+
+    return {
+      ...product,
+      price: Number(product.price),
+    };
+  } catch (error) {
+    console.log("getProductById Error:", error);
+    return null;
+  }
 }
 
 export async function getAllProducts() {
-  return {
-    success: true,
-    shop: [
-      {
-        id: 1,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 0,
+  try {
+    const products = await prisma.products.findMany({
+      include: {
+        categories: true,
+        _count: {
+          select: {
+            stocks: {
+              where: {
+                status: "AVAILABLE",
+              },
+            },
+          },
+        },
       },
-      {
-        id: 2,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 3,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 4,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 5,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 6,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 7,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 8,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 9,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 10,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-    ],
-  };
+    });
+
+    const categories = await prisma.categories.findMany();
+
+    const plainProducts = products.map((item) => ({
+      ...item,
+      price: Number(item.price),
+      remain: item._count.stocks,
+      allCategories: categories, // จำนวนสต็อกคงเหลือของสินค้านั้น
+    }));
+
+    return plainProducts;
+  } catch (error) {
+    console.log("getAllProducts Error: ", error);
+    return [];
+  }
 }
 
-export async function getSuggestProducts() {
-  return {
-    success: true,
-    shop: [
-      {
-        id: 1,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 0,
+export async function updateProduct(data: updateProduct) {
+  try {
+    await prisma.products.update({
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        image: data.image,
+        detail: data.detail,
+        price: data.price,
+        categoriesId: data.categoriesId,
       },
-      {
-        id: 2,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 3,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 4,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 5,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 6,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 7,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 8,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 9,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-      {
-        id: 10,
-        image:
-          "https://img.rdcw.co.th/images/9393c4d2409e1aa71e9a1bfed01dd4ed8a3ecb4ad11b479a8917e2e63b12a0a7.jpeg",
-        name: "ไอดี VALORANT",
-        price: 89,
-        remain: 8,
-      },
-    ],
-  };
+    });
+    revalidatePath("/admin/products");
+    revalidatePath("/products");
+  } catch (error) {
+    console.log("updateProduct Error: ", error);
+    throw new Error("เกิดข้อผืดพลาดจากระบบ");
+  }
 }
 
+export async function createProducts(data: productData) {
+  try {
+    await prisma.products.create({
+      data: {
+        name: data.name,
+        image: data.image,
+        detail: data.detail,
+        price: data.price,
+        categoriesId: data.categoriesId,
+      },
+    });
+    revalidatePath("/admin/products");
+    revalidatePath("/products");
+  } catch (error) {
+    console.log("createProducts Error: ", error);
+    throw new Error("เกิดข้อผิดพลากจากระบบ");
+  }
+}
+
+export async function deleteProduct(id: string) {
+  try {
+    await prisma.products.delete({
+      where: { id: id },
+    });
+    revalidatePath("/admin/products");
+    revalidatePath("products");
+  } catch (error) {
+    console.log("deleteProduct Error: ", error);
+    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+  }
+}
+
+export async function buyProducts(
+  quantity: number,
+  userId: string,
+  productId: string
+) {
+  try {
+    const user = await prisma.users.findUnique({ where: { id: userId } });
+    const product = await prisma.products.findUnique({
+      where: { id: productId },
+    });
+
+    if (!user || !product) {
+      throw new Error("ไม่พบผู้ใช้หรือสินค้าที่ระบุ");
+    }
+
+    const totalPrice = Number(product.price) * quantity;
+
+    if (totalPrice > Number(user.points)) {
+      throw new Error("ยอดเงินของคุณไม่เพียงพอ กรุณาเติมเงิน");
+    }
+
+    // 1️⃣ ดึง stocks ที่ว่าง
+    const stocks = await prisma.stocks.findMany({
+      where: {
+        productId: productId,
+        status: "AVAILABLE",
+      },
+      take: quantity,
+    });
+
+    if (stocks.length < quantity) {
+      throw new Error("จำนวนสินค้าที่ต้องการซื้อมีไม่เพียงพอ");
+    }
+
+    // 2️⃣ อัปเดต stocks เป็น SOLD
+    await prisma.stocks.updateMany({
+      where: { id: { in: stocks.map((s) => s.id) } },
+      data: { status: "SOLD" },
+    });
+
+    // 3️⃣ สร้าง historyBuy
+    await prisma.historyBuy.createMany({
+      data: stocks.map((s) => ({
+        userId,
+        stockId: s.id,
+        productId,
+      })),
+    });
+
+    // 4️⃣ ลด points ของ user
+    await prisma.users.update({
+      where: { id: userId },
+      data: { points: Number(user.points) - totalPrice },
+    });
+
+    await sendDiscordWebhook({
+      username: "ระบบร้านค้า",
+      embeds: [
+        {
+          title: "🛒 มีรายการสั่งซื้อสินค้า!",
+          description: "มีผู้ใช้ทำการซื้อสินค้าในระบบ",
+          color: 16312092,
+          fields: [
+            { name: "👤 ผู้ใช้", value: `${user.username}`, inline: true },
+            { name: "🛍️ สินค้า", value: `${product.name}`, inline: true },
+            { name: "🔢 จำนวน", value: `${quantity}`, inline: true },
+            { name: "💵 ยอดชำระ", value: `${totalPrice} ฿` },
+            { name: "⏳ เวลาทำรายการ", value: `${new Date()}` },
+          ],
+          footer: {
+            text: "🛒 ระบบแจ้งเตือนการซื้อสินค้า",
+          },
+        },
+      ],
+    });
+    revalidatePath("/");
+    revalidatePath("/admin/users");
+  } catch (error: any) {
+    console.log("buyProducts Error:", error.message || error);
+    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+  }
+}

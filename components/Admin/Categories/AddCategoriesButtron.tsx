@@ -1,5 +1,4 @@
-
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,20 +15,19 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
 // 1. เปลี่ยนมาใช้ไอคอนจาก lucide-react
 import { Plus } from "lucide-react";
+import { createCategory } from "@/lib/database/category";
 
 export function AddCategoriesButtron() {
   // 2. เปลี่ยนชื่อฟังก์ชัน
   async function handleAddProduct(formData: FormData) {
-    const name = formData.get("name");
-    const image = formData.get("image");
+    const name = String(formData.get("name") || "");
+    const image = String(formData.get("image") || "");
 
-    // 3. เปลี่ยนข้อความ Toast
-    toast.success("เพิ่มหมวดหมู่สำเร็จ");
-
-    // 4. เปลี่ยน Console Log
-    console.log("เพิ่มหมวดหมู่สำเร็จ:", { name, image });
-
-    // ที่นี่ คุณสามารถเพิ่ม Logic การบันทึกลง Database
+    toast.promise(createCategory({ id: "", name, image }), {
+      loading: "กำลังบันทึก...",
+      success: "บันทึกการหมวดหมู่ใหม่สำเร็จ",
+      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+    });
   }
 
   return (

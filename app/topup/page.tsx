@@ -1,13 +1,12 @@
 import { Badge } from "@/components/ui/badge";
+import { getBankTopup } from "@/lib/database/banktopup";
+import { getWalletTopup } from "@/lib/database/wallettopup";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Page() {
-  const data = {
-    twEnable: true,
-    bkEnable: true,
-    feeEnable: true,
-  };
+export default async function Page() {
+  const truemoney = await getWalletTopup();
+  const bank = await getBankTopup();
 
   return (
     <div className="container header">
@@ -20,22 +19,22 @@ export default function Page() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
         {/* TrueMoney Section */}
-        <Link href={data.twEnable ? "/topup/wallet" : "#"}>
+        <Link href={truemoney.available ? "/topup/wallet" : "#"}>
           <div className="relative focus cursor-pointer flex flex-col items-center justify-center bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300">
             {/* Badge มุมขวาบน */}
             <Badge
-              variant={data.twEnable ? "secondary" : "destructive"}
+              variant={truemoney.available ? "secondary" : "destructive"}
               className={`absolute top-2 right-2 ${
-                data.twEnable
+                truemoney.available
                   ? "bg-emerald-500 text-white"
                   : "bg-red-500 text-white"
               }`}
             >
-              {data.twEnable ? "ใช้งานได้" : "ปิดใช้งาน"}
+              {truemoney.available ? "ใช้งานได้" : "ปิดใช้งาน"}
             </Badge>
 
             <Image
-              src="/img/True-money.jpg"
+              src="/img/True-Money.jpg"
               alt="เติมเงินผ่านทรูวอลเลท"
               width={150}
               height={150}
@@ -44,31 +43,31 @@ export default function Page() {
             <h1 className="text-lg font-semibold text-gray-800 mb-2">
               เติมเงินผ่านTrueMoney wallet
             </h1>
-            {data.feeEnable ? (
-              <Badge variant="secondary" className="bg-emerald-500 text-white">
-                ไม่มีการหักค่าธรรมเนียม
-              </Badge>
-            ) : (
+            {truemoney.feeAvailable ? (
               <Badge variant="destructive">
                 ยอดที่ได้รับจะหักค่าธรรมเนียม 2.9% สูงสุด 20 บาท
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="bg-emerald-500 text-white">
+                ไม่มีการหักค่าธรรมเนียม
               </Badge>
             )}
           </div>
         </Link>
 
         {/* Bank Section */}
-        <Link href={data.bkEnable ? "/topup/bank" : "#"}>
+        <Link href={bank.available ? "/topup/bank" : "#"}>
           <div className="relative focus cursor-pointer flex flex-col items-center justify-center bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300">
             {/* Badge มุมขวาบน */}
             <Badge
-              variant={data.bkEnable ? "secondary" : "destructive"}
+              variant={bank.available ? "secondary" : "destructive"}
               className={`absolute top-2 right-2 ${
-                data.bkEnable
+                bank.available
                   ? "bg-emerald-500 text-white"
                   : "bg-red-500 text-white"
               }`}
             >
-              {data.bkEnable ? "ใช้งานได้" : "ปิดใช้งาน"}
+              {bank.available ? "ใช้งานได้" : "ปิดใช้งาน"}
             </Badge>
 
             <Image

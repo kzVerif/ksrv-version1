@@ -5,19 +5,33 @@ import { UserIcon, LockIcon, Login02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "../ui/badge";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { toast } from "react-hot-toast"; // ใช้ toast แจ้ง error/success (optional)
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    console.log("Username:", username);
-    console.log("Password:", password);
+    const res = await signIn("credentials", {
+      redirect: false,
+      username,
+      password,
+    });
 
-    // ตรงนี้สามารถนำค่าไปยิง API ได้
-    // await fetch(...)
+    setLoading(false);
+    if (res?.error) {
+      toast.error(res.error || "เข้าสู่ระบบไม่สำเร็จ");
+    } else if (res?.ok) {
+      toast.success("เข้าสู่ระบบสำเร็จ!");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+    }
   };
 
   return (
@@ -31,7 +45,6 @@ export default function LoginForm() {
           >
             ชื่อผู้ใช้
           </label>
-
           <div className="relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <HugeiconsIcon
@@ -39,8 +52,8 @@ export default function LoginForm() {
                 className="w-4 h-4 text-gray-400"
               />
             </div>
-
             <input
+              required
               id="username"
               name="username"
               type="text"
@@ -61,7 +74,6 @@ export default function LoginForm() {
           >
             รหัสผ่าน
           </label>
-
           <div className="relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <HugeiconsIcon
@@ -69,8 +81,8 @@ export default function LoginForm() {
                 className="w-4 h-4 text-gray-400"
               />
             </div>
-
             <input
+              required
               id="password"
               name="password"
               type="password"
@@ -86,13 +98,15 @@ export default function LoginForm() {
         {/* Button */}
         <button
           type="submit"
+          disabled={loading}
           className="w-full btn-main p-2 flex items-center justify-center gap-1"
         >
           <HugeiconsIcon icon={Login02Icon} />
-          เข้าสู่ระบบ
+          {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
         </button>
       </form>
-      {/* Forgot */}
+
+      {/* Register Link */}
       <div className="flex flex-col items-center justify-center space-y-2">
         <Link href={"/register"}>
           <Badge

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function page() {
-  const data = await getCategories();
+  const data = await getCategories();  
   return (
     <div className="container header">
       <div className="mb-4">
@@ -12,7 +12,7 @@ export default async function page() {
         <h2 className="text-sm text-gray-500">เลือกหมวดหมู่ที่สนใจได้เลย</h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:md:grid-cols-2 gap-4">
-        {data.categories.map((c: any, index: number) => (
+        {data.map((c: any, index: number) => (
           <div className="" key={c.id}>
             <Link href={`/categories/${c.id}`}>
               <Card className="focus rounded-xl border bg-white cursor-pointer">
@@ -21,14 +21,14 @@ export default async function page() {
                     <Image
                       src={c.image}
                       width={1980}
-                      height={300}
+                      height={500}
                       alt={`สินค้า ${index + 1}`}
                       className="w-full object-cover"
                     />
                   </div>
                   <h3 className="font-semibold text">{c.name}</h3>
                   <h3 className="text-sm">
-                    จำนวนสินค้าทั้งหมด {c.amount} รายการ
+                    จำนวนสินค้าทั้งหมด {c.products.length} รายการ
                   </h3>
                 </CardContent>
               </Card>

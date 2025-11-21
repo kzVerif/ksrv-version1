@@ -14,25 +14,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AdminBuyProduct } from "@/app/(admin)/adminhistorybuy/columns";
-
+import { AdminBuyProduct } from "@/app/(admin)/admin/historybuy/columns";
+import { format } from "date-fns";
 export function ViewHistoryBuyButton({
   product,
 }: {
   product: AdminBuyProduct;
 }) {
-  // async function handleEdit(formData: FormData) {
-  //   const id = formData.get("id");
-  //   const name = formData.get("name");
-  //   const detail = formData.get("detail");
-  //   const time = formData.get("time");
-  //   const owner = formData.get("owner");
-
-  //   toast.success("แก้ไขสินค้าสำเร็จ");
-
-  //   console.log("แก้ไขสินค้า:", { id, name, detail, owner, time });
-  // }
-
+  const date = new Date(product.createdAt);
+  const formattedDate = format(date, "dd/MM/yyyy HH:mm");
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -57,7 +47,7 @@ export function ViewHistoryBuyButton({
 
           <div className="grid gap-3">
             <Label htmlFor="name">ชื่อสินค้า</Label>
-            <Input id="name" name="name" defaultValue={product.name} disabled />
+            <Input id="name" name="name" defaultValue={product.product.name} disabled />
           </div>
 
           <div className="grid gap-3">
@@ -65,7 +55,7 @@ export function ViewHistoryBuyButton({
             <Input
               id="owner"
               name="owner"
-              defaultValue={product.owner}
+              defaultValue={product.user.username}
               type="text"
               disabled
             />
@@ -76,7 +66,7 @@ export function ViewHistoryBuyButton({
             <Textarea
               id="detail"
               name="detail"
-              defaultValue={product.detail}
+              defaultValue={product.stock.detail}
               disabled
             />
           </div>
@@ -86,7 +76,7 @@ export function ViewHistoryBuyButton({
             <Input
               id="time"
               name="time"
-              defaultValue={product.time}
+              defaultValue={formattedDate}
               disabled
             />
           </div>

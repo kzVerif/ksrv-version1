@@ -1,0 +1,53 @@
+"use server";
+import { revalidatePath } from "next/cache";
+import prisma from "./conn";
+
+export async function addSuggestCategories(id: string) {
+  try {
+    await prisma.suggestCategories.create({
+      data: {
+        categoriesId: id,
+      },
+    });
+    revalidatePath("/admin/suggestproducts");
+    revalidatePath("/");
+  } catch (error) {
+    console.log("addSuggestCategories Error: ", error);
+    throw new Error("เกิดข้อผิดพลากจากระบบ");
+  }
+}
+
+export async function getAllSuggestCategories() {
+  try {
+    const suggestCategories = await prisma.suggestCategories.findMany({
+      include: {
+        category: {
+          include: {
+            products: true, // 👈 ดึงสินค้าทั้งหมดในหมวดหมู่
+          },
+        },
+      },
+    });
+    const plainCategories = suggestCategories.map((item) => ({
+      ...item,
+      amount: item.category.products.length, // 🍀 นับจำนวนสินค้า
+    }));    
+    return plainCategories
+  } catch (error) {
+    console.log("getAllSuggestCategories Error:", error);
+    return [];
+  }
+}
+
+export async function deleteSuggestCategories(id: string) {
+  try {
+    await prisma.suggestCategories.delete({
+      where: { id: id },
+    });
+    revalidatePath("/admin/suggestproducts")
+    revalidatePath("/")
+  } catch (error) {
+    console.log("deleteSuggestCategories Error: ", error);
+    throw new Error("เกิดข้อผิดพลากจากระบบ");
+  }
+}

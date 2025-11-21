@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+//  output   = "../lib/generated/prisma"
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------- Users ----------------------------
+enum Role {
+  ADMIN
+  USER
+}
+
+model Users {
+  id          String  @id @default(cuid())
+  username    String  @unique
+  password    String
+  role        Role    @default(USER)
+  points      Decimal  @db.Decimal(10, 2) @default(0)
+  totalPoints Decimal  @db.Decimal(10, 2) @default(0)
+
+  historyTopups HistoryTopup[]
+  
+  historyBuys HistoryBuy[]
+}
+
+// ---------------------------- Products ----------------------------
+model Products {
+  id       String   @id @default(cuid())
+  name     String   @default("ไม่ทราบชื่อสินค้า")
+  image    String?  @db.Text
+  detail   String?  @db.Text
+  price    Decimal  @db.Decimal(10, 2) @default(0)
+
+  categoriesId String
+  categories Categories @relation(fields:[categoriesId], references:[id], onDelete: Cascade)
+
+  stocks Stocks[]
+
+  suggested SuggestProducts[]
+
+  historyBuys HistoryBuy[]
+}
+
+// ---------------------------- Stocks ----------------------------
+enum StatusStock {
+  AVAILABLE   @map("พร้อมจำหน่าย")
+  SOLD        @map("จำหน่ายแล้ว")
+}
+
+model Stocks {
+  id       String   @id @default(cuid())
+  detail   String   @default("ไม่ทราบรายละเอียดสินค้า")
+  status    StatusStock @default(AVAILABLE)
+
+  productId String 
+  product Products @relation(fields:[productId], references: [id], onDelete: Cascade)
+
+  historyBuys HistoryBuy[]
+}
+
+// ---------------------------- Categories ----------------------------
+model Categories {
+  id       String   @id @default(cuid())
+  name     String   @default("ไม่ทราบชื่อหมวดหมู่")
+  image    String?  @db.Text  
+
+  products Products[]
+
+  suggested SuggestCategories[]
+}
+
+// ---------------------------- SuggestProducts ----------------------------
+model SuggestProducts {
+  id        String   @id @default(cuid())
+  productId String
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------- SuggestCategories----------------------------
+model SuggestCategories {
+  id           String     @id @default(cuid())
+  categoriesId String
+  category     Categories @relation(fields: [categoriesId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------- HistoryTopup ----------------------------
+enum TopupType {
+  Truemoney @map("ทรูวอลเลท")
+  Bank      @map("ธนาคาร")
+  ADMIN     @map("แอดมิน")
+}
+
+model HistoryTopup {
+  id           String     @id @default(cuid())
+  amount       Decimal    @db.Decimal(10, 2) @default(0)
+  reason       String     @default("เติมเงินจากระบบ")
+  topupType    TopupType  @default(Truemoney)
+  createdAt    DateTime   @default(now())
+
+  userId       String
+  user         Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------- HistoryBuy ----------------------------
+model HistoryBuy {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  stockId   String
+  stock     Stocks   @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+}
+
+// ---------------------------- TopupTruemoney ----------------------------
+model TopupTruemoney {
+  id             String   @id @default(cuid())
+  phone          String   @default("ไม่ทราบเบอร์รับเงิน")
+  available      Boolean  @default(false)
+  feeAvailable   Boolean  @default(false)  
+}
+
+// ---------------------------- TopupBank ----------------------------
+model TopupBank {
+  id             String   @id @default(cuid())
+  bankAccount    String   @default("ไม่ทราบเลขที่บัญชี")
+  bankName       String   @default("ไม่ทราบชื่อบัญชี")
+  bankProvider   String   @default("ไม่ทราบธนาคาร")
+  available      Boolean  @default(false)
+}
+
+// ---------------------------- Settings ----------------------------
+model Settings {
+  id              String   @id @default(cuid())
+  primaryColor    String   @default("#ffffff")
+  secondaryColor  String   @default("#000000")
+  hoverColor      String   @default("#ff0000")
+  backgroundImage String?  @db.Text
+  webhookDiscord  String   @default("")
+  shopName        String   @default("ร้านค้าไม่ทราบชื่อ")
+  announcement    String   @default("")
+  icon            String?  @db.Text
+  logo            String?  @db.Text
+  detail          String?  @db.Text
+  contact         String?  @db.Text
+  banner         String?  @db.Text
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

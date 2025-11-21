@@ -21,19 +21,28 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { Products } from "@/app/(admin)/admin/products/columns";
+import { addSuggestProducts } from "@/lib/database/suggestproducts";
 
-export function AddProductSuggestButton() {
+export function AddProductSuggestButton({
+  products,
+}: {
+  products: Products[];
+}) {
   // 2. เปลี่ยนชื่อฟังก์ชัน
   async function handleAddProduct(formData: FormData) {
-    const product = formData.get("product");
+    const product = String(formData.get("product") || "");
+    if (!product) {
+      toast.error("กรุณาเลือกสินค้า");
+      return;
+    }
 
     // 3. เปลี่ยนข้อความ Toast
-    toast.success("เพิ่มสินค้าสำเร็จ");
-
-    // 4. เปลี่ยน Console Log
-    console.log("เพิ่มสินค้า:", { product });
-
-    // ที่นี่ คุณสามารถเพิ่ม Logic การบันทึกลง Database
+    toast.promise(addSuggestProducts(product), {
+      loading: "กำลังบันทึก...",
+      success: "บันทึกสินค้าแนะนำสำเร็จ",
+      error: "ไม่สามารถบันทึกสินค้าแนะนำได้",
+    });
   }
 
   return (
@@ -66,17 +75,24 @@ export function AddProductSuggestButton() {
             {/* ส่งค่า category ผ่าน input hidden */}
             <input type="hidden" name="product" id="product-hidden" />
 
-            <Select>
+            <Select
+              onValueChange={(value) => {
+                const hidden = document.getElementById(
+                  "product-hidden"
+                ) as HTMLInputElement;
+                hidden.value = value;
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="เลือกสินค้าแนะนำ" />
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="gamepass">Game Pass</SelectItem>
-                <SelectItem value="robux">Robux</SelectItem>
-                <SelectItem value="topup">Top-Up</SelectItem>
-                <SelectItem value="account">บัญชีเกม</SelectItem>
-                <SelectItem value="other">อื่น ๆ</SelectItem>
+                {products.map((item) => (
+                  <SelectItem value={item.id} key={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

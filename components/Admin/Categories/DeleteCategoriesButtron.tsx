@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   Dialog,
   DialogTrigger,
@@ -12,11 +12,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { deleteCategory } from "@/lib/database/category";
+import { Badge } from "@/components/ui/badge";
 
 export function DeleteCategoriesButton({ id }: { id: string }) {
   async function handleDelete(id: string) {
     console.log("Delete user:", id);
-    toast.success("ลบหมวดหมู่สำเร็จ")
+    toast.promise(deleteCategory(id), {
+      loading: "กำลังลบ...",
+      success: "ลบหมวดหมู่สำเร็จ",
+      error: "ลบไม่สำเร็จ กรุณาลองใหม่",
+    });
   }
 
   return (
@@ -32,7 +38,8 @@ export function DeleteCategoriesButton({ id }: { id: string }) {
           <DialogTitle>ยืนยันการลบ</DialogTitle>
           <DialogDescription>
             การลบรายการนี้เป็นการกระทำถาวรและไม่สามารถย้อนกลับได้
-            คุณต้องการดำเนินการต่อหรือไม่
+            {" "}
+           <Badge variant={"destructive"}>สินค้าและ stocks ที่อยู่ภายในหมวดหมู่นี้จะถูกลบไปด้วยทั้งหมด</Badge>
           </DialogDescription>
         </DialogHeader>
 

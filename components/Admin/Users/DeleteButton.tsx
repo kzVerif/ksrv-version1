@@ -11,11 +11,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { deleteUSer } from "@/lib/database/users";
 
 export function DeleteButton({ id }: { id: string }) {
   function handleDelete(id: string) {
     console.log("Delete user:", id);
-    toast.success("ลบผู้ใช้สำเร็จ")
+    toast.promise(deleteUSer(id),{
+      loading: "กำลังลบ...",
+      success: "ลบผู้ใช้สำเร็จ",
+      error: "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+    })
   }
 
   return (

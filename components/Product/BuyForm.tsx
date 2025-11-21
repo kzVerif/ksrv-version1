@@ -1,57 +1,129 @@
-"use client"; // ✅ เพื่อให้ event ทำงานในฝั่ง client ได้
+"use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "../ui/button";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AddCircleIcon, RemoveCircleIcon } from "@hugeicons/core-free-icons";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
+import { buyProducts } from "@/lib/database/shop";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "../ui/dialog"; // ปรับ path ตาม project
+import { getUserById } from "@/lib/database/users";
+import { useUser } from "@/contexts/UserContext";
 
 interface BuyFormProps {
-  remain: number; // ✅ รับค่าจำนวนสินค้าคงเหลือจากภายนอก
+  remain: number;
+  productId: string;
 }
 
-export default function BuyForm({ remain }: BuyFormProps) {
+export default function BuyForm({ remain, productId }: BuyFormProps) {
   const [quantity, setQuantity] = useState(1);
+  const { data: session, update } = useSession();
+  const { refreshUser } = useUser();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("จำนวนที่สั่งซื้อ:", quantity);
-    alert(`คุณเลือกจำนวน ${quantity} ชิ้น`);
+  const handleBuy = async () => {
+    if (!session) {
+      toast.error("กรุณาเข้าสู่ระบบก่อน");
+      return;
+    }
+
+    try {
+      await toast.promise(buyProducts(quantity, session.user.id, productId), {
+        loading: "กำลังสั่งซื้อสินค้า...",
+        success: "สั่งซื้อสินค้าสำเร็จ กรุณาตรวจสอบประวัติการสั่งซื้อ",
+        error: (err: any) => err.message ?? "สั่งซื้อไม่สำเร็จ",
+      });
+
+      const users = await getUserById(session.user.id)
+      await update({ ...session, user: users });
+      await refreshUser();
+      
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row sm:items-center gap-4"
-    >
-      <div className="flex items-center gap-2 w-full sm:w-auto">
+    <div>
+      <div className="flex items-center gap-2 w-full sm:w-auto mb-4">
         <label
           htmlFor="quantity"
           className="text-gray-700 font-medium whitespace-nowrap"
         >
           จำนวน:
         </label>
+
+        {/* ลดจำนวน */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+        >
+          <HugeiconsIcon icon={RemoveCircleIcon} />
+        </Button>
+
+        {/* input quantity */}
         <input
           id="quantity"
-          name="quantity"
           type="number"
           min={1}
           max={remain}
           value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          className="w-full sm:w-24 border border-gray-300 rounded-lg p-2 text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) =>
+            setQuantity(Math.min(remain, Math.max(1, Number(e.target.value))))
+          }
+          className="w-20 border border-gray-300 rounded-lg p-2 text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+
+        {/* เพิ่มจำนวน */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setQuantity((prev) => Math.min(remain, prev + 1))}
+        >
+          <HugeiconsIcon icon={AddCircleIcon} />
+        </Button>
       </div>
 
-      <Button
-        variant={remain <= 0 ? "destructive" : "default"}
-        type="submit"
-        disabled={remain <= 0}
-        className={`w-full sm:w-auto text-lg px-6 py-3 rounded-xl flex items-center justify-center gap-2 ${
-          remain <= 0 ? "opacity-70 cursor-not-allowed" : "btn-main"
-        }`}
-      >
-        <ShoppingCart size={22} />
-        {remain <= 0 ? "สินค้าหมด" : "สั่งซื้อสินค้า"}
-      </Button>
-    </form>
+      {/* ปุ่มสั่งซื้อ + Dialog */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant={remain <= 0 ? "destructive" : "default"}
+            disabled={remain <= 0}
+            className={`w-full sm:w-auto text-lg px-6 py-3 rounded-xl flex items-center justify-center gap-2 ${
+              remain <= 0 ? "opacity-70 cursor-not-allowed" : "btn-main"
+            }`}
+          >
+            <ShoppingCart size={22} />
+            {remain <= 0 ? "สินค้าหมด" : "สั่งซื้อสินค้า"}
+          </Button>
+        </DialogTrigger>
+
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการสั่งซื้อ</DialogTitle>
+            <DialogDescription>
+              คุณต้องการซื้อสินค้า {quantity} ชิ้น ใช่หรือไม่?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex justify-end gap-2">
+            <DialogTrigger asChild>
+              <Button variant="outline">ยกเลิก</Button>
+            </DialogTrigger>
+            <Button onClick={handleBuy}>ยืนยัน</Button>{" "}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

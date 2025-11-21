@@ -22,24 +22,32 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-export function AddCategoriesSuggestButton() {
-  // 2. เปลี่ยนชื่อฟังก์ชัน
+import { Categories } from "../../../lib/database/category";
+import { addSuggestCategories } from "@/lib/database/suggestcategories";
+
+export function AddCategoriesSuggestButton({
+  categories,
+}: {
+  categories: Categories[];
+}) {
   async function handleAddProduct(formData: FormData) {
-    const category = formData.get("category");
+    const categoryId = String(formData.get("category") || "");
 
-    // 3. เปลี่ยนข้อความ Toast
-    toast.success("เพิ่มสินค้าสำเร็จ");
+    if (!categoryId) {
+      toast.error("กรุณาเลือกหมวดหมู่");
+      return;
+    }
 
-    // 4. เปลี่ยน Console Log
-    console.log("เพิ่มสินค้า:", { category });
-
-    // ที่นี่ คุณสามารถเพิ่ม Logic การบันทึกลง Database
+    toast.promise(addSuggestCategories(categoryId), {
+      loading: "กำลังบันทึก...",
+      success: "เพิ่มหมวดหมู่แนะนำสำเร็จ",
+      error: "ไม่สามารถเพิ่มหมวดหมู่แนะนำได้",
+    });
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {/* 5. อัปเดตปุ่ม Trigger */}
         <Button
           variant="secondary"
           className="cursor-pointer flex items-center gap-2 btn-main"
@@ -51,32 +59,37 @@ export function AddCategoriesSuggestButton() {
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          {/* 6. อัปเดต Title และ Description */}
           <DialogTitle className="text">เพิ่มหมวดหมู่แนะนำใหม่</DialogTitle>
           <DialogDescription>
-            กรอกรายละเอียดเพื่อเพิ่มหมวดหมู่แนะนำใหม่ลงในระบบ
+            เลือกหมวดหมู่เพื่อเพิ่มลงในระบบ
           </DialogDescription>
         </DialogHeader>
 
-        {/* 7. อัปเดต action */}
         <form action={handleAddProduct} className="grid gap-4">
           <div className="grid gap-3">
             <Label htmlFor="category">หมวดหมู่แนะนำ</Label>
 
-            {/* ส่งค่า category ผ่าน input hidden */}
+            {/* Hidden input */}
             <input type="hidden" name="category" id="category-hidden" />
 
-            <Select>
+            <Select
+              onValueChange={(value) => {
+                const hidden = document.getElementById(
+                  "category-hidden"
+                ) as HTMLInputElement;
+                hidden.value = value;
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="เลือกหมวดหมู่แนะนำ" />
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="gamepass">Game Pass</SelectItem>
-                <SelectItem value="robux">Robux</SelectItem>
-                <SelectItem value="topup">Top-Up</SelectItem>
-                <SelectItem value="account">บัญชีเกม</SelectItem>
-                <SelectItem value="other">อื่น ๆ</SelectItem>
+                {categories.map((item) => (
+                  <SelectItem value={item.id} key={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -88,7 +101,6 @@ export function AddCategoriesSuggestButton() {
               </Button>
             </DialogClose>
 
-            {/* 13. อัปเดตข้อความปุ่ม Submit */}
             <Button type="submit" className="btn-main">
               เพิ่มหมวดหมู่แนะนำ
             </Button>

@@ -1,141 +1,35 @@
-import { columns, BuyProduct } from "./columns"
-import { DataTable } from "./data-table"
- 
-async function getData(): Promise<BuyProduct[]> {
-  // Fetch data from your API here.
-//   export type BuyProduct = {
-//   id: string
-//   name: string
-//   detail: string
-//   time: string
-// }
-  return [
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    {
-      id: "728ed52f",
-      name: "ไอดี Valorant",
-      detail: "m@example.com",
-      time: new Date().toLocaleString()
-    },
-    // ...
-  ]
-}
+"use client";
 
-export default async function page() {
-    const data = await getData()
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { columns, BuyProduct } from "./columns";
+import { DataTable } from "./data-table";
+import { getHistoryBuyByUserId } from "@/lib/database/historybuy";
+
+export default function Page() {
+  const { data: session } = useSession();
+  const [orders, setOrders] = useState<BuyProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const fetchData = async () => {
+      try {
+        const dataHistoryBuy = await getHistoryBuyByUserId(session.user.id);
+
+        // map ให้เข้ากับ BuyProduct type
+        setOrders(dataHistoryBuy);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session]);
+
   return (
     <div className="header container">
       <div className="mb-4">
@@ -144,7 +38,12 @@ export default async function page() {
           ประวัติการสั่งซื้อทั้งหมดของคุณ
         </h2>
       </div>
-      <DataTable columns={columns} data={data} />
+
+      {loading ? (
+        <div>กำลังโหลดข้อมูล...</div>
+      ) : (
+        <DataTable columns={columns} data={orders} />
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,16 +15,18 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
 import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Categories, updateCategory } from "@/lib/database/category";
 
-export function  EditCategoriesButton({ category }: { category: any }) {
+export function EditCategoriesButton({ category }: { category: Categories }) {
   async function handleEdit(formData: FormData) {
-    const id = formData.get("id");
-    const name = formData.get("name");
-    const image = formData.get("image");
+    const name = String(formData.get("name") || "");
+    const image = String(formData.get("image") || "");
 
-    toast.success("แก้ไขหมวดหมู่สำเร็จ");
-
-    console.log("แก้ไขหมวดหมู่สำเร็จ:", { id, name, image });
+    toast.promise(updateCategory({ id: category.id, name, image }), {
+      loading: "กำลังบันทึก...",
+      success: "บันทึกการแก้ไขหมวดหมู่สำเร็จ",
+      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+    });
   }
 
   return (
@@ -55,7 +57,7 @@ export function  EditCategoriesButton({ category }: { category: any }) {
             <Input
               id="image"
               name="image"
-              defaultValue={category.image}
+              defaultValue={category.image ?? ""}
               type="text"
             />
           </div>

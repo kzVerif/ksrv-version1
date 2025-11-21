@@ -7,27 +7,31 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
+import { updateWalletTopup, Wallet } from "@/lib/database/wallettopup";
 
-export default function WalletSettingForm({ data }: { data: any }) {
-  const [enabled, setEnabled] = useState(data.status);
-  const [feeEnabled, feeSetEnabled] = useState(data.fee);
+export default function WalletSettingForm({ data }: { data: Wallet }) {
+  const [enabled, setEnabled] = useState(data.available);
+  const [feeEnabled, feeSetEnabled] = useState(data.feeAvailable);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // ดึงข้อมูลจากฟอร์ม
     const formData = new FormData(e.currentTarget);
-    const phone = formData.get("phone");
+    const phone = String(formData.get("phone") || "");
 
-    console.log({
+    const updateData: Wallet = {
+      id: data.id,
       phone,
-      enabled,
+      feeAvailable: feeEnabled,
+      available: enabled,
+    };
+
+    toast.promise(updateWalletTopup(updateData), {
+      loading: "กำลังบันทึก...",
+      success: "บันทึกการตั้งค่าการเติมเงินผ่านธนาคารสำเร็จ",
+      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
     });
-
-    toast.success("บันทึการเติมเงินผ่าน TrueMoney wallet สำเร็จ")
-
-    // ตรงนี้สามารถ fetch ไป backend ได้
-    // fetch("/api/wallet-setting", { method: "POST", body: JSON.stringify({ phone, enabled }) })
   };
 
   return (

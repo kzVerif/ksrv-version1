@@ -9,16 +9,31 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { getHomepage } from "@/lib/database/home";
-import AutoCarousel from "@/components/AutoCarousel";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Notification01Icon, Package01Icon, PackageMoving01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import {
+  Notification01Icon,
+  Package01Icon,
+  PackageMoving01Icon,
+  UserGroupIcon,
+} from "@hugeicons/core-free-icons";
+import { Badge } from "@/components/ui/badge";
 
 export default async function Home() {
   const data = await getHomepage();
+
   return (
     <div className="header container">
-      {/* Carousel Section */}
-      <AutoCarousel data={data}/>
+      {/* Banner Section */}
+      <Image
+        src={
+          data?.setting?.banner ?? "https://placehold.co/1860x500?text=Banner"
+        }
+        width={1860}
+        height={500}
+        alt={`Banner`}
+        className="w-full object-cover rounded-2xl"
+        priority
+      />
 
       {/* ประกาศ */}
       <div className="bg-white rounded-xl p-3 shadow border flex items-center gap-2">
@@ -27,7 +42,9 @@ export default async function Home() {
           <HugeiconsIcon icon={Notification01Icon} /> ประกาศ
         </span>
         {/* เนื้อหาประกาศ */}
-        <p className="leading-relaxed text-center">{data.notice}</p>
+        <p className="leading-relaxed text-center">
+          {data?.setting?.announcement}
+        </p>
       </div>
 
       {/* สเตตัส */}
@@ -49,12 +66,12 @@ export default async function Home() {
         {/* สินค้าทั้งหมด */}
         <div className="flex items-center justify-start bg-white p-4 gap-x-4 rounded-2xl focus shadow ">
           <div className="text-with-color p-3 rounded-2xl ">
-            <HugeiconsIcon icon={Package01Icon}  size={40}/>
+            <HugeiconsIcon icon={Package01Icon} size={40} />
           </div>
           <div className="flex flex-col">
             <h1 className="text-lg font-medium ">สินค้าทั้งหมด</h1>
             <div className="flex items-end gap-1">
-              <span className="text-4xl font-bold ">{data.stock}</span>
+              <span className="text-4xl font-bold ">{data.allStock}</span>
               <span className="text-sm text-gray-500">ชิ้น</span>
             </div>
           </div>
@@ -68,7 +85,7 @@ export default async function Home() {
           <div className="flex flex-col">
             <h1 className="text-lg font-medium ">สินค้าที่ขายไปแล้ว</h1>
             <div className="flex items-end gap-1">
-              <span className="text-4xl font-bold ">{data.sold}</span>
+              <span className="text-4xl font-bold ">{data.soldStock}</span>
               <span className="text-sm text-gray-500">ชิ้น</span>
             </div>
           </div>
@@ -87,21 +104,21 @@ export default async function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {data.categories.map((c: any, index) => (
             <div className="" key={c.id}>
-              <Link href={`/categories/${c.id}`}>
+              <Link href={`/categories/${c.categoriesId}`}>
                 <Card className="focus rounded-xl border bg-white cursor-pointer">
                   <CardContent className="flex flex-col items-start justify-center">
                     <div className="w-full rounded-lg overflow-hidden mb-3 bg-gray-50">
                       <Image
-                        src={c.image}
-                        width={500}
-                        height={300}
+                        src={c.category.image}
+                        width={1980}
+                        height={500}
                         alt={`สินค้า ${index + 1}`}
                         className="w-full object-cover"
                       />
                     </div>
-                    <h3 className="font-semibold text">{c.name}</h3>
+                    <h3 className="font-semibold text">{c.category.name}</h3>
                     <h3 className="text-sm">
-                      จำนวนสินค้าทั้งหมด {c.amount} รายการ
+                      จำนวนสินค้าทั้งหมด {c.category.products.length} รายการ
                     </h3>
                   </CardContent>
                 </Card>
@@ -118,23 +135,28 @@ export default async function Home() {
                 className="pl-2 md:basis-1/2 lg:basis-1/4 xl:basis-1/5 cursor-pointer"
               >
                 <div className="p-2">
-                  <Link href={`/shop/${s.id}`}>
+                  <Link href={`/shop/${s.product.id}`}>
                     <Card className="focus rounded-xl border bg-white">
                       <CardContent className="flex flex-col items-start justify-center">
                         <div className="w-full aspect-square rounded-lg overflow-hidden mb-3 bg-gray-50">
                           <Image
-                            src={s.image}
+                            src={s.product.image}
                             width={500}
                             height={500}
                             alt={`สินค้า ${index + 1}`}
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <h3 className="text-base font-semibold ">{s.name}</h3>
+                        <h3 className="text-base font-semibold ">
+                          {s.product.name}
+                        </h3>
                         <p className="text-sm text-gray-500 mt-1">
-                          ราคา: <span className="font-bold">{s.price}฿</span>
+                          <Badge className="font-bold">
+                          ราคา:{" "}
+                            {Number(s.product.price)}฿
+                          </Badge>
                         </p>
-                        {s.remain > 0 ? (
+                        {s.product.stocks.length > 0 ? (
                           <button className="btn-main mt-3 px-3 py-1 rounded-lg text-sm w-full">
                             ดูรายละเอียด
                           </button>
@@ -147,7 +169,7 @@ export default async function Home() {
                           </button>
                         )}
                         <h3 className="text-sm text-gray-500 mt-1 items-center">
-                          คงเหลือ {s.remain} ชิ้น
+                          คงเหลือ {s.product.stocks.length} ชิ้น
                         </h3>
                       </CardContent>
                     </Card>

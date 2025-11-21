@@ -1,36 +1,42 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Image as ImageIcon,
-} from "lucide-react";
-import toast from "react-hot-toast";
+import { Image as ImageIcon } from "lucide-react";
+import toast from "react-hot-toast";;
+import { TopupByBank } from "@/lib/database/users";
+import { useSession } from "next-auth/react";
+import { useUser } from "@/contexts/UserContext";
 
 export default function BankTopup() {
+  const { data: session } = useSession();
   const [file, setFile] = useState<File | null>(null);
-  const [status, setStatus] = useState<"success" | "fail" | null>(null);
+  const { refreshUser } = useUser();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
       setFile(selected);
-      setStatus(null);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!file) {
-      setStatus("fail");
-      toast.error("กรุณาแนบสลิปมาด้วย")
-      return;
-    } 
-    toast.success("เติมเงินสำเร็จ")
+     if (!session) {
+      toast.error("กรุณาเข้าสู่ระบบก่อนทำรายการ")
+      return
+    }
 
-    // จำลองตรวจสอบสลิป
-    setTimeout(() => {
-      setStatus("success");
-    }, 1000);
+    if (!file) {
+      toast.error("กรุณาแนบสลิปมาด้วย");
+      return;
+    }
+
+    toast.promise(TopupByBank(session?.user.id, file), {
+      loading: "กำลังเติมเงิน...",
+      success: "เติมเงินสำเร็จ",
+      error: (error: any) => error.message ?? "เติมเงินไม่สำเร็จ",
+    });
+    await refreshUser();
   };
 
   return (

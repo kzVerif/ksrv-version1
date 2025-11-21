@@ -3,14 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
-
-
 :root {
   /* ──────────────── Theme Colors ──────────────── */
   --color-primary: rgb(174, 0, 0); /* สีหลัก */
   --color-primary-light: #ec81819f; /* สีรอง */
   --color-primary-hover: #730101; /* น้ำเงินเข้มตอน hover */
+  --bg-url: "";
 
   --color-text: #1e293b; /* slate-800 */
   --color-text-light: #1f2937; /* gray-800 */
@@ -250,11 +248,11 @@
 
 body {
   font-family: "Prompt", sans-serif;
-  background-image: url("https://img2.pic.in.th/pic/76f73e24-6526-4f2f-b474-e422f9f32419.jpg");
+  background-image: var(--bg-url);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  margin: 0; /* เอาขอบขาวรอบข้างออก */
+  margin: 0;
   background-attachment: fixed;
 }
 /* ──────────────── Header ──────────────── */

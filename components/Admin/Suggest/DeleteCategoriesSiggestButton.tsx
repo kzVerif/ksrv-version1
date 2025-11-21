@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   Dialog,
   DialogTrigger,
@@ -12,11 +12,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { deleteSuggestCategories } from "@/lib/database/suggestcategories";
 
 export function DeleteCategoriesSiggestButton({ id }: { id: string }) {
   async function handleDelete(id: string) {
     console.log("Delete user:", id);
-    toast.success("ลบหมวดหมู่แนะนำสำเร็จ")
+    toast.promise(deleteSuggestCategories(id), {
+      loading: "กำลังลย...",
+      success: "ลบหมวดหมู่แนะนำสำเร็จ",
+      error: "ไม่สามารถลบหมดวหมู่แนะนำได้",
+    });
   }
 
   return (

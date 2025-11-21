@@ -1,0 +1,46 @@
+"use client";
+
+import { DeleteButton } from "@/components/Admin/Users/DeleteButton";
+import { EditButton } from "@/components/Admin/Users/EditButton";
+import { Button } from "@/components/ui/button";
+import { Delete02Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ColumnDef } from "@tanstack/react-table";
+
+// This type is used to define the shape of our data.
+// You can use a Zod schema here if you want.
+export type Users = {
+  id: string;
+  username: string;
+  points: number;
+  totalPoints: number;
+  role: "USER" | "ADMIN"
+};
+
+export const columns: ColumnDef<Users>[] = [
+  {
+    accessorKey: "username",
+    header: "Username",
+  },
+  {
+    accessorKey: "points",
+    header: "Point",
+  },
+  {
+    accessorKey: "totalPoints",
+    header: "ยอดเติมสะสม",
+  },
+  {
+    id: "actions",
+    header: "จัดการ",
+    cell: ({ row }) => {
+      const user = row.original;
+      return (
+        <div className="flex gap-2">
+          <EditButton user={user} />
+          <DeleteButton id={user.id}/>
+        </div>
+      );
+    },
+  },
+];

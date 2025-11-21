@@ -1,4 +1,4 @@
-import { Products } from "@/app/(admin)/products/columns";
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,9 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
-// 1. เปลี่ยนมาใช้ไอคอนจาก lucide-react
 import { Plus } from "lucide-react";
-
 import {
   Select,
   SelectTrigger,
@@ -24,30 +22,42 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { Categories } from "@/src/generated/client";
+import { createProducts } from "@/lib/database/shop";
+import { useState } from "react";
 
-export function AddProductButton() {
-  // 2. เปลี่ยนชื่อฟังก์ชัน
-  async function handleAddProduct(formData: FormData) {
-    const name = formData.get("name");
-    const price = formData.get("price");
-    const image = formData.get("image");
-    const detail = formData.get("detail");
-    const category = formData.get("category")
+export function AddProductButton({ categories }: { categories: Categories[] }) {
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-    // 3. เปลี่ยนข้อความ Toast
-    toast.success("เพิ่มสินค้าสำเร็จ");
+  async function handleAddProduct(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
 
-    // 4. เปลี่ยน Console Log
-    console.log("เพิ่มสินค้า:", { name, price, image, detail, category });
-    
-    // ที่นี่ คุณสามารถเพิ่ม Logic การบันทึกลง Database
+    const name = String(formData.get("name") || "");
+    const price = Number(formData.get("price") || 0);
+    const image = String(formData.get("image") || "");
+    const detail = String(formData.get("detail") || "");
+    const categoryId = selectedCategory;
+
+    if (!categoryId) {
+      toast.error("กรุณาเลือกหมวดหมู่สินค้า");
+      return;
+    }
+
+    toast.promise(
+      createProducts({ name, price, image, detail, categoriesId: categoryId }),
+      {
+        loading: "กำลังบันทึก...",
+        success: "สร้างสินค้าใหม่สำเร็จ",
+        error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      }
+    );
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {/* 5. อัปเดตปุ่ม Trigger */}
-        <Button variant="secondary" className="cursor-pointer flex items-center gap-2 btn-main">
+        <Button variant="secondary" className="flex items-center gap-2 btn-main">
           <Plus className="h-4 w-4" />
           <span>เพิ่มสินค้า</span>
         </Button>
@@ -55,81 +65,53 @@ export function AddProductButton() {
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          {/* 6. อัปเดต Title และ Description */}
-          <DialogTitle className="text">เพิ่มสินค้าใหม่</DialogTitle>
+          <DialogTitle>เพิ่มสินค้าใหม่</DialogTitle>
           <DialogDescription>
             กรอกรายละเอียดเพื่อเพิ่มสินค้าใหม่ลงในระบบ
           </DialogDescription>
         </DialogHeader>
 
-        {/* 7. อัปเดต action */}
-        <form action={handleAddProduct} className="grid gap-4">
-          {/* 8. ลบ hidden input "id" ที่ไม่จำเป็น */}
-
+        <form onSubmit={handleAddProduct} className="grid gap-4">
           <div className="grid gap-3">
             <Label htmlFor="name">ชื่อสินค้า</Label>
-            {/* 9. ลบ defaultValue และเพิ่ม placeholder */}
-            <Input id="name" name="name"/>
+            <Input id="name" name="name" required />
           </div>
 
           <div className="grid gap-3">
             <Label htmlFor="price">ราคา</Label>
-            <Input
-              id="price"
-              name="price"
-              type="number"
-              // 10. ลบ defaultValue
-            />
+            <Input id="price" name="price" type="number" required />
           </div>
 
           <div className="grid gap-3">
             <Label htmlFor="image">URL รูปภาพ</Label>
-            <Input
-              id="image"
-              name="image"
-              type="text"
-              // 11. ลบ defaultValue
-            />
+            <Input id="image" name="image" type="text" required />
           </div>
 
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
-            <Textarea
-              id="detail"
-              name="detail"
-              // 12. ลบ defaultValue
-            />
+            <Textarea id="detail" name="detail" required />
           </div>
 
           <div className="grid gap-3">
             <Label htmlFor="category">หมวดหมู่</Label>
-
-            {/* ส่งค่า category ผ่าน input hidden */}
-            <input type="hidden" name="category" id="category-hidden" />
-
-            <Select>
+            <Select onValueChange={setSelectedCategory} defaultValue="">
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="เลือกหมวดหมู่สินค้า" />
               </SelectTrigger>
-
               <SelectContent>
-                <SelectItem value="gamepass">Game Pass</SelectItem>
-                <SelectItem value="robux">Robux</SelectItem>
-                <SelectItem value="topup">Top-Up</SelectItem>
-                <SelectItem value="account">บัญชีเกม</SelectItem>
-                <SelectItem value="other">อื่น ๆ</SelectItem>
+                {categories.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" className="cursor-pointer">
-                ยกเลิก
-              </Button>
+              <Button variant="outline">ยกเลิก</Button>
             </DialogClose>
-
-            {/* 13. อัปเดตข้อความปุ่ม Submit */}
             <Button type="submit" className="btn-main">
               เพิ่มสินค้า
             </Button>

@@ -20,19 +20,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"; // 3. เพิ่ม Select สำหรับ status
-import { Stocks } from "@/app/(admin)/products/[id]/columns";
+import { Stocks } from "@/app/(admin)/admin/products/[id]/columns";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
+import { updateStocksById } from "@/lib/database/stocks";
 
 export function EditStockButton({ stock }: { stock: Stocks }) {
   // 4. อัปเดตฟังก์ชัน handleEdit
   async function handleEdit(formData: FormData) {
-    const id = formData.get("id");
-    const detail = formData.get("detail");
-    const status = formData.get("status"); // 5. เพิ่ม status
+    const id = String(formData.get("id") || "");
+    const detail = String(formData.get("detail") || "");
+    const productId = stock.productId;
 
-    toast.success("แก้ไขสต็อกสำเร็จ"); // 6. อัปเดตข้อความ
-    console.log("แก้ไขสต็อก:", { id, detail, status }); // 7. อัปเดต log
+    // แปลงค่าให้ตรงกับ union type
+    const statusRaw = formData.get("status") as string | null;
+    const status: "AVAILABLE" | "SOLD" =
+      statusRaw === "SOLD" ? "SOLD" : "AVAILABLE";
+
+   toast.promise(updateStocksById({ id, detail, status, productId }), {
+      loading: "กำลังบันทึก...",
+      success: "แก้ไขสต็อคสำเร็จ",
+      error: "เกิดข้อผิดพลาด",
+    });
   }
 
   return (
@@ -58,11 +67,7 @@ export function EditStockButton({ stock }: { stock: Stocks }) {
 
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
-            <Textarea
-              id="detail"
-              name="detail"
-              defaultValue={stock.detail}
-            />
+            <Textarea id="detail" name="detail" defaultValue={stock.detail} />
           </div>
 
           {/* 11. เพิ่มฟิลด์สำหรับ Status */}
@@ -73,8 +78,8 @@ export function EditStockButton({ stock }: { stock: Stocks }) {
                 <SelectValue placeholder="เลือกสถานะ" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="พร้อมจำหน่าย">พร้อมจำหน่าย</SelectItem>
-                <SelectItem value="จำหน่ายแล้ว">จำหน่ายแล้ว</SelectItem>
+                <SelectItem value="AVAILABLE">พร้อมจำหน่าย</SelectItem>
+                <SelectItem value="SOLD">จำหน่ายแล้ว</SelectItem>
               </SelectContent>
             </Select>
           </div>

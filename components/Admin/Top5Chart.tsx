@@ -12,21 +12,25 @@ import {
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const data = [
-  { name: "Roblox 50", sold: 120 },
-  { name: "Roblox 100", sold: 80 },
-  { name: "Gamepass A", sold: 60 },
-  { name: "Gamepass B", sold: 45 },
-  { name: "Gamepass C", sold: 30 },
-];
+export interface BestSeller {
+  product: {
+    id: string;
+    name: string;
+    image: string | null;
+    detail: string | null;
+    price: number;
+    categoriesId: string;
+  };
+  sold: number;
+}
 
-export default function Top5Chart() {
+export default function Top5Chart({ bestSeller }: { bestSeller: any }) {
   const chartData = {
-    labels: data.map((item) => item.name),
+    labels: bestSeller.map((item: any) => item.name),
     datasets: [
       {
         label: "ยอดขาย",
-        data: data.map((item) => item.sold),
+        data: bestSeller.map((item: any) => item.sold),
         backgroundColor: [
           "#4ade80",
           "#facc15",

@@ -1,4 +1,4 @@
-import { Users } from "@/app/(admin)/users/columns";
+import { Users } from "@/app/(admin)/admin/users/columns";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,20 +11,28 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { updateUser } from "@/lib/database/users";
 import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
 
-export function EditButton({user} : {user: Users}) {
+export function EditButton({ user }: { user: Users }) {
   async function handleEdit(formData: FormData) {
-    const name = formData.get("name");
-    const point = formData.get("point");
-    const totalTopup = formData.get("totalTopup");
-    toast.success("แก้ไขสำเร็จ");
-
-    // เขียน logic ตรงนี้ เช่น อัปเดต DB
-    console.log("แก้ไข:", { name, point, totalTopup });
+    const point = Number(formData.get("points") || 0);
+    const totalTopup = Number(formData.get("totalPoints")|| 0);
+    toast.promise(
+      updateUser({
+        id: user.id,
+        points: point,
+        totalPoints: totalTopup,
+      }),
+      {
+        loading: "กำลังอัพเดทผู็ใช้...",
+        success: "อัพเดทสำเร็จ",
+        error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      }
+    );
   }
 
   return (
@@ -46,9 +54,9 @@ export function EditButton({user} : {user: Users}) {
         {/* ✅ ย้าย form มาวางตรงนี้ และใส่ action */}
         <form action={handleEdit} className="grid gap-4">
           <div className="grid gap-3">
-            <Label htmlFor="name-1">ชื่อผู้ใช้</Label>
+            <Label htmlFor="name">ชื่อผู้ใช้</Label>
             <Input
-              id="name-1"
+              id="name"
               name="name"
               defaultValue={user.username}
               disabled
@@ -56,16 +64,21 @@ export function EditButton({user} : {user: Users}) {
           </div>
 
           <div className="grid gap-3">
-            <Label htmlFor="point">พ้อยท์</Label>
-            <Input id="point" name="point" defaultValue={user.point} type="number" />
+            <Label htmlFor="points">พ้อยท์</Label>
+            <Input
+              id="points"
+              name="points"
+              defaultValue={user.points}
+              type="number"
+            />
           </div>
 
           <div className="grid gap-3">
-            <Label htmlFor="totalTopup">ยอดเติมสะสม</Label>
+            <Label htmlFor="totalPoints">ยอดเติมสะสม</Label>
             <Input
-              id="totalTopup"
-              name="totalTopup"
-              defaultValue={user.totalTopup}
+              id="totalPoints"
+              name="totalPoints"
+              defaultValue={user.totalPoints}
               type="number"
             />
           </div>

@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -27,13 +27,17 @@ import {
   TransactionHistoryIcon,
   UserEdit01Icon,
   UserIcon,
-  UserSquareIcon,
 } from "@hugeicons/core-free-icons";
+import { useSession, signOut } from "next-auth/react";
+import { useUser } from "@/contexts/UserContext";
 
-export default function Navbar() {
+export default function Navbar({ setting }: { setting: any }) {
+  const { data: session } = useSession();
+  const { user } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [login, isLogin] = useState(true);
-  const [admin, isAdmin] = useState(true);
+  const isLoggedIn = !!session?.user;
+  const isAdmin = session?.user?.role === "ADMIN";
+  const points = user?.points || 0
   return (
     <nav className="bg-white shadow-md py-3 sticky top-0 z-50 border-b border-gray-100 w-full">
       <div className=" container  flex justify-between items-center">
@@ -41,7 +45,7 @@ export default function Navbar() {
         <Link href={"/"}>
           <div className="flex items-center gap-2 cursor-pointer">
             <Image
-              src="https://img.rdcw.co.th/images/98cf018c3cb93cff9a350642fb8edb7ee1cb3e67686b1104514440a3eeb3c8bb.png"
+              src={setting.logo}
               width={60}
               height={60}
               alt="KSRV Logo"
@@ -69,14 +73,16 @@ export default function Navbar() {
               <HugeiconsIcon icon={MoneyReceiveSquareIcon} /> เติมเงิน
             </button>
           </Link>
-          <button className="flex items-center button-underline pb-1">
-            <HugeiconsIcon icon={Contact01Icon} />
-            ติดต่อเรา
-          </button>
+          <Link href={`${setting.contact}`} target="_blank">
+            <button className="flex items-center button-underline pb-1">
+              <HugeiconsIcon icon={Contact01Icon} />
+              ติดต่อเรา
+            </button>
+          </Link>
         </div>
 
         {/* ปุ่มเข้าสู่ระบบ / สมัครสมาชิก */}
-        {login ? (
+        {isLoggedIn ? (
           <div className="flex gap-2">
             {/* เมนูผู้ใช้ */}
             <DropdownMenu>
@@ -89,13 +95,13 @@ export default function Navbar() {
                     {/* <User className="w-4 h-4 text-muted-foreground" /> */}
                     <HugeiconsIcon icon={UserIcon} />
                     <span className="hidden sm:inline font-semibold tracking-wide">
-                      KSRV USER
+                      {session?.user?.username}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1 border-l pl-3">
                     <Badge className="bg-(--color-primary) text-white font-semibold px-2 py-0.5 rounded-md">
-                      99฿
+                      {points} ฿
                     </Badge>
                   </div>
                 </Button>
@@ -107,7 +113,8 @@ export default function Navbar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="flex items-center gap-2">
-                  <HugeiconsIcon icon={BitcoinBagIcon} /> ยอดเงินคงเหลือ 99฿
+                  <HugeiconsIcon icon={BitcoinBagIcon} /> ยอดเงินคงเหลือ{" "}
+                  {points} ฿
                 </DropdownMenuItem>
                 <Link href={"/changepassword"}>
                   <DropdownMenuItem className="flex items-center gap-2">
@@ -126,8 +133,8 @@ export default function Navbar() {
                     ประวัติการเติมเงิน
                   </DropdownMenuItem>
                 </Link>
-                {admin ? (
-                  <Link href={"/dashboard"}>
+                {isAdmin ? (
+                  <Link href={"/admin/dashboard"}>
                     <DropdownMenuItem className="flex items-center gap-2">
                       <HugeiconsIcon icon={Settings05Icon} />
                       จัดการร้านค้าของคุณ
@@ -135,7 +142,10 @@ export default function Navbar() {
                   </Link>
                 ) : null}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center gap-2 text-red-500 focus:text-red-600">
+                <DropdownMenuItem
+                  className="flex items-center gap-2 text-red-500 focus:text-red-600"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
                   <HugeiconsIcon icon={LogoutSquare02Icon} /> ออกจากระบบ
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -185,9 +195,11 @@ export default function Navbar() {
                 <HugeiconsIcon icon={MoneyReceiveSquareIcon} /> เติมเงิน
               </button>
             </Link>
-            <button className="flex items-center button-underline pb-1">
-              <HugeiconsIcon icon={Contact01Icon} /> ติดต่อเรา
-            </button>
+            <Link href={`${setting.contact}`} target="_blank">
+              <button className="flex items-center button-underline pb-1">
+                <HugeiconsIcon icon={Contact01Icon} /> ติดต่อเรา
+              </button>
+            </Link>
           </div>
         </div>
       )}

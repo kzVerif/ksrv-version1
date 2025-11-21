@@ -11,11 +11,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { deleteProduct } from "@/lib/database/shop";
+import { Badge } from "@/components/ui/badge";
 
 export function DeleteProductButton({ id }: { id: string }) {
   function handleDelete(id: string) {
-    console.log("Delete user:", id);
-    toast.success("ลบสินค้าสำเร็จ")
+    toast.promise(deleteProduct(id), {
+      loading: "กำลังลบ...",
+      success: "ลบสินค้าสำเร็จ",
+      error: "ลบไม่สำเร็จ กรุณาลองใหม่",
+    });
   }
 
   return (
@@ -31,7 +36,7 @@ export function DeleteProductButton({ id }: { id: string }) {
           <DialogTitle>ยืนยันการลบ</DialogTitle>
           <DialogDescription>
             การลบรายการนี้เป็นการกระทำถาวรและไม่สามารถย้อนกลับได้
-            คุณต้องการดำเนินการต่อหรือไม่
+           <Badge variant={"destructive"}>stocks ที่อยู่ภายในสินค้านี้จะถูกลบไปด้วยทั้งหมด</Badge>
           </DialogDescription>
         </DialogHeader>
 
