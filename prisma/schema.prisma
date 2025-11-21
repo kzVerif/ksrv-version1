@@ -7,7 +7,7 @@
 
 generator client {
   provider      = "prisma-client"
-  output        = "../src/generated" // โฟลเดอร์ที่คุณต้องการให้ Prisma สร้าง client
+  output        = "../src/generated/client"
 }
 
 datasource db {
