@@ -229,7 +229,7 @@ export async function buyProducts(
       where: { id: userId },
       data: { points: Number(user.points) - totalPrice },
     });
-
+    
     await sendDiscordWebhook({
       username: "ระบบร้านค้า",
       embeds: [
@@ -255,6 +255,9 @@ export async function buyProducts(
     revalidatePath(`/categories/${product.categoriesId}`);
     revalidatePath("/products");
     revalidatePath("/");
+    return {
+        status: true,
+      };
   } catch (error: any) {
     console.log("buyProducts Error:", error.message || error);
     return {

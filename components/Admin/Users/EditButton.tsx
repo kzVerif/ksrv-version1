@@ -40,7 +40,7 @@ export function EditButton({ user }: { user: Users }) {
         role
       }),
       {
-        loading: "กำลังอัพเดทผู็ใช้...",
+        loading: "กำลังอัพเดทผู้ใช้...",
         success: "อัพเดทสำเร็จ",
         error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
       }

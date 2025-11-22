@@ -38,14 +38,18 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
 
     try {
         toast.loading("กำลังสั่งซื้อสินค้า...")
+
         const status = await buyProducts(quantity, session.user.id, productId)
+        // console.log(status);
+        
         if (!status?.status) {
           toast.dismiss()
           toast.error(status?.message ?? "เกิดข้อผิดพลากจากระบบ")
           return
         }
-
+        toast.dismiss()
         toast.success("สั่งซื้อสินค้าสำเร็จ กรุณาตรวจสอบประวัติการสั่งซื้อ")
+
       
       // await toast.promise(buyProducts(quantity, session.user.id, productId), {
       //   loading: "กำลังสั่งซื้อสินค้า...",
