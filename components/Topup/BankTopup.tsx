@@ -81,26 +81,35 @@ export default function BankTopup() {
       {/* ✅ ฟอร์มอัปโหลดสลิป */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-5 cursor-pointer hover:border-blue-400 transition">
-          <label
-            htmlFor="file-upload"
-            className="cursor-pointer flex flex-col items-center space-y-2"
-          >
-            <ImageIcon className="text-gray-400" size={40} />
-            <span className="text-gray-600 text-sm font-medium">
-              {file ? "เปลี่ยนรูปสลิป" : "คลิกเพื่อเลือกหรือวางรูปสลิปที่นี่"}
-            </span>
-            <span className="text-xs text-gray-400">
-              รองรับไฟล์ .jpg .png .jpeg
-            </span>
-          </label>
-          <input
-            id="file-upload"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-        </div>
+  <label
+    htmlFor="file-upload"
+    className="cursor-pointer flex flex-col items-center space-y-2"
+  >
+    <ImageIcon className="text-gray-400" size={40} />
+    <span className="text-gray-600 text-sm font-medium">
+      {file ? "เปลี่ยนรูปสลิป" : "คลิกเพื่อเลือกหรือวางรูปสลิปที่นี่"}
+    </span>
+    <span className="text-xs text-gray-400">
+      รองรับไฟล์ .jpg .png .jpeg
+    </span>
+    {/* ✅ Preview */}
+    {file && (
+      <img
+        src={URL.createObjectURL(file)}
+        alt="Slip Preview"
+        className="mt-3 w-full max-w-xs object-contain rounded-md border"
+      />
+    )}
+  </label>
+  <input
+    id="file-upload"
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={handleFileChange}
+  />
+</div>
+
 
         {/* ✅ แสดง Preview */}
 
