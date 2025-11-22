@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const defaultTitle = "KSRV | Kanghun Server And Service";
   const defaultDesc = "บริการให้เช่าเว็บไซต์ E-Commerce";
   const defaultIcon =
-    "https://img.rdcw.co.th/images/98cf018c3cb93cff9a350642fb8edb7ee1cb3e67686b1104514440a3eeb3c8bb.png";
+    "https://img2.pic.in.th/pic/ksrv-logo-trans.png";
 
   // 3. ตรวจสอบว่ามี setting หรือไม่ ถ้ามี ก็ใช้ค่าจาก DB
   const title = setting?.shopName || defaultTitle;

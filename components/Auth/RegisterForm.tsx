@@ -1,48 +1,74 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserIcon, LockIcon, UserAdd02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "../ui/badge";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { createUser } from "@/lib/database/users";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function RegisterForm() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return; // รอ session โหลด
+    if (session) {
+      router.push("/"); // redirect ถ้า user login แล้ว
+    }
+  }, [session, status, router]);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
+  const validate = () => {
+    // Username 6-20 ตัว, ตัวอักษรและตัวเลข
+    const usernameRegex = /^[a-zA-Z0-9]{6,20}$/;
+    if (!usernameRegex.test(username)) {
+      toast.error(
+        "Username ต้องมี 6-20 ตัวอักษร และใช้ตัวอักษร A-Z, a-z, 0-9 เท่านั้น"
+      );
+      return false;
+    }
+
+    // Password: 8-32 ตัว, มีพิมพ์ใหญ่, พิมพ์เล็ก, ตัวเลข, special char
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,32}$/;
+    if (!passwordRegex.test(password)) {
+      toast.error(
+        "Password ต้องมี 8-32 ตัวอักษร มีพิมพ์ใหญ่ พิมพ์เล็ก ตัวเลข และอักขระพิเศษ (!@#$%^&*)"
+      );
+      return false;
+    }
+
+    // Confirm password ต้องตรงกับ password
+    if (password !== confirm) {
+      toast.error("รหัสผ่านไม่ตรงกัน");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password != confirm) {
-      return toast.error("รหัสผ่านไม่ตรงกัน");
-    }
-
-    if (password.length < 6 && confirm.length < 6) {
-      return toast.error("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
-    }
-    const data = {
-      username,
-      password,
-    };
+    if (!validate()) return;
 
     toast.loading("กำลังสมัครสมาชิก...");
-    const status = await createUser(data);
-    if (!status.success) {
-      toast.dismiss()
-      toast.error(status.message ?? "เกิดข้อผิดพลาดจากระบบ");
-      return;
-    }
-    toast.success("สมัครสมาชิกเรียบร้อยแล้ว!");
+    const status = await createUser({ username, password });
     toast.dismiss();
 
-    // toast.promise(createUser(data), {
-    //   loading: "กำลังสมัครสมาชิก...",
-    //   success: "สมัครสมาชิกเรียบร้อยแล้ว!",
-    //   error: (err) => err.message || "เกิดข้อผิดพลาด",
-    // });
+    if (!status.success) {
+      return toast.error(status.message ?? "เกิดข้อผิดพลาดจากระบบ");
+    }
+
+    toast.success("สมัครสมาชิกสำเร็จ!");
+    setTimeout(() => router.push("/login"), 1000);
   };
 
   return (

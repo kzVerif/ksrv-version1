@@ -1,5 +1,7 @@
 "use server";
+import { revalidateEntireCache } from "next/dist/client/components/segment-cache";
 import prisma from "./conn";
+import { revalidatePath } from "next/cache";
 
 export async function getShopSettings() {
   try {
@@ -48,6 +50,7 @@ export async function updateShopSetting(data: any) {
         banner: data.banner
       },
     });
+    revalidatePath("/")
   } catch (error) {
     console.log("updateShopSetting Error: ", error);
     return {};

@@ -118,7 +118,10 @@ export async function updateProduct(data: updateProduct) {
       },
     });
     revalidatePath("/admin/products");
+    revalidatePath("/admin/suggestproducts");
+    revalidatePath(`/categories/${data.categoriesId}`);
     revalidatePath("/products");
+    revalidatePath("/");
   } catch (error) {
     console.log("updateProduct Error: ", error);
     throw new Error("เกิดข้อผืดพลาดจากระบบ");
@@ -137,7 +140,10 @@ export async function createProducts(data: productData) {
       },
     });
     revalidatePath("/admin/products");
+    revalidatePath("/admin/suggestproducts");
+    revalidatePath(`/categories/${data.categoriesId}`);
     revalidatePath("/products");
+    revalidatePath("/");
   } catch (error) {
     console.log("createProducts Error: ", error);
     throw new Error("เกิดข้อผิดพลากจากระบบ");
@@ -146,11 +152,14 @@ export async function createProducts(data: productData) {
 
 export async function deleteProduct(id: string) {
   try {
-    await prisma.products.delete({
+   const product =  await prisma.products.delete({
       where: { id: id },
     });
     revalidatePath("/admin/products");
-    revalidatePath("products");
+    revalidatePath("/admin/suggestproducts");
+    revalidatePath(`/categories/${product.categoriesId}`);
+    revalidatePath("/products");
+    revalidatePath("/");
   } catch (error) {
     console.log("deleteProduct Error: ", error);
     throw new Error("เกิดข้อผิดพลาดจากระบบ");
@@ -241,8 +250,11 @@ export async function buyProducts(
         },
       ],
     });
+    revalidatePath("/admin/products");
+    revalidatePath("/admin/suggestproducts");
+    revalidatePath(`/categories/${product.categoriesId}`);
+    revalidatePath("/products");
     revalidatePath("/");
-    revalidatePath("/admin/users");
   } catch (error: any) {
     console.log("buyProducts Error:", error.message || error);
     return {

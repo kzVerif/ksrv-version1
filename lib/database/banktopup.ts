@@ -1,4 +1,5 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 
 export interface Bank {
@@ -22,6 +23,8 @@ export async function updateBankTopup(data: Bank) {
         available: data.available,
       },
     });
+    revalidatePath("/admin/commonsetting")
+    revalidatePath("/topup/bank")
     return { success: true };
   } catch (error) {
     console.log("updateBankTopup Error: ", error);

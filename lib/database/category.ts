@@ -39,7 +39,9 @@ export async function createCategory(data: Categories) {
       },
     });
     revalidatePath("/admin/categories");
+    revalidatePath("/admin/suggestproducts");
     revalidatePath("/categories");
+    revalidatePath("/");
     return updated;
   } catch (error) {
     console.log("CreateCategory Error: ", error);
@@ -53,7 +55,9 @@ export async function deleteCategory(id: string) {
       where: { id: id },
     });
     revalidatePath("/admin/categories");
+    revalidatePath("/admin/suggestproducts");
     revalidatePath("/categories");
+    revalidatePath("/");
     return deleted;
   } catch (error) {
     console.log("deleteCategory Error: ", error);
@@ -71,7 +75,9 @@ export async function updateCategory(data: Categories) {
       },
     });
     revalidatePath("/admin/categories");
+    revalidatePath("/admin/suggestproducts");
     revalidatePath("/categories");
+    revalidatePath("/");
     return updated;
   } catch (error) {
     console.log("updateCategory Error: ", error);

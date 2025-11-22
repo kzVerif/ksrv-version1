@@ -48,7 +48,7 @@ export async function createUser(userData: authData) {
       points: Number(user.points),
       totalPoints: Number(user.totalPoints),
     };
-
+    revalidatePath("/admin/users");
     return { success: true, user: plainUser };
   } catch (error: any) {
     if (error.code === "P2002" && error.meta?.target?.includes("username")) {
@@ -178,7 +178,7 @@ interface updateUser {
   id: string;
   points: number;
   totalPoints: number;
-  role: "ADMIN" | "USER"
+  role: "ADMIN" | "USER";
 }
 
 export async function updateUser(data: updateUser) {
@@ -188,7 +188,7 @@ export async function updateUser(data: updateUser) {
       data: {
         points: data.points,
         totalPoints: data.totalPoints,
-        role: data.role
+        role: data.role,
       },
     });
     revalidatePath("/admin/users");
@@ -267,6 +267,7 @@ export async function TopupByWallet(id: string | undefined, url: string) {
         },
       ],
     });
+    revalidatePath("/admin/users");
   } catch (error) {
     console.log("Topup Error: ", error);
     return {
@@ -309,6 +310,8 @@ export async function TopupByBank(id: string | undefined, file: File) {
         userId: id,
       },
     });
+
+    revalidatePath("/admin/users");
 
     await sendDiscordWebhook({
       username: "ระบบการเงิน",
