@@ -6,10 +6,9 @@ import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import NextTopLoader from "nextjs-toploader";
 import { CustomProviders } from "@/components/Auth/Provider";
-
 import { getShopSettings } from "@/lib/database/setting";
 import { UserProvider } from "@/contexts/UserContext";
-
+export const revalidate = 60;
 export async function generateMetadata(): Promise<Metadata> {
   // 1. ดึงข้อมูล Setting ภายในนี้เลย
   const setting = await getShopSettings();
