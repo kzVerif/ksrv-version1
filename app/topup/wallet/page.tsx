@@ -1,5 +1,4 @@
 import WalletTopup from "@/components/Topup/WalletTopup";
-import React from "react";
 
 export default function page() {
   return (

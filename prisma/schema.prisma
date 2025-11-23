@@ -163,3 +163,9 @@ model Settings {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// ---------------------------- Expired ----------------------------
+model Expired {
+  id           String   @id @default(cuid())
+  timeExpire   DateTime @default(now())
+}

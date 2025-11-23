@@ -1,10 +1,14 @@
+// requireUser.ts หรือไฟล์อื่นๆ ที่ทำงานบน Server
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 
 export async function requireUser() {
-  const session = await getServerSession(authOptions);
+  // NextAuth จะพยายามอ่าน Cookie จาก Headers ในบริบทของ Server Component/Action
+  const session = await getServerSession(authOptions); 
+
+  console.log(session); // ตรวจสอบตรงนี้อีกครั้ง
 
   if (!session) {
     throw new Error("UNAUTHORIZED");
-  }
+  } 
 }

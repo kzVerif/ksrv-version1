@@ -1,3 +1,4 @@
+"use server"
 import { Badge } from "@/components/ui/badge";
 import { getBankTopup } from "@/lib/database/banktopup";
 import { getWalletTopup } from "@/lib/database/wallettopup";
