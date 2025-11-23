@@ -8,7 +8,10 @@ import NextTopLoader from "nextjs-toploader";
 import { CustomProviders } from "@/components/Auth/Provider";
 import { getShopSettings } from "@/lib/database/setting";
 import { UserProvider } from "@/contexts/UserContext";
-import { getExpired } from "@/lib/database/expired";
+import ExpiredGuard from "@/components/ExpiredGuard";
+
+// export const revalidate = 30; 
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const setting = await getShopSettings();
@@ -54,21 +57,6 @@ export default async function RootLayout({
 }) {
   const setting = await getShopSettings();
 
-  // ดึงวันหมดอายุจาก DB
-  const expiredRecord = await getExpired();
-  const now = new Date();
-  let isExpired = false;
-
-  if (expiredRecord) {
-    const dateExpired = new Date(expiredRecord.timeExpire);
-    if (now.getTime() > dateExpired.getTime()) {
-      isExpired = true;
-    }
-  } else {
-    // ถ้าไม่มีข้อมูลใน DB ให้ถือว่า expired
-    isExpired = true;
-  }
-
   return (
     <CustomProviders>
       <html lang="th">
@@ -80,54 +68,19 @@ export default async function RootLayout({
               --color-primary-light: ${setting?.secondaryColor};
               --color-primary-hover: ${setting?.hoverColor};
               --bg-url: url('${setting?.backgroundImage}');
-            }
-          `}
+              }
+              `}
           </style>
         </head>
         <body className="antialiased">
-          {isExpired ? (
-            <div className="min-h-screen flex flex-col items-center justify-center ">
-              {/* ไอคอนหรือภาพ */}
-              <div className="text-9xl mb-8 text-orange-400 animate-pulse">
-                ⏰
-              </div>
-
-              {/* หัวข้อ */}
-              <h1 className="text-4xl font-bold text-gray-800 mb-4 text-center">
-                เว็บไซต์หมดอายุแล้ว
-              </h1>
-
-              {/* คำอธิบาย */}
-              <p className="text-center text-gray-600 mb-8 max-w-xl">
-                ขณะนี้เว็บไซต์นี้หมดอายุการใช้งานแล้ว
-                หากคุณต้องการเข้าถึงข้อมูลหรือบริการเพิ่มเติม
-                กรุณาติดต่อผู้ดูแลระบบ
-              </p>
-
-              {/* ปุ่ม */}
-              <div className="flex gap-4">
-                <a
-                  href="/"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition ease-in-out duration-300"
-                >
-                  กลับหน้าหลัก
-                </a>
-                <a
-                  href="https://discord.gg/YhUs3vnKxG"
-                  className="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg shadow hover:bg-gray-400 transition ease-in-out duration-300"
-                >
-                  ติดต่อผู้ดูแล
-                </a>
-              </div>
-            </div>
-          ) : (
+          <ExpiredGuard>
             <UserProvider>
               <NextTopLoader color="var(--color-primary)" />
               <Navbar setting={setting ?? null} />{" "}
               <Toaster position="bottom-center" /> {children}
             </UserProvider>
-          )}
-          <Footer />
+            <Footer />
+          </ExpiredGuard>
         </body>
       </html>
     </CustomProviders>
