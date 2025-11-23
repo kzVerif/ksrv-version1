@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "vercel-build": "bunx prisma generate && bun run build && bunx ts-node --esm prisma/seed.ts",
-    "seed": "bunx ts-node --esm prisma/seed.ts"
+    "vercel-build": "bunx prisma generate && bun run build"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^1.2.1",
