@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
+import { requireUser } from "../requireUser";
 
 export interface suggestProducts {
   id: string;
@@ -19,6 +20,7 @@ export interface suggestProducts {
 
 export async function getAllSuggestProducts() {
   try {
+
     const suggests = await prisma.suggestProducts.findMany({
       include: {
         product: {
@@ -53,6 +55,7 @@ export async function getAllSuggestProducts() {
 
 export async function addSuggestProducts(id: string) {
   try {
+    await requireUser()
     await prisma.suggestProducts.create({
       data: {
         productId: id,
@@ -69,6 +72,7 @@ export async function addSuggestProducts(id: string) {
 
 export async function DeleteSuggestProduct(id: string) {
   try {
+    await requireUser()
     await prisma.suggestProducts.delete({
       where: {
         id: id

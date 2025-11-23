@@ -1,9 +1,11 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
+import { requireUser } from "../requireUser";
 
 export async function addSuggestCategories(id: string) {
   try {
+    await requireUser()
     await prisma.suggestCategories.create({
       data: {
         categoriesId: id,
@@ -41,6 +43,7 @@ export async function getAllSuggestCategories() {
 
 export async function deleteSuggestCategories(id: string) {
   try {
+    await requireUser()
     await prisma.suggestCategories.delete({
       where: { id: id },
     });

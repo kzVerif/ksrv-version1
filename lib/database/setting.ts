@@ -1,10 +1,11 @@
 "use server";
-import { revalidateEntireCache } from "next/dist/client/components/segment-cache";
 import prisma from "./conn";
 import { revalidatePath } from "next/cache";
+import { requireUser } from "../requireUser";
 
 export async function getShopSettings() {
   try {
+    await requireUser()
     const setting = await prisma.settings.findFirst();
     return setting;
   } catch (error) {
@@ -31,6 +32,7 @@ export async function getShopSettings() {
 
 export async function updateShopSetting(data: any) {
   try {
+    await requireUser()
     await prisma.settings.update({
       where: {
         id: data.id,
@@ -59,6 +61,7 @@ export async function updateShopSetting(data: any) {
 
 export async function getColorSetting() {
   try {
+    await requireUser()
     const setting = await prisma.settings.findFirst();
     return {
       primaryColor: setting?.primaryColor,

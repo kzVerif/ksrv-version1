@@ -1,4 +1,5 @@
 "use server"
+import { requireUser } from "../requireUser";
 import prisma from "./conn";
 export interface Wallet {
   id: string;
@@ -31,6 +32,7 @@ export async function getWalletTopup() {
 
 export async function updateWalletTopup(data: Wallet) {
   try {
+    await requireUser()
     const wallet = await getWalletTopup();
     if (wallet.id === "") {
       throw new Error("ไม่พบการตั้งค่า");

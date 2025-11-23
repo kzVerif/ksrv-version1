@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { walletTopup } from "../Topup/wallet";
 import { TopupBank } from "../Topup/bank";
 import { sendDiscordWebhook } from "../Discord/discord";
+import { requireUser } from "../requireUser";
 
 interface authData {
   username: string;
@@ -107,6 +108,7 @@ export async function ChangePassword(userData: {
   newPassword: string;
 }) {
   try {
+    await requireUser()
     const user = await prisma.users.findUnique({
       where: { id: userData.userId },
     });
@@ -158,6 +160,7 @@ export async function ChangePassword(userData: {
 
 export async function getAllUsers() {
   try {
+    await requireUser()
     const users = await prisma.users.findMany();
     if (!users) {
       return [];
@@ -183,6 +186,7 @@ interface updateUser {
 
 export async function updateUser(data: updateUser) {
   try {
+    await requireUser()
     await prisma.users.update({
       where: { id: data.id },
       data: {
@@ -200,6 +204,7 @@ export async function updateUser(data: updateUser) {
 
 export async function deleteUSer(id: string) {
   try {
+    await requireUser()
     await prisma.users.delete({
       where: { id: id },
     });
@@ -213,6 +218,7 @@ export async function deleteUSer(id: string) {
 export async function TopupByWallet(id: string | undefined, url: string) {
   const topupStatus = await walletTopup(url);
   try {
+    await requireUser()
     if (!topupStatus.status || !id) {
       return {
         status: false,
@@ -279,6 +285,7 @@ export async function TopupByWallet(id: string | undefined, url: string) {
 
 export async function TopupByBank(id: string | undefined, file: File) {
   const res = await TopupBank(file);
+  await requireUser()
 
   if (!res || !id) {
     return {
@@ -352,6 +359,7 @@ export async function TopupByBank(id: string | undefined, file: File) {
 
 export async function getUserById(id: string) {
   try {
+    await requireUser()
     const user = await prisma.users.findUnique({
       where: { id: id },
     });

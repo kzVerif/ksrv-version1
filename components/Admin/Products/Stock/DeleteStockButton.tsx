@@ -11,12 +11,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { deleteStock } from "@/lib/database/stocks";
 
 export function DeleteStockButton({ id }: { id: string }) {
-  function handleDelete(id: string) {
-    console.log("Delete user:", id);
-    toast.success("ลบสินค้าสำเร็จ")
+async function handleDelete(id: string) {
+  toast.loading("กำลังลบสต็อค...");
+
+  try {
+    const deleted = await deleteStock(id);
+
+    if (!deleted.status) {
+      toast.error("ไม่สามารถลบสินค้าได้");
+      return;
+    }
+
+    toast.success("ลบสินค้าสำเร็จ");
+    setTimeout(() => {
+      toast.dismiss()
+    }, 1000);
+  } catch (err) {
+    toast.error("เกิดข้อผิดพลาด");
   }
+}
 
   return (
     <Dialog>

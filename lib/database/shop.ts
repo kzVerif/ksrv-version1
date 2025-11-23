@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 import { sendDiscordWebhook } from "../Discord/discord";
+import { requireUser } from "../requireUser";
 
 export interface productData {
   name: string;
@@ -107,6 +108,7 @@ export async function getAllProducts() {
 
 export async function updateProduct(data: updateProduct) {
   try {
+    await requireUser()
     await prisma.products.update({
       where: { id: data.id },
       data: {
@@ -130,6 +132,7 @@ export async function updateProduct(data: updateProduct) {
 
 export async function createProducts(data: productData) {
   try {
+    await requireUser()
     await prisma.products.create({
       data: {
         name: data.name,
@@ -152,6 +155,7 @@ export async function createProducts(data: productData) {
 
 export async function deleteProduct(id: string) {
   try {
+    await requireUser()
    const product =  await prisma.products.delete({
       where: { id: id },
     });
@@ -172,6 +176,7 @@ export async function buyProducts(
   productId: string
 ) {
   try {
+    await requireUser()
     const user = await prisma.users.findUnique({ where: { id: userId } });
     const product = await prisma.products.findUnique({
       where: { id: productId },

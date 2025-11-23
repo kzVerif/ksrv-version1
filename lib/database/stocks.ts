@@ -2,9 +2,11 @@
 import { Stocks } from "@/app/(admin)/admin/products/[id]/columns";
 import prisma from "./conn";
 import { revalidatePath } from "next/cache";
+import { requireUser } from "../requireUser";
 
 export async function getStocksByProductId(id: string) {
   try {
+    await requireUser()
     const stocks = await prisma.stocks.findMany({
       where: { productId: id },
     });
@@ -20,6 +22,7 @@ export async function getStocksByProductId(id: string) {
 
 export async function updateStocksById(data: Stocks) {
   try {
+    await requireUser()
     await prisma.stocks.update({
       where: { id: data.id },
       data: {
@@ -53,6 +56,7 @@ export type UpdatedStocks = {
 
 export async function addStocks(data: UpdatedStocks[]) {
   try {
+    await requireUser()
     await prisma.stocks.createMany({
       data: data,
     });
@@ -65,5 +69,32 @@ export async function addStocks(data: UpdatedStocks[]) {
   } catch (error) {
     console.log("addStocks Error: ", error);
     throw new Error("เกิดข้อผิดพลาดจากะรบบ");
+  }
+}
+
+export async function deleteStock(id: string) {
+  try {
+    await requireUser()
+    const stock = await prisma.stocks.delete({
+      where: {
+        id: id
+      }
+    })
+    revalidatePath("/admin/products");
+    revalidatePath("/admin/suggestproducts");
+    revalidatePath(`/admin/products/${stock.productId}`);
+    revalidatePath("/products");
+    revalidatePath("/");
+    return {
+      status: true,
+      message: ""
+    }
+
+  } catch (error) {
+    console.log("deleteStock: ",error);
+    return {
+      status: false,
+      message: "เกิดข้อผิดพลาดจากระบบ"
+    }
   }
 }

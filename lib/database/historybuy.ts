@@ -1,8 +1,10 @@
 "use server";
+import { requireUser } from "../requireUser";
 import prisma from "./conn";
 
 export async function getHistoryBuyByUserId(id: string) {
   try {
+    await requireUser()
     const historyBuy = await prisma.historyBuy.findMany({
       where: { userId: id },
       include: {
@@ -40,6 +42,7 @@ export async function getHistoryBuyByUserId(id: string) {
 
 export async function getAllHistoryBuy() {
   try {
+    await requireUser()
     const historyBuy = await prisma.historyBuy.findMany({
       include: {
         user: true,
@@ -77,6 +80,7 @@ export async function getAllHistoryBuy() {
 
 export async function getSOLDForDashboard() {
   try {
+    await requireUser()
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -109,6 +113,7 @@ export async function getSOLDForDashboard() {
 
 export async function getBestSellerProducts() {
   try {
+    await requireUser()
     // จัดกลุ่มตาม productId แล้วนับจำนวนการซื้อ
     const bestSellers = await prisma.historyBuy.groupBy({
       by: ["productId"],
@@ -149,6 +154,7 @@ export async function getBestSellerProducts() {
 
 export async function getLast7DaysDailyRevenue() {
   try {
+    await requireUser()
     const today = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate() - 6); // รวมวันนี้เป็น 7 วัน

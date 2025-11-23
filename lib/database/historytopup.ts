@@ -1,8 +1,10 @@
 "use server";
+import { requireUser } from "../requireUser";
 import prisma from "./conn";
 
 export async function getHistoryTopupByUserId(id: string) {
   try {
+    await requireUser()
     const historytopup = await prisma.historyTopup.findMany({
       where: { userId: id },
     });
@@ -21,6 +23,7 @@ export async function getHistoryTopupByUserId(id: string) {
 
 export async function getAllHistoryTopup() {
   try {
+    await requireUser()
     const historyTopup = await prisma.historyTopup.findMany({
       include: {
         user: true,
@@ -50,6 +53,7 @@ export async function getAllHistoryTopup() {
 
 export async function getTopupForDashboard() {
   try {
+    await requireUser()
     const today = new Date();
     today.setHours(0, 0, 0, 0); // เริ่มต้นวัน
 

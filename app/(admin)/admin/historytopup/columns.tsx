@@ -3,6 +3,7 @@
 import { ViewHistoryTopupButton } from "@/components/Admin/็Historytopup/ViewHistoryTopupButton";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -63,6 +64,29 @@ export const columns: ColumnDef<AdminTopupHis>[] = [
           {topupType}
         </Badge>
       );
+    },
+  },
+    {
+    accessorKey: "createdAt",
+    header: (
+      { column } // 👈 นี่คือส่วน header ที่คุณมีอยู่แล้ว
+    ) => (
+      <button
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="font-bold cursor-pointer"
+      >
+        วันที่{" "}
+        {column.getIsSorted() === "asc"
+          ? "↑"
+          : column.getIsSorted() === "desc"
+          ? "↓"
+          : ""}
+      </button>
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      const formattedDate = format(date, "dd/MM/yyyy HH:mm");
+      return <div className="text-left">{formattedDate}</div>;
     },
   },
   {
