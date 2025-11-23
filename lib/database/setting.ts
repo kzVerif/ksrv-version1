@@ -5,7 +5,6 @@ import { requireUser } from "../requireUser";
 
 export async function getShopSettings() {
   try {
-    await requireUser()
     const setting = await prisma.settings.findFirst();
     return setting;
   } catch (error) {

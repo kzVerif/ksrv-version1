@@ -9,39 +9,34 @@ import { CustomProviders } from "@/components/Auth/Provider";
 import { getShopSettings } from "@/lib/database/setting";
 import { UserProvider } from "@/contexts/UserContext";
 export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
-  // 1. ดึงข้อมูล Setting ภายในนี้เลย
   const setting = await getShopSettings();
 
-  // 2. สร้างค่าเริ่มต้น (Fallback) เผื่อว่าดึงข้อมูลไม่สำเร็จ
   const defaultTitle = "KSRV | Kanghun Server And Service";
   const defaultDesc = "บริการให้เช่าเว็บไซต์ E-Commerce";
-  const defaultIcon =
-    "https://img2.pic.in.th/pic/ksrv-logo-trans.png";
+  const defaultIcon = "https://img2.pic.in.th/pic/ksrv-logo-trans.png";
 
-  // 3. ตรวจสอบว่ามี setting หรือไม่ ถ้ามี ก็ใช้ค่าจาก DB
   const title = setting?.shopName || defaultTitle;
   const description = setting?.detail || defaultDesc;
   const iconUrl = setting?.icon || defaultIcon;
-  const logoUrl = setting?.logo || iconUrl; // ใช้ logo ถ้ามี, ถ้าไม่มีก็ใช้ icon แทน
+  const logoUrl = setting?.logo || iconUrl;
 
-  // 4. Return Metadata ที่เป็น Dynamic
   return {
-    title: title,
-    description: description,
-    icons: [
-      {
-        url: iconUrl,
-        href: iconUrl,
-      },
-    ],
+    title,
+    description,
+    icons: {
+      icon: iconUrl,
+      shortcut: iconUrl,
+      apple: iconUrl,
+    },
     openGraph: {
-      title: title,
-      description: description,
+      title,
+      description,
       siteName: title,
       images: [
         {
-          url: logoUrl, // ใช้ logo สำหรับ Open Graph
+          url: logoUrl,
           width: 1050,
           height: 1050,
         },
