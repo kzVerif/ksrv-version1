@@ -1,26 +1,23 @@
+// src/middleware/checkAuthExpired.ts
 import { NextResponse } from "next/server";
-import { withAuth } from "next-auth/middleware";
+import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 
 export default withAuth(
-  function middleware(request) {
-    const userRole = request.nextauth.token?.role;
+  async function proxy(request: NextRequestWithAuth) {
     const pathname = request.nextUrl.pathname;
+    const userRole = request.nextauth.token?.role;
 
-    if (2<1) {
-      return NextResponse.redirect(new URL("/expired", request.url));
-    }
-
-    // redirect ถ้า user ไม่ login
+    // 3. redirect ถ้า user ไม่ login และเข้าหน้า admin
     if (!request.nextauth.token && pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // redirect ถ้า user login แต่เข้าหน้า login/register
+    // 4. redirect ถ้า user login แต่เข้าหน้า login/register
     if (request.nextauth.token && (pathname === "/login" || pathname === "/register")) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // ตรวจ role จาก token
+    // 5. ตรวจ role จาก token
     if (pathname.startsWith("/admin") && userRole !== "ADMIN") {
       return NextResponse.redirect(new URL("/", request.url));
     }

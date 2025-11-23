@@ -1,18 +1,17 @@
 // components/ExpiredGuard.tsx
+"use server"
 import prisma from "@/lib/database/conn";
 
 interface Props {
   children: React.ReactNode;
 }
-export const dynamic = "force-dynamic"; // ให้ render ทุก request
-
 export default async function ExpiredGuard({ children }: Props) {
   const expired = await prisma.expired.findFirst();
   const now = new Date();
   if (!expired || now.getTime() > new Date(expired.timeExpire).getTime()) {
     // redirect ไป /expired
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center ">
+      <div className="header flex flex-col items-center justify-center ">
         {/* ไอคอนหรือภาพ */}
         <div className="text-9xl mb-8 text-orange-400 animate-pulse">⏰</div>
 
@@ -29,12 +28,6 @@ export default async function ExpiredGuard({ children }: Props) {
 
         {/* ปุ่ม */}
         <div className="flex gap-4">
-          <a
-            href="/"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition ease-in-out duration-300"
-          >
-            กลับหน้าหลัก
-          </a>
           <a
             href="https://discord.gg/YhUs3vnKxG"
             className="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg shadow hover:bg-gray-400 transition ease-in-out duration-300"

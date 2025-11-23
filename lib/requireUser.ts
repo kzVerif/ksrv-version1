@@ -5,9 +5,6 @@ import { getServerSession } from "next-auth/next";
 export async function requireUser() {
   // NextAuth จะพยายามอ่าน Cookie จาก Headers ในบริบทของ Server Component/Action
   const session = await getServerSession(authOptions); 
-
-  console.log(session); // ตรวจสอบตรงนี้อีกครั้ง
-
   if (!session) {
     throw new Error("UNAUTHORIZED");
   } 

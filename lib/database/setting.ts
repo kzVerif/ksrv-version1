@@ -52,6 +52,7 @@ export async function updateShopSetting(data: any) {
       },
     });
     revalidatePath("/")
+    revalidatePath("/admin/commonsetting")
   } catch (error) {
     console.log("updateShopSetting Error: ", error);
     return {};

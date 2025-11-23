@@ -1,4 +1,3 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -10,8 +9,8 @@ import { getShopSettings } from "@/lib/database/setting";
 import { UserProvider } from "@/contexts/UserContext";
 import ExpiredGuard from "@/components/ExpiredGuard";
 
-// export const revalidate = 30; 
-export const dynamic = "force-dynamic";
+export const revalidate = 0; 
+// export const dynamic = "force-dynamic"; 
 
 export async function generateMetadata(): Promise<Metadata> {
   const setting = await getShopSettings();

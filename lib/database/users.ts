@@ -71,7 +71,7 @@ export async function Login(userData: any) {
 
     if (!user) {
       return {
-        success: true,
+        success: false, // <-- ต้องเป็น false
         message: "ไม่พบผู้ใช้นี้ในระบบ",
       };
     }
@@ -79,11 +79,12 @@ export async function Login(userData: any) {
     const isMatch = await bcrypt.compare(userData.password, user.password);
     if (!isMatch) {
       return {
-        success: true,
+        success: false, // <-- ต้องเป็น false
         message: "รหัสผ่านไม่ถูกต้อง",
       };
     }
-    const plainUser = {
+
+   const plainUser = {
       ...user,
       points: Number(user.points),
       totalPoints: Number(user.totalPoints),
@@ -91,7 +92,7 @@ export async function Login(userData: any) {
 
     return {
       success: true,
-      user: plainUser,
+      user: plainUser, // <-- MyUser พร้อม expiredDate
     };
   } catch (error: any) {
     console.error("Login error:", error);
@@ -101,6 +102,7 @@ export async function Login(userData: any) {
     };
   }
 }
+
 
 export async function ChangePassword(userData: {
   userId: string; // เรามั่นใจแล้วว่ามีค่ามาจาก frontend
