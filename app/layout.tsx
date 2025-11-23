@@ -124,7 +124,7 @@ export default async function RootLayout({
             <UserProvider>
               <NextTopLoader color="var(--color-primary)" />
               <Navbar setting={setting ?? null} />{" "}
-              <Toaster position="bottom-center" /> ( children )
+              <Toaster position="bottom-center" /> {children}
             </UserProvider>
           )}
           <Footer />
