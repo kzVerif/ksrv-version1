@@ -8,7 +8,13 @@ import NextTopLoader from "nextjs-toploader";
 import { CustomProviders } from "@/components/Auth/Provider";
 import { getShopSettings } from "@/lib/database/setting";
 import { UserProvider } from "@/contexts/UserContext";
-export const revalidate = 60;
+
+
+// const getCachedSettings = unstable_cache(
+//   async () => await getShopSettings(),
+//   ["shop-setting"],     // cache key
+//   { tags: ["shop-setting"] } // IMPORTANT!
+// );
 
 export async function generateMetadata(): Promise<Metadata> {
   const setting = await getShopSettings();

@@ -41,6 +41,6 @@ export const config = {
     "/historybuy",
     "/admin/:path*",
     "/login",
-    "/register",
+    // "/register",
   ],
 };
