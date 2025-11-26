@@ -84,7 +84,7 @@ export async function Login(userData: any) {
       };
     }
 
-   const plainUser = {
+    const plainUser = {
       ...user,
       points: Number(user.points),
       totalPoints: Number(user.totalPoints),
@@ -103,14 +103,13 @@ export async function Login(userData: any) {
   }
 }
 
-
 export async function ChangePassword(userData: {
   userId: string; // เรามั่นใจแล้วว่ามีค่ามาจาก frontend
   oldPassword: string;
   newPassword: string;
 }) {
   try {
-    await requireUser()
+    await requireUser();
     const user = await prisma.users.findUnique({
       where: { id: userData.userId },
     });
@@ -162,7 +161,7 @@ export async function ChangePassword(userData: {
 
 export async function getAllUsers() {
   try {
-    await requireUser()
+    await requireUser();
     const users = await prisma.users.findMany();
     if (!users) {
       return [];
@@ -188,7 +187,7 @@ interface updateUser {
 
 export async function updateUser(data: updateUser) {
   try {
-    await requireUser()
+    await requireUser();
     await prisma.users.update({
       where: { id: data.id },
       data: {
@@ -206,7 +205,7 @@ export async function updateUser(data: updateUser) {
 
 export async function deleteUSer(id: string) {
   try {
-    await requireUser()
+    await requireUser();
     await prisma.users.delete({
       where: { id: id },
     });
@@ -220,7 +219,7 @@ export async function deleteUSer(id: string) {
 export async function TopupByWallet(id: string | undefined, url: string) {
   const topupStatus = await walletTopup(url);
   try {
-    await requireUser()
+    await requireUser();
     if (!topupStatus.status || !id) {
       return {
         status: false,
@@ -287,7 +286,9 @@ export async function TopupByWallet(id: string | undefined, url: string) {
 
 export async function TopupByBank(id: string | undefined, file: File) {
   const res = await TopupBank(file);
-  await requireUser()
+  console.log("res ponse from Slip2Go", res);
+
+  await requireUser();
 
   if (!res || !id) {
     return {
@@ -296,7 +297,7 @@ export async function TopupByBank(id: string | undefined, file: File) {
     };
   }
 
-  if (res.code !== "200000") {
+  if (res.code !== "200200") {
     return {
       status: false,
       message: res.message,
@@ -330,7 +331,7 @@ export async function TopupByBank(id: string | undefined, file: File) {
           description: "ผู้ใช้ได้ทำการเติมเงินเข้าสู่ระบบ",
           color: 2299548,
           fields: [
-            { name: "👤 ผู้ใช้", value: `${user.password}`, inline: true },
+            { name: "👤 ผู้ใช้", value: `${user.username}`, inline: true },
             { name: "🆔 User ID", value: `${user.id}`, inline: true },
             {
               name: "💵 จำนวนเงิน",
@@ -350,6 +351,11 @@ export async function TopupByBank(id: string | undefined, file: File) {
         },
       ],
     });
+
+    return {
+      status: true,
+      message: `เติมเงินจำนวน ${res.data.amount} บาท สำเร็จ`,
+    };
   } catch (error) {
     console.log("TopupByBank DB Error:", error);
     return {
@@ -361,7 +367,7 @@ export async function TopupByBank(id: string | undefined, file: File) {
 
 export async function getUserById(id: string) {
   try {
-    await requireUser()
+    await requireUser();
     const user = await prisma.users.findUnique({
       where: { id: id },
     });

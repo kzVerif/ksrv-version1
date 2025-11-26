@@ -79,7 +79,7 @@ export default function BankTopup({ bank }: { bank: any }) {
       return;
     }
 
-    toast.success("เติมเงินสำเร็จ");
+    toast.success(`${status?.message}`);
     await refreshUser();
   };
 
