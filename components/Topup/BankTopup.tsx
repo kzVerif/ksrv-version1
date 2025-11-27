@@ -93,7 +93,7 @@ export default function BankTopup({ bank }: { bank: any }) {
       </div>
 
       {/* Bank Info */}
-      <div className="text-box rounded-xl p-4 space-y-2">
+      <div className="bg-[var(--color-secondary)]/50 rounded-xl p-4 space-y-2">
         <p className="text-sm text-gray-700">
           <span className="font-semibold">ธนาคาร:</span>{" "}
           {getBankName(bank.bankProvider)}
