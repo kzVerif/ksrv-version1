@@ -16,7 +16,7 @@ import bcrypt from "bcrypt";
 // // เรียกใช้ฟังก์ชัน
 // createHash();
 
-import prisma from "../lib/database/conn"; // ปรับ path ตามโปรเจกต์
+import prisma from "../lib/database/conn";// ปรับ path ตามโปรเจกต์
 
 async function main() {
   console.log("Seeding database...");
