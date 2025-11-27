@@ -14,7 +14,7 @@ export default async function ProductPage({
     return <div>ไม่พบสินค้าที่ต้องการ</div>;
   }
   return (
-    <div className="container header py-10">
+    <div className="container header py-10 text-black ">
       {/* ✅ ใช้ flex-row บนจอใหญ่ */}
       <div className="flex flex-col lg:flex-row gap-10 items-start justify-between">
         {/* ✅ รูปสินค้า */}
@@ -33,7 +33,7 @@ export default async function ProductPage({
 
         {/* ✅ รายละเอียดสินค้า */}
         <div className="flex flex-col space-y-6 w-full lg:w-1/2">
-          <h1 className="text-3xl font-bold text-gray-900 wrap-break-word">
+          <h1 className="text-3xl font-bold text-black wrap-break-word">
             {product.name}
           </h1>
 
@@ -56,7 +56,7 @@ export default async function ProductPage({
           {/* ✅ ฟอร์มกรอกจำนวน (responsive) */}
           <BuyForm remain={product.stocks.length} productId={product.id}  />
           {/* ✅ รายละเอียดสินค้า */}
-          <div className="border-t pt-6 text-gray-900 leading-relaxed whitespace-pre-line text-sm sm:text-base">
+          <div className="border-t pt-6 text-black leading-relaxed whitespace-pre-line text-sm sm:text-base">
             <h2 className="text-xl font-semibold mb-2">รายละเอียดสินค้า</h2>
             {product.detail}
           </div>
