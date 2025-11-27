@@ -56,7 +56,7 @@ export default async function ProductPage({
           {/* ✅ ฟอร์มกรอกจำนวน (responsive) */}
           <BuyForm remain={product.stocks.length} productId={product.id}  />
           {/* ✅ รายละเอียดสินค้า */}
-          <div className="border-t pt-6 text-gray-700 leading-relaxed whitespace-pre-line text-sm sm:text-base">
+          <div className="border-t pt-6 text-gray-900 leading-relaxed whitespace-pre-line text-sm sm:text-base">
             <h2 className="text-xl font-semibold mb-2">รายละเอียดสินค้า</h2>
             {product.detail}
           </div>
