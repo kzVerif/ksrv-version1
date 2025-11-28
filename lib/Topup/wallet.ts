@@ -1,6 +1,8 @@
 "use server";
+process.env.IMPIT_VERBOSE = '1';
 
 import prisma from "../database/conn";
+import { Impit } from 'impit';
 
 export async function walletTopup(url: string) {
   try {
@@ -19,19 +21,34 @@ export async function walletTopup(url: string) {
       voucher_hash: voucher,
     });
 
+    const client = new Impit({
+      browser: "chrome",
+      timeout: 30000
+    })
+
+    // const endpoint = `https://gift.truemoney.com/campaign/vouchers/${voucher}/redeem`;
     const endpoint = `https://gift.truemoney.com/campaign/vouchers/${voucher}/redeem`;
-    const response = await fetch(endpoint, {
+    // const response = await fetch(endpoint, {
+    const response = await client.fetch(endpoint, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "PostmanRuntime/7.50.0",
-        Accept: "application/json, text/plain, */*",
-        Referer: "https://gift.truemoney.com/",
-        Origin: "https://gift.truemoney.com",
+        accept: "application/json",
+        "accept-language": "en-US,en;q=0.6",
+        "content-type": "application/json",
+        priority: "u=1, i",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "sec-gpc": "1",
+        Referer: "https://gift.truemoney.com/campaign/card",
       },
+
       body: data,
     });
+    // console.log(response);
+
     const res = await response.json();
+    console.log(res);
 
     // console.log(res.data?.voucher?.member);
 
@@ -71,9 +88,12 @@ export async function walletTopup(url: string) {
       };
     }
   } catch (error) {
+    console.log("TrueWallet: ", error);
     return {
       status: false,
       reason: "ไม่สามารตติดต่อกับ server ได้",
     };
   }
 }
+
+
