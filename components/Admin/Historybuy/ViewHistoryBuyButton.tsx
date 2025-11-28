@@ -12,11 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { ViewIcon } from "@hugeicons/core-free-icons";
+import { Copy01Icon, ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AdminBuyProduct } from "@/app/(admin)/admin/historybuy/columns";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import toast from "react-hot-toast";
 export function ViewHistoryBuyButton({
   product,
 }: {
@@ -24,6 +25,12 @@ export function ViewHistoryBuyButton({
 }) {
   const date = new Date(product.createdAt);
   const formattedDate = format(date, "dd/MM/yyyy HH:mm");
+
+  const handleCopy = async (e: any) => {
+    e.preventDefault();
+    await navigator.clipboard.writeText(product.stock.detail);
+    toast.success("คัดลอกสำเร็จ")
+  }
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -73,6 +80,7 @@ export function ViewHistoryBuyButton({
               className="resize-none h-40 w-full p-2 break-all"
               />
               </ScrollArea>
+              <Button variant={"outline"} onClick={handleCopy}><HugeiconsIcon icon={Copy01Icon} /></Button>
           </div>
 
           <div className="grid gap-3">

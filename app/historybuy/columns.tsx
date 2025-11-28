@@ -1,7 +1,11 @@
 "use client";
 import { ViewHistoryBuyButton } from "@/components/Admin/Historybuy/ViewHistoryBuyButton";
+import { Button } from "@/components/ui/button";
+import { Copy01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 export type BuyProduct = {
   id: string;
@@ -90,9 +94,23 @@ export const columns: ColumnDef<BuyProduct>[] = [
     header: "จัดการ",
     cell: ({ row }) => {
       const product = row.original;
+      const onCopyClick = async () => {
+        try {
+          await navigator.clipboard.writeText(product.stock.detail);
+          toast.success("คัดลอกสำเร็จ");
+        } catch (error) {
+          toast.error("เกิดข้อผิดพลาด");
+        }
+      };
+      // ----------------------------------
+
       return (
         <div className="flex gap-2">
+          {/* เรียกใช้ฟังก์ชันด้านบน */}
           <ViewHistoryBuyButton product={product} />
+          <Button variant={"outline"} onClick={onCopyClick} className="cursor-pointer">
+            <HugeiconsIcon icon={Copy01Icon} />
+          </Button>
         </div>
       );
     },
