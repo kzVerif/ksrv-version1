@@ -59,7 +59,7 @@ enum StatusStock {
 
 model Stocks {
   id       String   @id @default(cuid())
-  detail String?  @db.LongText @default("ยังไม่มีรายละเอียด")
+  detail   String  @db.LongText
   status    StatusStock @default(AVAILABLE)
 
   productId String 
