@@ -60,7 +60,7 @@ enum StatusStock {
 model Stocks {
   id       String   @id @default(cuid())
   detail   String  @db.LongText
-  status    StatusStock @default(AVAILABLE)
+  status   StatusStock @default(AVAILABLE)
 
   productId String 
   product Products @relation(fields:[productId], references: [id], onDelete: Cascade)

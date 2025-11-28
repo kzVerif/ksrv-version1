@@ -16,6 +16,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react"; // 2. แก้ไขไอคอน
 import { addStocks } from "@/lib/database/stocks";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 export function AddStockButton({ productId }: { productId: string }) {
   // 4. อัปเดตฟังก์ชัน handleEdit
@@ -33,7 +34,7 @@ export function AddStockButton({ productId }: { productId: string }) {
 
     if (stockObjects.length === 0) {
       toast.error("กรุณากรอกข้อมูล");
-      return
+      return;
     }
 
     toast.promise(addStocks(stockObjects), {
@@ -69,7 +70,15 @@ export function AddStockButton({ productId }: { productId: string }) {
         <form action={handleEdit} className="grid gap-4">
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
-            <Textarea id="detail" name="detail" required />
+            <ScrollArea className="h-40 max-h-40 overflow-auto rounded-md border">
+              <Textarea
+                id="detail"
+                name="detail"
+                required
+                className="resize-none h-full"
+                placeholder="ใส่รายละเอียดสต็อคของคุณ"
+              />
+            </ScrollArea>
           </div>
 
           <DialogFooter>

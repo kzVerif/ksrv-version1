@@ -128,6 +128,7 @@ import { Stocks } from "@/app/(admin)/admin/products/[id]/columns";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { updateStocksById } from "@/lib/database/stocks";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 export function EditStockButton({ stock }: { stock: Stocks }) {
   const [detail, setDetail] = useState(stock.detail);
@@ -170,11 +171,14 @@ export function EditStockButton({ stock }: { stock: Stocks }) {
         <form onSubmit={handleEdit} className="grid gap-4">
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
+            <ScrollArea className="h-40 max-h-40 overflow-auto rounded-md border">
+
             <Textarea
               id="detail"
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
-            />
+              />
+              </ScrollArea>
           </div>
 
           <div className="grid gap-3">
