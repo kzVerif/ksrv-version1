@@ -38,7 +38,7 @@ model Products {
   id       String   @id @default(cuid())
   name     String   @default("ไม่ทราบชื่อสินค้า")
   image    String?  @db.Text
-  detail   String?  @db.LongText
+  detail   String   @db.Text
   price    Decimal  @db.Decimal(10, 2) @default(0)
 
   categoriesId String

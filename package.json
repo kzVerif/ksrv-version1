@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "vercel-build": "bunx prisma generate && bun run build"
+    "vercel-build": "npx prisma generate && next build && npx prisma db push"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^1.2.1",
