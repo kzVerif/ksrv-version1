@@ -23,6 +23,11 @@ export const columns: ColumnDef<Stocks>[] = [
   {
     accessorKey: "detail",
     header: "รายละเอียด",
+    cell: ({ row }) => (
+      <span className="block truncate max-w-[200px]" title={row.original.detail}>
+        {row.original.detail}
+      </span>
+    ),
   },
   {
     id: "status",

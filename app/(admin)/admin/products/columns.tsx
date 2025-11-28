@@ -36,7 +36,11 @@ export type Products = {
 export const columns: ColumnDef<Products>[] = [
   {
     accessorKey: "name",
-    header: "ชื่อสินค้า",
+    cell: ({ row }) => (
+      <span className="block truncate max-w-[200px]" title={row.original.name}>
+        {row.original.name}
+      </span>
+    ),
   },
   {
     accessorKey: "price",
@@ -49,6 +53,11 @@ export const columns: ColumnDef<Products>[] = [
   {
     accessorFn: (row) => row.categories.name,
     header: "หมวดหมู่",
+    cell: ({ row }) => (
+      <span className="block truncate max-w-[200px]" title={row.original.categories.name}>
+        {row.original.categories.name}
+      </span>
+    ),
   },
   {
     id: "actions",

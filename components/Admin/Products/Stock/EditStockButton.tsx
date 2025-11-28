@@ -177,6 +177,7 @@ export function EditStockButton({ stock }: { stock: Stocks }) {
               id="detail"
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
+              className="resize-none h-40 w-full p-2"
               />
               </ScrollArea>
           </div>

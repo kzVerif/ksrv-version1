@@ -27,6 +27,7 @@ interface BuyFormProps {
 
 export default function BuyForm({ remain, productId }: BuyFormProps) {
   const [quantity, setQuantity] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
   const { data: session, update } = useSession();
   const { refreshUser } = useUser();
 
@@ -37,6 +38,7 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
     }
 
     try {
+        setIsOpen(false);
         toast.loading("กำลังสั่งซื้อสินค้า...")
 
         const status = await buyProducts(quantity, session.user.id, productId)
@@ -51,10 +53,10 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
 
       const users = await getUserById(session.user.id)
       await update({ ...session, user: users });
-      await refreshUser();
-      
+      await refreshUser();      
     } catch (err) {
       console.error(err);
+      setIsOpen(false);
     }
   };
 
@@ -101,35 +103,38 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
       </div>
 
       {/* ปุ่มสั่งซื้อ + Dialog */}
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            variant={remain <= 0 ? "destructive" : "default"}
-            disabled={remain <= 0}
-            className={`w-full sm:w-auto text-lg px-6 py-3 rounded-xl flex items-center justify-center gap-2 ${
-              remain <= 0 ? "opacity-70 cursor-not-allowed" : "btn-main"
-            }`}
-          >
-            <ShoppingCart size={22} />
-            {remain <= 0 ? "สินค้าหมด" : "สั่งซื้อสินค้า"}
-          </Button>
-        </DialogTrigger>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant={remain <= 0 ? "destructive" : "default"}
+          disabled={remain <= 0}
+          className={`w-full sm:w-auto text-lg px-6 py-3 rounded-xl flex items-center justify-center gap-2 ${
+            remain <= 0 ? "opacity-70 cursor-not-allowed" : "btn-main"
+          }`}
+        >
+          <ShoppingCart size={22} />
+          {remain <= 0 ? "สินค้าหมด" : "สั่งซื้อสินค้า"}
+        </Button>
+      </DialogTrigger>
 
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>ยืนยันการสั่งซื้อ</DialogTitle>
-            <DialogDescription>
-              คุณต้องการซื้อสินค้า {quantity} ชิ้น ใช่หรือไม่?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex justify-end gap-2">
-            <DialogTrigger asChild>
-              <Button variant="outline">ยกเลิก</Button>
-            </DialogTrigger>
-            <Button onClick={handleBuy}>ยืนยัน</Button>{" "}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DialogContent className="sm:max-w-[400px]">
+        <DialogHeader>
+          <DialogTitle>ยืนยันการสั่งซื้อ</DialogTitle>
+          <DialogDescription>
+            คุณต้องการซื้อสินค้า {quantity} ชิ้น ใช่หรือไม่?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex justify-end gap-2">
+          {/* ปุ่มยกเลิก: สามารถใช้ setIsOpen(false) หรือปล่อยให้ DialogTrigger (หรือ DialogClose) ทำงานตามปกติก็ได้ */}
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
+            ยกเลิก
+          </Button>
+          
+          {/* ปุ่มยืนยัน: เรียก handleBuy ซึ่งจะไปสั่งปิด Dialog ข้างในนั้น */}
+          <Button onClick={handleBuy}>ยืนยัน</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </div>
   );
 }

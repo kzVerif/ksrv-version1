@@ -25,6 +25,7 @@ import {
 import { createProducts } from "@/lib/database/shop";
 import { useState } from "react";
 import { Categories } from "@/lib/database/category";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function AddProductButton({ categories }: { categories: Categories[] }) {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -57,7 +58,10 @@ export function AddProductButton({ categories }: { categories: Categories[] }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary" className="flex items-center gap-2 btn-main">
+        <Button
+          variant="secondary"
+          className="flex items-center gap-2 btn-main"
+        >
           <Plus className="h-4 w-4" />
           <span>เพิ่มสินค้า</span>
         </Button>
@@ -89,7 +93,15 @@ export function AddProductButton({ categories }: { categories: Categories[] }) {
 
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
-            <Textarea id="detail" name="detail" required />
+             <ScrollArea className="h-40 rounded-md border">
+              <Textarea
+                id="detail"
+                name="detail"
+                required
+                className="resize-none h-40 w-full p-2"
+                placeholder="ใส่รายละเอียดสินค้า..."
+              />
+            </ScrollArea>
           </div>
 
           <div className="grid gap-3">

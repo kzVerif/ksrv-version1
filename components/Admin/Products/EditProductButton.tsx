@@ -26,6 +26,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { updateProduct } from "@/lib/database/shop";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function EditProductButton({ product }: { product: Products }) {
   const [selectedCategory, setSelectedCategory] = useState(
@@ -112,11 +113,15 @@ export function EditProductButton({ product }: { product: Products }) {
 
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
+            <ScrollArea className="h-40 rounded-md border">
+
             <Textarea
               id="detail"
               name="detail"
               defaultValue={product.detail ?? ""}
+              className="resize-none h-40 w-full p-2"
             />
+            </ScrollArea>
           </div>
 
           <div className="grid gap-3">

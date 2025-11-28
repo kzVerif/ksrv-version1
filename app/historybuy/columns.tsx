@@ -1,4 +1,5 @@
 "use client";
+import { ViewHistoryBuyButton } from "@/components/Admin/Historybuy/ViewHistoryBuyButton";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -40,10 +41,26 @@ export const columns: ColumnDef<BuyProduct>[] = [
   {
     accessorFn: (row) => row.product.name,
     header: "ชื่อสินค้า",
+    cell: ({ row }) => (
+      <span
+        className="block truncate max-w-[200px]"
+        title={row.original.product.name}
+      >
+        {row.original.product.name}
+      </span>
+    ),
   },
   {
     accessorFn: (row) => row.stock.detail,
     header: "รายละเอียด",
+    cell: ({ row }) => (
+      <span
+        className="block truncate max-w-[200px]"
+        title={row.original.stock.detail}
+      >
+        {row.original.stock.detail}
+      </span>
+    ),
   },
   {
     accessorKey: "createdAt",
@@ -66,6 +83,18 @@ export const columns: ColumnDef<BuyProduct>[] = [
       const date = new Date(row.getValue("createdAt"));
       const formattedDate = format(date, "dd/MM/yyyy HH:mm");
       return <div className="text-left">{formattedDate}</div>;
+    },
+  },
+  {
+    accessorKey: "action",
+    header: "จัดการ",
+    cell: ({ row }) => {
+      const product = row.original;
+      return (
+        <div className="flex gap-2">
+          <ViewHistoryBuyButton product={product} />
+        </div>
+      );
     },
   },
 ];

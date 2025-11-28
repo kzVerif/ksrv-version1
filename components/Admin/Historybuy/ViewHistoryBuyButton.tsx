@@ -16,6 +16,7 @@ import { ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AdminBuyProduct } from "@/app/(admin)/admin/historybuy/columns";
 import { format } from "date-fns";
+import { ScrollArea } from "@/components/ui/scroll-area";
 export function ViewHistoryBuyButton({
   product,
 }: {
@@ -63,12 +64,15 @@ export function ViewHistoryBuyButton({
 
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
+            <ScrollArea className="h-40 rounded-md border">
             <Textarea
               id="detail"
               name="detail"
               defaultValue={product.stock.detail}
               disabled
-            />
+              className="resize-none h-40 w-full p-2"
+              />
+              </ScrollArea>
           </div>
 
           <div className="grid gap-3">
