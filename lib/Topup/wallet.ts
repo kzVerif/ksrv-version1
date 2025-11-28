@@ -1,8 +1,8 @@
 "use server";
-process.env.IMPIT_VERBOSE = '1';
+process.env.IMPIT_VERBOSE = "1";
 
 import prisma from "../database/conn";
-import { Impit } from 'impit';
+import { Impit } from "impit";
 
 export async function walletTopup(url: string) {
   try {
@@ -23,8 +23,9 @@ export async function walletTopup(url: string) {
 
     const client = new Impit({
       browser: "chrome",
-      timeout: 30000
-    })
+      timeout: 30000,
+      proxyUrl: "http://swiftserver:pL0qMm6w3sU4xb3@45.201.28.242:7778",
+    });
 
     // const endpoint = `https://gift.truemoney.com/campaign/vouchers/${voucher}/redeem`;
     const endpoint = `https://gift.truemoney.com/campaign/vouchers/${voucher}/redeem`;
@@ -95,5 +96,3 @@ export async function walletTopup(url: string) {
     };
   }
 }
-
-
