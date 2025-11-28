@@ -63,8 +63,15 @@ export function DataTable<TData, TValue>({
   /* Export CSV ด้วย PapaParse */
   const handleExportCSV = () => {
     if (!filteredData.length) return;
+    const exportData = filteredData.map((item: any) => ({
+        "รหัสคำสั่งซื้อ": item.stock.id,
+        "ชื่อสินค้า": item.product.name,
+        "รายละเอียด": item.stock.detail,
+        "ราคา": item.product.price,
+      }));
 
-    const csv = Papa.unparse(filteredData, {
+
+    const csv = Papa.unparse(exportData, {
       quotes: true,
       delimiter: ",",
     });
