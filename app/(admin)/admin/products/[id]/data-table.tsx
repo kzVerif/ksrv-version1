@@ -8,6 +8,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
+  getFilteredRowModel
 } from "@tanstack/react-table";
 
 import {
@@ -20,42 +21,45 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-//   const [filterValue, setFilterValue] = React.useState<string>("");
-  const [sorting, setSorting] = React.useState<SortingState>([]);
 
- const [filterValue, setFilterValue] = React.useState<string>("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
 
-const filteredData = React.useMemo(() => {
-  if (!filterValue) return data;
+  const [filterValue, setFilterValue] = useState<string>("");
 
-  const lower = filterValue.toLowerCase();
-  return data.filter((item: any) =>
-    item.detail.toLowerCase().includes(lower) || // ค้นหาจาก username เท่านั้น
-    item.status.toLowerCase().includes(lower), // ค้นหาจาก username เท่านั้น
-  );
-}, [filterValue, data]);
+  const filteredData = React.useMemo(() => {
+    if (!filterValue) return data;
+
+    const lower = filterValue.toLowerCase();
+    return data.filter((item: any) =>
+      item.detail.toLowerCase().includes(lower) ||
+      item.status.toLowerCase().includes(lower),
+    );
+  }, [filterValue, data]);
 
   const table = useReactTable({
     data: filteredData,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-
-    // ✅ Sorting support
+    state: { sorting, rowSelection },
+    enableRowSelection: true,
     onSortingChange: setSorting,
+
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    state: { sorting },
   });
 
 
@@ -68,8 +72,6 @@ const filteredData = React.useMemo(() => {
           onChange={(e) => setFilterValue(e.target.value)}
           className="max-w-sm focus"
         />
-
-
       </div>
 
       <div className="overflow-hidden rounded-md border">

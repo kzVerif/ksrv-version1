@@ -6,6 +6,7 @@ import { walletTopup } from "../Topup/wallet";
 import { TopupBank } from "../Topup/bank";
 import { sendDiscordWebhook } from "../Discord/discord";
 import { requireUser } from "../requireUser";
+import { Decimal } from "@prisma/client/runtime/library";
 
 interface authData {
   username: string;
@@ -232,7 +233,7 @@ export async function TopupByWallet(id: string | undefined, url: string) {
       where: { id: id },
       data: {
         points: {
-          increment: topupStatus.amount,
+          increment: new Decimal(topupStatus.amount ?? 0),
         },
       },
     });
@@ -254,7 +255,7 @@ export async function TopupByWallet(id: string | undefined, url: string) {
           description: "ผู้ใช้ได้ทำการเติมเงินเข้าสู่ระบบ",
           color: 2299548,
           fields: [
-            { name: "👤 ผู้ใช้", value: `${user.password}`, inline: true },
+            { name: "👤 ผู้ใช้", value: `${user.username}`, inline: true },
             { name: "🆔 User ID", value: `${user.id}`, inline: true },
             {
               name: "💵 จำนวนเงิน",
@@ -274,6 +275,10 @@ export async function TopupByWallet(id: string | undefined, url: string) {
         },
       ],
     });
+    return {
+      status: true,
+      message: `เติมเงินจำนวน ${topupStatus.amount ?? 0} บาท สำเร็จ`,
+    };
     revalidatePath("/admin/users");
   } catch (error) {
     console.log("Topup Error: ", error);
@@ -307,7 +312,7 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
     const user = await prisma.users.update({
       where: { id },
       data: {
-        points: { increment: res.data.amount },
+        points: { increment: new Decimal(res.data.amount ?? 0) },
       },
     });
 

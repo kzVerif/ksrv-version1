@@ -7,11 +7,10 @@ import { DeleteStockButton } from "@/components/Admin/Products/Stock/DeleteStock
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-
 export type Stocks = {
   id: string;
   detail: string;
-  status:  "AVAILABLE" | "SOLD";
+  status: "AVAILABLE" | "SOLD";
   productId: string;
 };
 
@@ -24,7 +23,10 @@ export const columns: ColumnDef<Stocks>[] = [
     accessorKey: "detail",
     header: "รายละเอียด",
     cell: ({ row }) => (
-      <span className="block truncate max-w-[200px]" title={row.original.detail}>
+      <span
+        className="block truncate max-w-[200px]"
+        title={row.original.detail}
+      >
         {row.original.detail}
       </span>
     ),

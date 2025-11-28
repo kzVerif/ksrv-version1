@@ -1,5 +1,5 @@
 import { getStocksByProductId } from "@/lib/database/stocks";
-import { columns, Stocks } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { getProductById } from "@/lib/database/shop";
 import { AddStockButton } from "@/components/Admin/Products/Stock/AddStockButton";
@@ -22,7 +22,6 @@ export default async function page({ params }: { params: { id: string } }) {
       <div className="flex items-center justify-end">
         <AddStockButton productId={id}/>
       </div>
-
       <DataTable columns={columns} data={stocks} />
     </div>
   );
