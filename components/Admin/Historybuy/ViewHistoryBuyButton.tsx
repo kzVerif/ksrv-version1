@@ -70,7 +70,7 @@ export function ViewHistoryBuyButton({
               name="detail"
               defaultValue={product.stock.detail}
               disabled
-              className="resize-none h-40 w-full p-2"
+              className="resize-none h-40 w-full p-2 break-all"
               />
               </ScrollArea>
           </div>
