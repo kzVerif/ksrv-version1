@@ -284,9 +284,8 @@ export async function TopupByWallet(id: string | undefined, url: string) {
   }
 }
 
-export async function TopupByBank(id: string | undefined, file: File) {
-  const res = await TopupBank(file);
-  console.log("res ponse from Slip2Go", res);
+export async function TopupByBank(id: string | undefined, qrCode: string) {
+  const res = await TopupBank(qrCode);
 
   await requireUser();
 

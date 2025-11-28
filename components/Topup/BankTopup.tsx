@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { TopupByBank } from "@/lib/database/users";
 import { useSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
+import jsQR from "jsqr";
 
 export default function BankTopup({ bank }: { bank: any }) {
   const { data: session } = useSession();
@@ -68,19 +69,52 @@ export default function BankTopup({ bank }: { bank: any }) {
       return;
     }
 
-    toast.loading("กำลังเติมเงิน...");
+    // 1) โหลดไฟล์เป็นรูปภาพ
+    const imageURL = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = imageURL;
 
-    const status = await TopupByBank(session.user.id, file);
+    img.onload = async () => {
+      // 2) สร้าง canvas เพื่ออ่าน pixel
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
-    toast.dismiss();
+      if (!ctx) {
+        toast.error("ไม่สามารถอ่านภาพได้");
+        return;
+      }
 
-    if (!status?.status) {
-      toast.error(status?.message || "เกิดข้อผิดพลาด");
-      return;
-    }
+      canvas.width = img.width;
+      canvas.height = img.height;
 
-    toast.success(`${status?.message}`);
-    await refreshUser();
+      ctx.drawImage(img, 0, 0);
+
+      // 3) อ่านข้อมูลพิกเซล
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      // 4) decode QR Code
+      const qr = jsQR(imageData.data, canvas.width, canvas.height);
+
+      if (!qr) {
+        toast.error("ไม่พบ QR Code ในภาพนี้");
+        return;
+      }
+      toast.loading("กำลังเติมเงิน...");
+
+      const status = await TopupByBank(session.user.id, qr.data);
+      toast.dismiss()
+      if (!status?.status) {
+        toast.error(status?.message || "เกิดข้อผิดพลาด");
+        setTimeout(() => toast.dismiss(), 1500);
+        return;
+      }
+
+      toast.success(`${status?.message}`);
+      toast.dismiss()
+      await refreshUser();
+
+      URL.revokeObjectURL(imageURL);
+    };
   };
 
   return (
@@ -151,4 +185,3 @@ export default function BankTopup({ bank }: { bank: any }) {
     </div>
   );
 }
-

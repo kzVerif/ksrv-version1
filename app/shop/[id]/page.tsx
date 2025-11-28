@@ -10,16 +10,20 @@ export default async function ProductPage({
 }) {
   const { id } = await params;
   const product = await getProductById(id);
+  
   if (product === null) {
     return <div>ไม่พบสินค้าที่ต้องการ</div>;
   }
+
   return (
-    <div className="container header py-10 text-black ">
+    <div className="container header text-black">
       {/* ✅ ใช้ flex-row บนจอใหญ่ */}
-      <div className="flex flex-col lg:flex-row gap-10 items-start justify-between">
+      <div className="flex flex-col lg:flex-row gap-2 items-start justify-between">
+        
         {/* ✅ รูปสินค้า */}
         <div className="flex justify-center w-full lg:w-1/2">
-          <div className="relative w-full max-w-[500px] aspect-square rounded-xl overflow-hidden shadow-md">
+          {/* เพิ่ม sticky top เพื่อให้รูปค้างอยู่ตอนเลื่อนอ่านเนื้อหา (Optional UX) */}
+          <div className="relative w-full max-w-[500px] aspect-square rounded-xl overflow-hidden shadow-md lg:sticky lg:top-4">
             <Image
               src={product.image ?? ""}
               alt={product.name}
@@ -32,7 +36,11 @@ export default async function ProductPage({
         </div>
 
         {/* ✅ รายละเอียดสินค้า */}
-        <div className="flex flex-col space-y-6 w-full lg:w-1/2">
+        {/* แก้ไข: เปลี่ยน h-screen เป็น min-h-screen 
+            หรือใช้ min-h-[calc(100vh-2rem)] เพื่อเผื่อระยะขอบ
+        */}
+        <div className="flex flex-col space-y-6 w-full lg:w-1/2 ">
+        {/* <div className="flex flex-col space-y-6 w-full lg:w-1/2 bg-white shadow rounded-2xl px-8 py-4 min-h-screen lg:min-h-[calc(100vh-100px)]"> */}
           <h1 className="text-3xl font-bold text-black wrap-break-word">
             {product.name}
           </h1>
@@ -53,8 +61,9 @@ export default async function ProductPage({
             ฿ {product.price.toLocaleString()}
           </p>
 
-          {/* ✅ ฟอร์มกรอกจำนวน (responsive) */}
+          {/* ✅ ฟอร์มกรอกจำนวน */}
           <BuyForm remain={product.stocks.length} productId={product.id}  />
+          
           {/* ✅ รายละเอียดสินค้า */}
           <div className="border-t pt-6 text-black leading-relaxed whitespace-pre-line text-sm sm:text-base">
             <h2 className="text-xl font-semibold mb-2">รายละเอียดสินค้า</h2>

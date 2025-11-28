@@ -33,7 +33,7 @@ export async function walletTopup(url: string) {
     });
     const res = await response.json();
 
-    console.log(res.data?.voucher?.member);
+    // console.log(res.data?.voucher?.member);
 
     // SUCCESS CHECK
     if (res.status?.code === "SUCCESS" && res.data?.voucher?.member === 1) {
