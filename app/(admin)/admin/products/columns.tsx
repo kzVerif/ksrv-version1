@@ -37,7 +37,8 @@ export const columns: ColumnDef<Products>[] = [
   {
     accessorKey: "name",
     cell: ({ row }) => (
-      <span className="block truncate max-w-[200px]" title={row.original.name}>
+      <span className="" title={row.original.name}>
+      {/* <span className="block truncate max-w-[200px]" title={row.original.name}> */}
         {row.original.name}
       </span>
     ),
