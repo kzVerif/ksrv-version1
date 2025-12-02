@@ -19,6 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import Papa from "papaparse";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
@@ -59,6 +61,34 @@ export function DataTable<TData, TValue>({
     state: { sorting },
   });
 
+    const handleExportCSV = () => {
+      if (!filteredData.length) return;
+      const exportData = filteredData.map((item: any) => ({
+          "รหัสคำสั่งซื้อ": item.stock.id,
+          "ชื่อสินค้า": item.product.name,
+          "รายละเอียด": item.stock.detail,
+          "ราคา": item.product.price,
+          "ผู้ซื้อ": item.user.username,
+        }));
+  
+  
+      const csv = Papa.unparse(exportData, {
+        quotes: true,
+        delimiter: ",",
+      });
+  
+      const blob = new Blob(["\uFEFF" + csv], {
+        type: "text/csv;charset=utf-8;",
+      });
+  
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "export.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
   return (
     <div>
       <div className="flex items-center justify-end py-4 gap-3">
@@ -68,6 +98,9 @@ export function DataTable<TData, TValue>({
           onChange={(e) => setFilterValue(e.target.value)}
           className="max-w-sm focus"
         />
+        <Button onClick={handleExportCSV} className="btn-main">
+                  ดาวน์โหลด CSV
+                </Button>
       </div>
 
       <div className="overflow-hidden rounded-md border">
