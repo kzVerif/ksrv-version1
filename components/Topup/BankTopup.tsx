@@ -99,10 +99,10 @@ export default function BankTopup({ bank }: { bank: any }) {
         toast.error("ไม่พบ QR Code ในภาพนี้");
         return;
       }
-      toast.loading("กำลังเติมเงิน...");
+      const loading = toast.loading("กำลังเติมเงิน...");
 
       const status = await TopupByBank(session.user.id, qr.data);
-      toast.dismiss()
+      toast.dismiss(loading)
       if (!status?.status) {
         toast.error(status?.message || "เกิดข้อผิดพลาด");
         setTimeout(() => toast.dismiss(), 1500);
@@ -110,7 +110,6 @@ export default function BankTopup({ bank }: { bank: any }) {
       }
 
       toast.success(`${status?.message}`);
-      toast.dismiss()
       await refreshUser();
 
       URL.revokeObjectURL(imageURL);
