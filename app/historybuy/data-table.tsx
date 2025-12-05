@@ -41,10 +41,11 @@ export function DataTable<TData, TValue>({
     if (!filterValue) return data;
 
     const lower = filterValue.toLowerCase();
-    return data.filter((item: any) =>
-      item.id.toLowerCase().includes(lower) ||
-      item.product.name.toLowerCase().includes(lower) ||
-      item.stock.detail.toLowerCase().includes(lower)
+    return data.filter(
+      (item: any) =>
+        item.id.toLowerCase().includes(lower) ||
+        item.product.name.toLowerCase().includes(lower) ||
+        item.stock.detail.toLowerCase().includes(lower)
     );
   }, [filterValue, data]);
 
@@ -64,12 +65,11 @@ export function DataTable<TData, TValue>({
   const handleExportCSV = () => {
     if (!filteredData.length) return;
     const exportData = filteredData.map((item: any) => ({
-        "รหัสคำสั่งซื้อ": item.stock.id,
-        "ชื่อสินค้า": item.product.name,
-        "รายละเอียด": item.stock.detail,
-        "ราคา": item.product.price,
-      }));
-
+      รหัสคำสั่งซื้อ: item.stock.id,
+      ชื่อสินค้า: item.product.name,
+      รายละเอียด: item.stock.detail,
+      ราคา: item.product.price,
+    }));
 
     const csv = Papa.unparse(exportData, {
       quotes: true,
@@ -88,6 +88,19 @@ export function DataTable<TData, TValue>({
     URL.revokeObjectURL(url);
   };
 
+  const downloadFile = () => {
+    const text = filteredData
+    .map((item: any) => item.stock.detail)
+    .join("\n"); // แยกบรรทัด
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "combo.txt"
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div>
       <div className="flex items-center justify-end py-4 gap-3">
@@ -100,6 +113,10 @@ export function DataTable<TData, TValue>({
 
         <Button onClick={handleExportCSV} className="btn-main">
           ดาวน์โหลด CSV
+        </Button>
+
+        <Button onClick={downloadFile} className="btn-main">
+          ดาวน์โหลด Combo
         </Button>
       </div>
 
@@ -138,7 +155,10 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   ไม่พบข้อมูล
                 </TableCell>
               </TableRow>
@@ -165,7 +185,8 @@ export function DataTable<TData, TValue>({
 
         <div className="flex items-center gap-2">
           <span className="text-sm">
-            หน้าที่ {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+            หน้าที่ {table.getState().pagination.pageIndex + 1}/
+            {table.getPageCount()}
           </span>
 
           <Button

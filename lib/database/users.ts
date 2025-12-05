@@ -7,9 +7,6 @@ import { TopupBank } from "../Topup/bank";
 import { sendDiscordWebhook } from "../Discord/discord";
 import { requireUser } from "../requireUser";
 import { Decimal } from "@prisma/client/runtime/library";
-import { Code } from "lucide-react";
-import { preconnect } from "react-dom";
-
 interface authData {
   username: string;
   password: string;
@@ -277,11 +274,11 @@ export async function TopupByWallet(id: string | undefined, url: string) {
         },
       ],
     });
+    revalidatePath("/admin/users");
     return {
       status: true,
       message: `เติมเงินจำนวน ${topupStatus.amount ?? 0} บาท สำเร็จ`,
     };
-    revalidatePath("/admin/users");
   } catch (error) {
     console.log("Topup Error: ", error);
     return {
