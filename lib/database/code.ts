@@ -1,8 +1,10 @@
 "use server"
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
+import { requireUser } from "../requireUser";
 
 export async function getAllCode() {
+  await requireUser()
   try {
     const codes = await prisma.code.findMany();
     const plainCodes = codes.map((code) => ({
@@ -17,6 +19,7 @@ export async function getAllCode() {
 }
 
 export async function createCode(data: any) {
+    await requireUser()
   try {
     await prisma.code.create({
       data: {
@@ -46,6 +49,7 @@ export async function createCode(data: any) {
 }
 
 export async function updateCode(data: any) {
+    await requireUser()
   try {
     await prisma.code.update({where: {
       id: data.id
@@ -77,6 +81,7 @@ export async function updateCode(data: any) {
 }
 
 export async function deleteCode(id: string) {
+    await requireUser()
   try {
     await prisma.code.delete({
       where: {
