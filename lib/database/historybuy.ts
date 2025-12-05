@@ -48,7 +48,9 @@ export async function getAllHistoryBuy() {
         user: true,
         product: true,
         stock: true,
-      },
+      },orderBy: {
+        createdAt: "desc",
+      }
     });
     const mappedData = historyBuy.map((item) => {
       return {

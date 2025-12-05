@@ -59,6 +59,10 @@ export const columns: ColumnDef<AdminTopupHis>[] = [
         );
       }
 
+      if (topupType === "Code") {
+        return <Badge>{topupType}</Badge>;
+      }
+
       return (
         <Badge variant="default" className="bg-blue-500 text-white">
           {topupType}
@@ -66,7 +70,7 @@ export const columns: ColumnDef<AdminTopupHis>[] = [
       );
     },
   },
-    {
+  {
     accessorKey: "createdAt",
     header: (
       { column } // 👈 นี่คือส่วน header ที่คุณมีอยู่แล้ว

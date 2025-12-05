@@ -45,6 +45,7 @@ export function DataTable<TData, TValue>({
       item.refId.toLowerCase().includes(lower) ||
       item.type.toLowerCase().includes(lower) ||
       item.reason.toLowerCase().includes(lower) ||
+      item.topupType.toLowerCase().includes(lower) ||
       item.owner.toLowerCase().includes(lower)
     );
   }, [filterValue, data]);

@@ -31,6 +31,8 @@ model Users {
   historyTopups HistoryTopup[]
   
   historyBuys HistoryBuy[]
+
+  HistoryCode HistoryCode[]
 }
 
 // ---------------------------- Products ----------------------------
@@ -98,6 +100,7 @@ enum TopupType {
   Truemoney @map("ทรูวอลเลท")
   Bank      @map("ธนาคาร")
   ADMIN     @map("แอดมิน")
+  Code      @map("เติมโค้ด")
 }
 
 model HistoryTopup {
@@ -142,6 +145,34 @@ model TopupBank {
   bankName       String   @default("ไม่ทราบชื่อบัญชี")
   bankProvider   String   @default("ไม่ทราบธนาคาร")
   available      Boolean  @default(false)
+}
+
+// ---------------------------- Code ----------------------------
+model Code {
+  id         String   @id @default(cuid())
+  name       String   @default("ไม่ทราบชื่อcode")
+  key        String   @unique
+  reward     Decimal  @db.Decimal(10, 2) @default(0)
+  currentUse Int      @default(0)
+  maxUse     Int
+  canDuplicateUse Boolean @default(false)
+  createdAt  DateTime  @default(now())
+  expired    DateTime  @default(now())
+
+  HistoryCode HistoryCode[]
+}
+
+// ---------------------------- HistoryCode ----------------------------
+model HistoryCode {
+  id         String   @id @default(cuid())
+
+  codeId     String
+  code       Code     @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, codeId])
 }
 
 // ---------------------------- Settings ----------------------------

@@ -18,6 +18,7 @@ import {
   Settings02Icon,
   ThumbsUpIcon,
   TransactionHistoryIcon,
+  SourceCodeIcon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import Image from "next/image";
@@ -53,6 +54,11 @@ const items = [
     title: "ตั้งค่าการเติมเงิน",
     url: "/admin/topupsetting",
     icon: MoneyReceiveSquareIcon, // การตั้งค่าเฉพาะ
+  },
+  {
+    title: "ตั้งค่าโค้ดเติมเงิน",
+    url: "/admin/code",
+    icon: SourceCodeIcon, // การตั้งค่าเฉพาะ
   },
   {
     title: "ตั้งค่าทั่วไป",

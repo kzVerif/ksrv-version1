@@ -7,7 +7,10 @@ export async function getHistoryTopupByUserId(id: string) {
     await requireUser()
     const historytopup = await prisma.historyTopup.findMany({
       where: { userId: id },
-    });
+      orderBy: {
+        createdAt: "desc",
+      }
+    })
 
     const plainHistoryTopup = historytopup.map(item => ({
       ...item,
@@ -27,6 +30,8 @@ export async function getAllHistoryTopup() {
     const historyTopup = await prisma.historyTopup.findMany({
       include: {
         user: true,
+      },orderBy: {
+        createdAt: "desc",
       }
     })
     const mapHistoryTopup = historyTopup.map((item) => {
@@ -41,8 +46,6 @@ export async function getAllHistoryTopup() {
       }
     })
 
-    // console.log(mapHistoryTopup);
-    
 
     return mapHistoryTopup
   } catch (error) {

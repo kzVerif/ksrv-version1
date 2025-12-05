@@ -48,6 +48,14 @@ export const columns: ColumnDef<TopupHis>[] = [
         );
       }
 
+      if (topupType === "Code") {
+        return (
+          <Badge>
+            {topupType}
+          </Badge>
+        );
+      }
+
       return (
         <Badge variant="default" className="bg-blue-500 text-white">
           {topupType}

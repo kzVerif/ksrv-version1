@@ -7,6 +7,8 @@ import { TopupBank } from "../Topup/bank";
 import { sendDiscordWebhook } from "../Discord/discord";
 import { requireUser } from "../requireUser";
 import { Decimal } from "@prisma/client/runtime/library";
+import { Code } from "lucide-react";
+import { preconnect } from "react-dom";
 
 interface authData {
   username: string;
@@ -368,6 +370,122 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
     };
   }
 }
+
+export async function TopupByCode(id: string | undefined, key: string) {
+  await requireUser();
+
+  if (!id) {
+    return { status: false, message: "ไม่พบผู้ใช้สำหรับการเติมโค้ด" };
+  }
+
+  try {
+
+    const result = await prisma.$transaction(async (tx) => {
+      const code = await tx.code.findUnique({
+        where: { key }
+      });
+
+      if (!code) {
+        return { status: false, message: "ไม่พบโค้ดในระบบ" };
+      }
+
+      // ห้ามใช้ซ้ำ (แก้เงื่อนไขให้ถูก)
+      if (!code.canDuplicateUse) {
+        const isUsed = await tx.historyCode.findFirst({
+          where: { userId: id, codeId: code.id }
+        });
+
+        if (isUsed) {
+          return { status: false, message: "คุณใช้โค้ดนี้ไปแล้ว" };
+        }
+      }
+
+      // ใช้เต็มแล้ว
+      if (code.currentUse >= code.maxUse) {
+        return {
+          status: false,
+          message: `จำนวนการใช้งานครบแล้ว ${code.currentUse}/${code.maxUse}`
+        };
+      }
+
+      // หมดอายุ
+      if (new Date() > new Date(code.expired)) {
+        return { status: false, message: "โค้ดนี้หมดอายุแล้ว" };
+      }
+
+      const reward = Number(code.reward);
+
+      // อัปเดต user, อัปเดต code, สร้าง history ทั้งหมดใน transaction
+      const user = await tx.users.update({
+        where: { id },
+        data: {
+          points: { increment: reward },
+        }
+      });
+
+      const plainUser = {
+        ...user,
+        points: Number(user.points),
+        totalPoints: Number(user.totalPoints),
+      };
+
+      await tx.code.update({
+        where: { key },
+        data: { currentUse: { increment: 1 } }
+      });
+
+      // เก็บประวัติ "ใช้โค้ดนี้"
+      await tx.historyCode.create({
+        data: {
+          userId: id,
+          codeId: code.id
+        }
+      });
+
+      await tx.historyTopup.create({
+        data: {
+          userId: id,
+          amount: reward,
+          reason: "เติมโค้ด",
+          topupType: "Code",
+        }
+      });
+
+      return {
+        status: true,
+        message: `เติมโค้ดสำเร็จ คุณได้รับพ้อยท์จำนวน ${reward} บาทแล้ว`,
+        plainUser,
+        reward
+      };
+    });
+
+    // result.status === false คือ error logic (ไม่ใช่ระบบล่ม)
+    if (!result.status) return result;
+
+    // Send Discord log
+    await sendDiscordWebhook({
+      username: "ระบบการเงิน",
+      embeds: [
+        {
+          title: "💰 มีรายการเติมเงินจากโค้ด!",
+          color: 2299548,
+          fields: [
+            { name: "👤 ผู้ใช้", value: result?.plainUser?.username},
+            { name: "💵 จำนวนเงิน", value: `${result.reward} ฿` },
+            { name: "🔑 โค้ด", value: key },
+          ],
+        }
+      ],
+    });
+
+    return result;
+
+  } catch (err) {
+    console.log("TopupByCode Error:", err);
+    return { status: false, message: "เกิดข้อผิดพลาดในระบบ" };
+  }
+}
+
 
 export async function getUserById(id: string) {
   try {
