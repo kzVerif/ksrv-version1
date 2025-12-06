@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   experimental: {
+    optimizeCss: false,
     serverComponentsExternalPackages: ['impit'],
   },
 };
