@@ -27,20 +27,10 @@ export default function RegisterForm() {
 
   const validate = () => {
     // Username 6-20 ตัว, ตัวอักษรและตัวเลข
-    const usernameRegex = /^[a-zA-Z0-9]{6,20}$/;
+    const usernameRegex = /^[a-z]{6,20}$/;
     if (!usernameRegex.test(username)) {
       toast.error(
-        "Username ต้องมี 6-20 ตัวอักษร และใช้ตัวอักษร A-Z, a-z, 0-9 เท่านั้น"
-      );
-      return false;
-    }
-
-    // Password: 8-32 ตัว, มีพิมพ์ใหญ่, พิมพ์เล็ก, ตัวเลข, special char
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,32}$/;
-    if (!passwordRegex.test(password)) {
-      toast.error(
-        "Password ต้องมี 8-32 ตัวอักษร มีพิมพ์ใหญ่ พิมพ์เล็ก ตัวเลข และอักขระพิเศษ (!@#$%^&*)"
+        "Username ต้องมี 6-20 ตัวอักษร และใช้ตัวอักษร a-z เท่านั้น"
       );
       return false;
     }

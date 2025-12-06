@@ -1,8 +1,5 @@
 import { getShopSettings } from "../database/setting";
-import { requireUser } from "../requireUser";
-
 export async function sendDiscordWebhook(data: Object) {
-  await requireUser()
   try {
     const setting = await getShopSettings();
     const url = setting?.webhookDiscord;

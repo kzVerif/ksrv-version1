@@ -15,8 +15,7 @@ export default async function Footer() {
           </Link>
         </p>
         <p className="text-xs text-gray-500">
-          © <span className="font-semibold">KSRV</span> — Kanghun Server and
-          Service
+          © <span className="font-semibold">KLAZY</span> — Kanghun LAZY
         </p>
       </div>
     </footer>

@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import { walletTopup } from "../Topup/wallet";
 import { TopupBank } from "../Topup/bank";
 import { sendDiscordWebhook } from "../Discord/discord";
-import { requireUser } from "../requireUser";
+
 import { Decimal } from "@prisma/client/runtime/library";
 interface authData {
   username: string;
@@ -102,6 +102,8 @@ export async function Login(userData: any) {
     };
   }
 }
+
+import { requireUser } from "../requireUser";
 
 export async function ChangePassword(userData: {
   userId: string; // เรามั่นใจแล้วว่ามีค่ามาจาก frontend
