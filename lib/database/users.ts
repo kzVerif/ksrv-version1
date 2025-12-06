@@ -236,6 +236,9 @@ export async function TopupByWallet(id: string | undefined, url: string) {
         points: {
           increment: new Decimal(topupStatus.amount ?? 0),
         },
+        totalPoints: {
+          increment: new Decimal(topupStatus.amount ?? 0),
+        },
       },
     });
 
@@ -314,6 +317,7 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
       where: { id },
       data: {
         points: { increment: new Decimal(res.data.amount ?? 0) },
+        totalPoints: { increment: new Decimal(res.data.amount ?? 0) },
       },
     });
 
@@ -419,6 +423,7 @@ export async function TopupByCode(id: string | undefined, key: string) {
         where: { id },
         data: {
           points: { increment: reward },
+          totalPoints: { increment: reward },
         }
       });
 
