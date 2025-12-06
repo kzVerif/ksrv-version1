@@ -17,12 +17,14 @@ import {
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
+import Notice from "@/components/Notice";
 
 export default async function Home() {
   const data = await getHomepage();
 
   return (
     <div className="header container">
+      <Notice message={data.setting?.announcement ?? "ไม่พบข้อความประกาศ"}/>
       {/* Banner Section */}
       <Image
         src={
