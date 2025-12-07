@@ -127,13 +127,13 @@ export default function BuyForm({
 
         {/* ค่าธรรมเนียม */}
         {feeAvailable && (
-          <Badge variant="secondary">
+          <Badge variant="destructive">
             <span>ค่าธรรมเนียม (2.9%)</span>
             <span className="font-semibold">+ {fee.toFixed(2)} บาท</span>
           </Badge>
         )}
 
-        <Badge variant="secondary">
+        <Badge variant="destructive">
           <span>ยอดที่ต้องเติมเงินผ่านวอลเลท</span>
           <span>{finalTotal.toLocaleString()} บาท</span>
         </Badge>
