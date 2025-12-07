@@ -2,6 +2,7 @@ import { getProductById } from "@/lib/database/shop";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import BuyForm from "@/components/Product/BuyForm";
+import { getWalletTopup } from "@/lib/database/wallettopup";
 
 export default async function ProductPage({
   params,
@@ -10,6 +11,7 @@ export default async function ProductPage({
 }) {
   const { id } = await params;
   const product = await getProductById(id);
+  const wallet = await getWalletTopup()
   
   if (product === null) {
     return <div>ไม่พบสินค้าที่ต้องการ</div>;
@@ -62,7 +64,7 @@ export default async function ProductPage({
           </p>
 
           {/* ✅ ฟอร์มกรอกจำนวน */}
-          <BuyForm remain={product.stocks.length} productId={product.id}  />
+          <BuyForm remain={product.stocks.length} productId={product.id} feeAvailable={wallet.feeAvailable} price={product.price}  />
           
           {/* ✅ รายละเอียดสินค้า */}
           <div className="border-t pt-6 text-black leading-relaxed whitespace-pre-line text-sm sm:text-base">

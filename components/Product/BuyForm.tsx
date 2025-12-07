@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -19,18 +19,36 @@ import {
 } from "../ui/dialog"; // ปรับ path ตาม project
 import { getUserById } from "@/lib/database/users";
 import { useUser } from "@/contexts/UserContext";
+import { Badge } from "../ui/badge";
 
 interface BuyFormProps {
   remain: number;
   productId: string;
+  feeAvailable: boolean;
+  price: number;
 }
 
-export default function BuyForm({ remain, productId }: BuyFormProps) {
+export default function BuyForm({
+  remain,
+  productId,
+  feeAvailable,
+  price,
+}: BuyFormProps) {
   const [quantity, setQuantity] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, update } = useSession();
   const { refreshUser } = useUser();
+  const [total, setTotal] = useState(price * quantity);
 
+  useEffect(() => {
+    setTotal(price * quantity);
+  }, [quantity, price]);
+
+  const baseTotal = quantity * price;
+
+  const fee = feeAvailable ? Math.min(baseTotal * 0.029, 20) : 0;
+
+  const finalTotal = baseTotal + fee;
   const handleBuy = async () => {
     if (!session) {
       toast.error("กรุณาเข้าสู่ระบบก่อน");
@@ -38,22 +56,22 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
     }
 
     try {
-        setIsOpen(false);
-        toast.loading("กำลังสั่งซื้อสินค้า...")
+      setIsOpen(false);
+      toast.loading("กำลังสั่งซื้อสินค้า...");
 
-        const status = await buyProducts(quantity, session.user.id, productId)
-        
-        if (!status?.status) {
-          toast.dismiss()
-          toast.error(status?.message ?? "เกิดข้อผิดพลากจากระบบ")
-          return
-        }
-        toast.dismiss()
-        toast.success("สั่งซื้อสินค้าสำเร็จ กรุณาตรวจสอบประวัติการสั่งซื้อ")
+      const status = await buyProducts(quantity, session.user.id, productId);
 
-      const users = await getUserById(session.user.id)
+      if (!status?.status) {
+        toast.dismiss();
+        toast.error(status?.message ?? "เกิดข้อผิดพลากจากระบบ");
+        return;
+      }
+      toast.dismiss();
+      toast.success("สั่งซื้อสินค้าสำเร็จ กรุณาตรวจสอบประวัติการสั่งซื้อ");
+
+      const users = await getUserById(session.user.id);
       await update({ ...session, user: users });
-      await refreshUser();      
+      await refreshUser();
     } catch (err) {
       console.error(err);
       setIsOpen(false);
@@ -69,7 +87,6 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
         >
           จำนวน:
         </label>
-
         {/* ลดจำนวน */}
         <Button
           type="button"
@@ -78,7 +95,6 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
         >
           <HugeiconsIcon icon={RemoveCircleIcon} />
         </Button>
-
         {/* input quantity */}
         <input
           id="quantity"
@@ -91,7 +107,6 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
           }
           className="w-20 border border-gray-300 rounded-lg p-2 text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-
         {/* เพิ่มจำนวน */}
         <Button
           type="button"
@@ -101,40 +116,62 @@ export default function BuyForm({ remain, productId }: BuyFormProps) {
           <HugeiconsIcon icon={AddCircleIcon} />
         </Button>
       </div>
+      <div className="my-4 flex flex-col gap-2 w-full sm:w-72 ">
+        {/* ยอดรวมสินค้า */}
+        <Badge variant="outline">
+          <span>ยอดรวมสินค้า</span>
+          <span className="font-semibold">
+            {baseTotal.toLocaleString()} บาท
+          </span>
+        </Badge>
+
+        {/* ค่าธรรมเนียม */}
+        {feeAvailable && (
+          <Badge variant="secondary">
+            <span>ค่าธรรมเนียม (2.9%)</span>
+            <span className="font-semibold">+ {fee.toFixed(2)} บาท</span>
+          </Badge>
+        )}
+
+        <Badge variant="secondary">
+          <span>ยอดที่ต้องเติมเงินผ่านวอลเลท</span>
+          <span>{finalTotal.toLocaleString()} บาท</span>
+        </Badge>
+      </div>
 
       {/* ปุ่มสั่งซื้อ + Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant={remain <= 0 ? "destructive" : "default"}
-          disabled={remain <= 0}
-          className={`w-full sm:w-auto text-lg px-6 py-3 rounded-xl flex items-center justify-center gap-2 ${
-            remain <= 0 ? "opacity-70 cursor-not-allowed" : "btn-main"
-          }`}
-        >
-          <ShoppingCart size={22} />
-          {remain <= 0 ? "สินค้าหมด" : "สั่งซื้อสินค้า"}
-        </Button>
-      </DialogTrigger>
-
-      <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
-          <DialogTitle>ยืนยันการสั่งซื้อ</DialogTitle>
-          <DialogDescription>
-            คุณต้องการซื้อสินค้า {quantity} ชิ้น ใช่หรือไม่?
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex justify-end gap-2">
-          {/* ปุ่มยกเลิก: สามารถใช้ setIsOpen(false) หรือปล่อยให้ DialogTrigger (หรือ DialogClose) ทำงานตามปกติก็ได้ */}
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
-            ยกเลิก
+        <DialogTrigger asChild>
+          <Button
+            variant={remain <= 0 ? "destructive" : "default"}
+            disabled={remain <= 0}
+            className={`w-full sm:w-auto text-lg px-6 py-3 rounded-xl flex items-center justify-center gap-2 ${
+              remain <= 0 ? "opacity-70 cursor-not-allowed" : "btn-main"
+            }`}
+          >
+            <ShoppingCart size={22} />
+            {remain <= 0 ? "สินค้าหมด" : "สั่งซื้อสินค้า"}
           </Button>
-          
-          {/* ปุ่มยืนยัน: เรียก handleBuy ซึ่งจะไปสั่งปิด Dialog ข้างในนั้น */}
-          <Button onClick={handleBuy}>ยืนยัน</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogTrigger>
+
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการสั่งซื้อ</DialogTitle>
+            <DialogDescription>
+              คุณต้องการซื้อสินค้า {quantity} ชิ้น ใช่หรือไม่?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex justify-end gap-2">
+            {/* ปุ่มยกเลิก: สามารถใช้ setIsOpen(false) หรือปล่อยให้ DialogTrigger (หรือ DialogClose) ทำงานตามปกติก็ได้ */}
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              ยกเลิก
+            </Button>
+
+            {/* ปุ่มยืนยัน: เรียก handleBuy ซึ่งจะไปสั่งปิด Dialog ข้างในนั้น */}
+            <Button onClick={handleBuy}>ยืนยัน</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
