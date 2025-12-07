@@ -46,16 +46,14 @@ export async function walletTopup(url: string) {
 
       body: data,
     });
-    // console.log(response);
 
     const res = await response.json();
-    console.log(res);
-
-    // console.log(res.data?.voucher?.member);
+    // console.log("walletTopup: ",res);
 
     // SUCCESS CHECK
     if (res.status?.code === "SUCCESS" && res.data?.voucher?.member === 1) {
-      const amount = Number(res.data.voucher.redeemed_amount_baht);
+      const amountText = res.data.voucher.redeemed_amount_baht.replace(",","")
+      const amount = Number(amountText);
 
       if (truemoney?.feeAvailable === true) {
         if (amount * 0.029 < 20) {

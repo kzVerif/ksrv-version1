@@ -220,6 +220,8 @@ export async function deleteUSer(id: string) {
 
 export async function TopupByWallet(id: string | undefined, url: string) {
   const topupStatus = await walletTopup(url);
+  // console.log("TopupByWallet: ",topupStatus);
+  
   try {
     await requireUser();
     if (!topupStatus.status || !id) {
@@ -230,15 +232,12 @@ export async function TopupByWallet(id: string | undefined, url: string) {
       // throw new Error(topupStatus.reason);
     }
 
+
     const user = await prisma.users.update({
       where: { id: id },
       data: {
-        points: {
-          increment: new Decimal(topupStatus.amount ?? 0),
-        },
-        totalPoints: {
-          increment: new Decimal(topupStatus.amount ?? 0),
-        },
+        points: { increment: new Decimal(topupStatus.amount ?? 0) },
+        totalPoints: { increment: new Decimal(topupStatus.amount ?? 0) },
       },
     });
 
@@ -382,10 +381,9 @@ export async function TopupByCode(id: string | undefined, key: string) {
   }
 
   try {
-
     const result = await prisma.$transaction(async (tx) => {
       const code = await tx.code.findUnique({
-        where: { key }
+        where: { key },
       });
 
       if (!code) {
@@ -395,7 +393,7 @@ export async function TopupByCode(id: string | undefined, key: string) {
       // ห้ามใช้ซ้ำ (แก้เงื่อนไขให้ถูก)
       if (!code.canDuplicateUse) {
         const isUsed = await tx.historyCode.findFirst({
-          where: { userId: id, codeId: code.id }
+          where: { userId: id, codeId: code.id },
         });
 
         if (isUsed) {
@@ -407,7 +405,7 @@ export async function TopupByCode(id: string | undefined, key: string) {
       if (code.currentUse >= code.maxUse) {
         return {
           status: false,
-          message: `จำนวนการใช้งานครบแล้ว ${code.currentUse}/${code.maxUse}`
+          message: `จำนวนการใช้งานครบแล้ว ${code.currentUse}/${code.maxUse}`,
         };
       }
 
@@ -424,7 +422,7 @@ export async function TopupByCode(id: string | undefined, key: string) {
         data: {
           points: { increment: reward },
           totalPoints: { increment: reward },
-        }
+        },
       });
 
       const plainUser = {
@@ -435,15 +433,15 @@ export async function TopupByCode(id: string | undefined, key: string) {
 
       await tx.code.update({
         where: { key },
-        data: { currentUse: { increment: 1 } }
+        data: { currentUse: { increment: 1 } },
       });
 
       // เก็บประวัติ "ใช้โค้ดนี้"
       await tx.historyCode.create({
         data: {
           userId: id,
-          codeId: code.id
-        }
+          codeId: code.id,
+        },
       });
 
       await tx.historyTopup.create({
@@ -452,14 +450,14 @@ export async function TopupByCode(id: string | undefined, key: string) {
           amount: reward,
           reason: "เติมโค้ด",
           topupType: "Code",
-        }
+        },
       });
 
       return {
         status: true,
         message: `เติมโค้ดสำเร็จ คุณได้รับพ้อยท์จำนวน ${reward} บาทแล้ว`,
         plainUser,
-        reward
+        reward,
       };
     });
 
@@ -474,22 +472,20 @@ export async function TopupByCode(id: string | undefined, key: string) {
           title: "💰 มีรายการเติมเงินจากโค้ด!",
           color: 2299548,
           fields: [
-            { name: "👤 ผู้ใช้", value: result?.plainUser?.username},
+            { name: "👤 ผู้ใช้", value: result?.plainUser?.username },
             { name: "💵 จำนวนเงิน", value: `${result.reward} ฿` },
             { name: "🔑 โค้ด", value: key },
           ],
-        }
+        },
       ],
     });
 
     return result;
-
   } catch (err) {
     console.log("TopupByCode Error:", err);
     return { status: false, message: "เกิดข้อผิดพลาดในระบบ" };
   }
 }
-
 
 export async function getUserById(id: string) {
   try {

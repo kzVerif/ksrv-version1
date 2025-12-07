@@ -18,7 +18,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import Notice from "@/components/Notice";
-
 export default async function Home() {
   const data = await getHomepage();
 
