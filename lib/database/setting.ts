@@ -6,7 +6,19 @@ import { requireUser } from "../requireUser";
 export async function getShopSettings() {
   try {
     const setting = await prisma.settings.findFirst();
-    return setting;
+    return {
+      primaryColor: setting?.primaryColor,
+      secondaryColor: setting?.secondaryColor,
+      hoverColor: setting?.hoverColor,
+      backgroundImage: setting?.backgroundImage,
+      shopName: setting?.shopName,
+      announcement: setting?.announcement,
+      icon: setting?.icon,
+      logo: setting?.logo,
+      detail: setting?.detail,
+      contact: setting?.contact,
+      banner: setting?.banner,
+    };
   } catch (error) {
     console.log("getShopSettings Error: ", error);
     return {

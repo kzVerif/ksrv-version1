@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -37,6 +37,9 @@ export default function Navbar({ setting }: { setting: any }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const isLoggedIn = !!session?.user;
   const isAdmin = session?.user?.role === "ADMIN";
+  // console.log(session);
+  
+  
   const points = user?.points || 0
   return (
     <nav className="bg-white shadow-md py-3 sticky top-0 z-50 border-b border-gray-100 w-full">

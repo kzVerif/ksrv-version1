@@ -3,6 +3,9 @@ import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 import { sendDiscordWebhook } from "../Discord/discord";
 import { requireUser } from "../requireUser";
+import { Server } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth";
 
 export interface productData {
   name: string;
@@ -108,7 +111,7 @@ export async function getAllProducts() {
 
 export async function updateProduct(data: updateProduct) {
   try {
-    await requireUser()
+    await requireUser();
     await prisma.products.update({
       where: { id: data.id },
       data: {
@@ -132,7 +135,7 @@ export async function updateProduct(data: updateProduct) {
 
 export async function createProducts(data: productData) {
   try {
-    await requireUser()
+    await requireUser();
     await prisma.products.create({
       data: {
         name: data.name,
@@ -155,8 +158,8 @@ export async function createProducts(data: productData) {
 
 export async function deleteProduct(id: string) {
   try {
-    await requireUser()
-   const product =  await prisma.products.delete({
+    await requireUser();
+    const product = await prisma.products.delete({
       where: { id: id },
     });
     revalidatePath("/admin/products");
@@ -175,8 +178,15 @@ export async function buyProducts(
   userId: string,
   productId: string
 ) {
+  await requireUser();
+  const session = await getServerSession(authOptions);
+  if (userId !== session?.user.id) {
+    return {
+      status: false,
+      message: "ทำไรครับเนี่ย",
+    };
+  }
   try {
-    await requireUser()
     const user = await prisma.users.findUnique({ where: { id: userId } });
     const product = await prisma.products.findUnique({
       where: { id: productId },
@@ -234,7 +244,7 @@ export async function buyProducts(
       where: { id: userId },
       data: { points: Number(user.points) - totalPrice },
     });
-    
+
     await sendDiscordWebhook({
       username: "ระบบร้านค้า",
       embeds: [
@@ -261,8 +271,8 @@ export async function buyProducts(
     revalidatePath("/products");
     revalidatePath("/");
     return {
-        status: true,
-      };
+      status: true,
+    };
   } catch (error: any) {
     console.log("buyProducts Error:", error.message || error);
     return {

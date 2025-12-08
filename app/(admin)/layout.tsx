@@ -1,10 +1,24 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getShopSettings } from "@/lib/database/setting";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 export const revalidate = 60;
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
-  const setting = await getShopSettings()
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user.role !== "ADMIN") {
+    return redirect("/");
+  }
+  
+  const setting = await getShopSettings();
+
   return (
     <SidebarProvider>
       <AppSidebar logo={setting?.logo ?? ""} />
@@ -17,10 +31,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
           </div>
         </div>
 
-        <div className="">
-          {/* <Toaster position="top-right" /> */}
-          {children}
-        </div>
+        <div className="">{children}</div>
       </main>
     </SidebarProvider>
   );
