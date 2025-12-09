@@ -35,7 +35,7 @@ export default async function page({ params }: { params: { id: string } }) {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h3 className="text-base font-semibold ">{s.name}</h3>
+                  <h3 className="text-base font-semibold truncate w-full ">{s.name}</h3>
                   <p className="text-sm text-gray-500 mt-1">
                     <Badge className="font-bold">
                       ราคา: {Number(s.price)}฿

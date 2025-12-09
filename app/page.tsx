@@ -117,7 +117,7 @@ export default async function Home() {
                         className="w-full object-cover"
                       />
                     </div>
-                    <h3 className="font-semibold text">{c.category.name}</h3>
+                    <h3 className="font-semibold text truncate">{c.category.name}</h3>
                     <h3 className="text-sm">
                       จำนวนสินค้าทั้งหมด {c.category.products.length} รายการ
                     </h3>
@@ -148,7 +148,7 @@ export default async function Home() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <h3 className="text-base font-semibold ">
+                        <h3 className="text-base font-semibold truncate w-full">
                           {s.product.name}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
