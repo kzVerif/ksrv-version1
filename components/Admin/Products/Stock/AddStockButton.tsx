@@ -17,8 +17,19 @@ import toast from "react-hot-toast";
 import { Plus } from "lucide-react"; // 2. แก้ไขไอคอน
 import { addStocks } from "@/lib/database/stocks";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { useEffect, useState } from "react";
 
 export function AddStockButton({ productId }: { productId: string }) {
+  const [stocks, setStocks] = useState("");
+  const [stocksLength, setStocksLength] = useState(0);
+  useEffect(() => {
+    const count = stocks
+      .split(/\r?\n/)
+      .filter((line) => line.trim() !== "").length;
+
+    setStocksLength(count);
+  }, [stocks]);
+
   // 4. อัปเดตฟังก์ชัน handleEdit
   async function handleEdit(formData: FormData) {
     const detail = String(formData.get("detail") || "");
@@ -63,7 +74,9 @@ export function AddStockButton({ productId }: { productId: string }) {
           <DialogDescription>
             ใส่รายการสต็อกของคุณทีละบรรทัด
             <br />
-            ระบบจะนับ 1 บรรทัดเป็น 1ชิ้นอัตโนมัติ
+            ระบบจะนับ 1 บรรทัดเป็น 1 ชิ้นอัตโนมัติ
+            <br />
+            สินค้าทั้งหมด: {stocksLength} ชิ้น
           </DialogDescription>
         </DialogHeader>
 
@@ -77,6 +90,7 @@ export function AddStockButton({ productId }: { productId: string }) {
                 required
                 className="resize-none h-full"
                 placeholder="ใส่รายละเอียดสต็อคของคุณ"
+                onChange={(e) => setStocks(e.target.value)}
               />
             </ScrollArea>
           </div>

@@ -9,7 +9,7 @@ export default async function page({ params }: { params: { id: string } }) {
   const { id } = await params;
   const category = await getCategoriesById(id);
   const data = await getProductByCategory(id);
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="container header">

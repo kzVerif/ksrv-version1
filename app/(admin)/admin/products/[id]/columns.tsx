@@ -10,7 +10,7 @@ import { DeleteStockButton } from "@/components/Admin/Products/Stock/DeleteStock
 export type Stocks = {
   id: string;
   detail: string;
-  status: "AVAILABLE" | "SOLD";
+  status: "SOLD" | "AVAILABLE";
   productId: string;
 };
 
@@ -38,10 +38,10 @@ export const columns: ColumnDef<Stocks>[] = [
       const { status } = row.original;
 
       return status === "SOLD" ? (
-        <Badge variant="destructive">{status}</Badge>
+        <Badge variant="destructive">Sold</Badge>
       ) : (
         <Badge variant="default" className="bg-emerald-500 text-white">
-          {status}
+          Available
         </Badge>
       );
     },

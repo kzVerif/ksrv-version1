@@ -38,16 +38,17 @@ export type BuyProduct = {
 };
 
 export const columns: ColumnDef<BuyProduct>[] = [
-  {
-    accessorKey: "id",
-    header: "รหัสคำสั่งซื้อ",
-  },
+  // {
+  //   accessorKey: "id",
+  //   header: "รหัสคำสั่งซื้อ",
+  // },
   {
     accessorFn: (row) => row.product.name,
     header: "ชื่อสินค้า",
     cell: ({ row }) => (
       <span
-        className="block truncate max-w-[200px]"
+        className="block max-w-[200px]"
+        // className="block truncate max-w-[200px]"
         title={row.original.product.name}
       >
         {row.original.product.name}
@@ -59,6 +60,7 @@ export const columns: ColumnDef<BuyProduct>[] = [
     header: "รายละเอียด",
     cell: ({ row }) => (
       <span
+        // className="block max-w-[200px]"
         className="block truncate max-w-[200px]"
         title={row.original.stock.detail}
       >

@@ -50,12 +50,12 @@ export function ViewHistoryBuyButton({
           <div className="grid gap-3">
             <Label htmlFor="name">รหัสสินค้า</Label>
 
-            <Input disabled name="id" value={product.id} />
+            <Input readOnly name="id" value={product.id} />
           </div>
 
           <div className="grid gap-3">
             <Label htmlFor="name">ชื่อสินค้า</Label>
-            <Input id="name" name="name" defaultValue={product.product.name} disabled />
+            <Input id="name" name="name" defaultValue={product.product.name} readOnly />
           </div>
 
           <div className="grid gap-3">
@@ -65,7 +65,7 @@ export function ViewHistoryBuyButton({
               name="owner"
               defaultValue={product.user.username}
               type="text"
-              disabled
+              readOnly
             />
           </div>
 
@@ -76,8 +76,9 @@ export function ViewHistoryBuyButton({
               id="detail"
               name="detail"
               defaultValue={product.stock.detail}
-              disabled
               className="resize-none h-40 w-full p-2 break-all"
+              // readOnlyx  
+              readOnly
               />
               </ScrollArea>
               <Button variant={"outline"} onClick={handleCopy}><HugeiconsIcon icon={Copy01Icon} /></Button>
@@ -89,7 +90,7 @@ export function ViewHistoryBuyButton({
               id="time"
               name="time"
               defaultValue={formattedDate}
-              disabled
+              readOnly
             />
           </div>
 

@@ -36,6 +36,7 @@ export type Products = {
 export const columns: ColumnDef<Products>[] = [
   {
     accessorKey: "name",
+    header: "ชื่อสินค้า",
     cell: ({ row }) => (
       <span className="" title={row.original.name}>
       {/* <span className="block truncate max-w-[200px]" title={row.original.name}> */}
