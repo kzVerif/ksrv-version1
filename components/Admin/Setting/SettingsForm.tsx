@@ -16,7 +16,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
   };
 
   const handleSave = async () => {
-    console.log(data);
+    // console.log(data);
     
     toast.promise(updateShopSetting(data), {
       success: "บันทึกการตั้งค่าสำเร็จ",

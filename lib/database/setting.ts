@@ -7,6 +7,7 @@ export async function getShopSettings() {
   try {
     const setting = await prisma.settings.findFirst();
     return {
+      id: setting?.id,
       primaryColor: setting?.primaryColor,
       secondaryColor: setting?.secondaryColor,
       hoverColor: setting?.hoverColor,
@@ -42,6 +43,8 @@ export async function getShopSettings() {
 }
 
 export async function updateShopSetting(data: any) {
+  console.log(data);
+  
   try {
     await requireUser()
     await prisma.settings.update({
