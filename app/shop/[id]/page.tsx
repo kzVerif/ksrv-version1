@@ -73,13 +73,13 @@ export default async function ProductPage({
           {/* ✅ รายละเอียดสินค้า */}
           <div className="border-t pt-6 text-black leading-relaxed whitespace-pre-line text-sm sm:text-base">
             <h2 className="text-xl font-semibold mb-2">รายละเอียดสินค้า</h2>
-            <DetailProducts detail={product.detail} />
-            {/* <div
+            {/* <DetailProducts detail={product.detail} /> */}
+            <div
               className="prose"
               dangerouslySetInnerHTML={{
                 __html: product.detail ?? "ไม่มีรายละเอียดสินค้า",
               }}
-            /> */}
+            />
           </div>
         </div>
       </div>
