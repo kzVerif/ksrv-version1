@@ -3,9 +3,9 @@ import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 import { sendDiscordWebhook } from "../Discord/discord";
 import { requireUser } from "../requireUser";
-import { Server } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
+import DOMPurify from "isomorphic-dompurify";
 
 export interface productData {
   name: string;
@@ -112,6 +112,8 @@ export async function getAllProducts() {
 export async function updateProduct(data: updateProduct) {
   try {
     await requireUser();
+    const safe = DOMPurify.sanitize(data.detail);
+    data.detail = safe;
     await prisma.products.update({
       where: { id: data.id },
       data: {
@@ -136,6 +138,8 @@ export async function updateProduct(data: updateProduct) {
 export async function createProducts(data: productData) {
   try {
     await requireUser();
+    const safe = DOMPurify.sanitize(data.detail);
+    data.detail = safe;
     await prisma.products.create({
       data: {
         name: data.name,
