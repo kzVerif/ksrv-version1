@@ -113,7 +113,7 @@ export function EditProductButton({ product }: { product: Products }) {
 
           <div className="grid gap-3">
             <Label htmlFor="detail">รายละเอียด</Label>
-            <ScrollArea className="h-40 rounded-md border">
+            <ScrollArea className="h-40 rounded-md border overflow-auto ">
 
             <Textarea
               id="detail"
