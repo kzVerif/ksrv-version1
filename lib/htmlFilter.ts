@@ -12,6 +12,10 @@ export function HTMLFilter(html: string) {
   safe = safe.replace(/\son\w+='[^']*'/gi, "");
   safe = safe.replace(/\son\w+=\S+/gi, "");
 
+  // 3) กัน javascript: ในทุก attribute เช่น href, src
+  safe = safe.replace(/(href|src)\s*=\s*"javascript:[^"]*"/gi, "");
+  safe = safe.replace(/(href|src)\s*=\s*'javascript:[^']*'/gi, "");
+  safe = safe.replace(/(href|src)\s*=\s*javascript:\S+/gi, "");
 
   // 4) ลบ data URLs อันตราย เช่น data:text/html;base64
   safe = safe.replace(/(href|src)\s*=\s*"data:[^"]*"/gi, "");
