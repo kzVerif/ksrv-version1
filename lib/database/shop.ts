@@ -5,6 +5,7 @@ import { sendDiscordWebhook } from "../Discord/discord";
 import { requireUser } from "../requireUser";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
+import { HTMLFilter } from "../htmlFilter";
 // import DOMPurify from "isomorphic-dompurify";
 
 export interface productData {
@@ -112,8 +113,8 @@ export async function getAllProducts() {
 export async function updateProduct(data: updateProduct) {
   try {
     await requireUser();
-    // const safe = DOMPurify.sanitize(data.detail);
-    // data.detail = safe;
+    const safe = HTMLFilter(data.detail);
+    data.detail = safe;
     await prisma.products.update({
       where: { id: data.id },
       data: {
@@ -138,8 +139,8 @@ export async function updateProduct(data: updateProduct) {
 export async function createProducts(data: productData) {
   try {
     await requireUser();
-    // const safe = DOMPurify.sanitize(data.detail);
-    // data.detail = safe;
+    const safe = HTMLFilter(data.detail);    
+    data.detail = safe;
     await prisma.products.create({
       data: {
         name: data.name,
