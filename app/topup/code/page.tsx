@@ -1,6 +1,5 @@
 import CodeTopup from "@/components/Topup/CodeTopup";
 import { getTopupCode } from "@/lib/database/topupcode";
-import { get } from "http";
 import { redirect } from "next/navigation";
 
 export default async function page() {

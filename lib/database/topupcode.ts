@@ -13,6 +13,10 @@ export async function getTopupCode() {
     });
     code = await prisma.topupCode.findFirst();
   }
+
+  if (!code) {
+    return { available: false };
+  }
   return code;
 }
 
