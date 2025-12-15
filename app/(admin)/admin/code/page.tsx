@@ -2,13 +2,9 @@ import { DataTable } from "./data-table";
 import { AllCodes, columns } from "./columns";
 import { getAllCode } from "@/lib/database/code";
 import AddCodeButton from "@/components/Admin/Code/AddCodeButton";
-import CodeSettinngForm from "@/components/Admin/Topup/CodeSettingForm";
-import { getTopupCode } from "@/lib/database/topupcode";
 
 export default async function page() {
   const data: AllCodes[] = await getAllCode();
-  const dataCode = await  getTopupCode();
-  console.log(dataCode);
   
   return (
     <div className="header-admin">
@@ -20,7 +16,6 @@ export default async function page() {
         <AddCodeButton />
       </div>
       <DataTable columns={columns} data={data} />
-      <CodeSettinngForm data={dataCode} />
     </div>
   );
 }
