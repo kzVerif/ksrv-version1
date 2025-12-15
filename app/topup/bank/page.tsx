@@ -1,10 +1,12 @@
 import BankTopup from "@/components/Topup/BankTopup";
 import { getBankTopup } from "@/lib/database/banktopup";
-import React from "react";
+import { redirect } from "next/navigation";
 
 export default async function page() {
   const bank = await getBankTopup()
-  bank.bankProvider
+  if (!bank.available) { 
+    return redirect("/topup");
+  }
   return (
     <div className="header container">
         <div className="mb-4">

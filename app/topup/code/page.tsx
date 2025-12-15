@@ -1,6 +1,13 @@
 import CodeTopup from "@/components/Topup/CodeTopup";
+import { getTopupCode } from "@/lib/database/topupcode";
+import { get } from "http";
+import { redirect } from "next/navigation";
 
-export default function page() {
+export default async function page() {
+  const code = await getTopupCode();
+  if (!code.available) {
+    return redirect("/topup");
+  }
   return (
     <div className="header container">
       <div className="mb-4">

@@ -23,7 +23,7 @@ export default async function Home() {
 
   return (
     <div className="header container">
-      <Notice message={data.setting?.announcement ?? "ไม่พบข้อความประกาศ"}/>
+      <Notice message={data.setting?.announcement ?? "ไม่พบข้อความประกาศ"} />
       {/* Banner Section */}
       <Image
         src={
@@ -47,6 +47,54 @@ export default async function Home() {
           {data?.setting?.announcement}
         </p>
       </div>
+
+      {/* ETC BUTTON */}
+      {/* <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Link href="/orders">
+          <div className="focus max-w-[800px] max-h-[400px]">
+            <Image
+              src={"https://placehold.co/800x400?text=Test"}
+              alt={""}
+              width={400}
+              height={200}
+              className="object-cover"
+            />
+          </div>
+        </Link>
+        <Link href="/categories">
+          <div className="focus max-w-[800px] max-h-[400px]">
+            <Image
+              src={"https://placehold.co/800x400?text=Test"}
+              alt={""}
+              width={400}
+              height={200}
+              className=" object-cover"
+            />
+          </div>
+        </Link>
+        <Link href="/shop">
+          <div className="focus max-w-[800px] max-h-[400px]">
+            <Image
+              src={"https://placehold.co/800x400?text=Test"}
+              alt={""}
+              width={400}
+              height={200}
+              className=" object-cover"
+            />
+          </div>
+        </Link>
+        <Link href="/members">
+          <div className="focus max-w-[800px] max-h-[400px]">
+            <Image
+              src={"https://placehold.co/800x400?text=Test"}
+              alt={""}
+              width={400}
+              height={200}
+              className=" object-cover"
+            />
+          </div>
+        </Link>
+      </div> */}
 
       {/* สเตตัส */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -117,7 +165,9 @@ export default async function Home() {
                         className="w-full object-cover"
                       />
                     </div>
-                    <h3 className="font-semibold text truncate">{c.category.name}</h3>
+                    <h3 className="font-semibold text truncate">
+                      {c.category.name}
+                    </h3>
                     <h3 className="text-sm">
                       จำนวนสินค้าทั้งหมด {c.category.products.length} รายการ
                     </h3>
@@ -153,8 +203,7 @@ export default async function Home() {
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
                           <Badge className="font-bold">
-                          ราคา:{" "}
-                            {Number(s.product.price)}฿
+                            ราคา: {Number(s.product.price)}฿
                           </Badge>
                         </p>
                         {s.product.stocks.length > 0 ? (

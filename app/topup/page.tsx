@@ -1,6 +1,7 @@
-"use server"
+"use server";
 import { Badge } from "@/components/ui/badge";
 import { getBankTopup } from "@/lib/database/banktopup";
+import { getTopupCode } from "@/lib/database/topupcode";
 import { getWalletTopup } from "@/lib/database/wallettopup";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import Link from "next/link";
 export default async function Page() {
   const truemoney = await getWalletTopup();
   const bank = await getBankTopup();
+  const code = await getTopupCode();
 
   return (
     <div className="container header">
@@ -87,19 +89,19 @@ export default async function Page() {
           </div>
         </Link>
 
-         {/* Code Section */}
-        <Link href={bank.available ? "/topup/code" : "#"}>
+        {/* Code Section */}
+        <Link href={code.available ? "/topup/code" : "#"}>
           <div className="relative focus cursor-pointer flex flex-col items-center justify-center bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300">
             {/* Badge มุมขวาบน */}
             <Badge
-              variant={bank.available ? "secondary" : "destructive"}
+              variant={code.available ? "secondary" : "destructive"}
               className={`absolute top-2 right-2 ${
-                bank.available
+                code.available
                   ? "bg-emerald-500 text-white"
                   : "bg-red-500 text-white"
               }`}
             >
-              {bank.available ? "ใช้งานได้" : "ปิดใช้งาน"}
+              {code.available ? "ใช้งานได้" : "ปิดใช้งาน"}
             </Badge>
 
             <Image

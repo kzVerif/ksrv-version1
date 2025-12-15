@@ -1,6 +1,12 @@
 import WalletTopup from "@/components/Topup/WalletTopup";
+import { getWalletTopup } from "@/lib/database/wallettopup";
+import { redirect } from "next/navigation";
 
-export default function page() {
+export default async function page() {
+  const wallet = await getWalletTopup();
+  if (!wallet.available) { 
+    return redirect("/topup");
+  }
   return (
     <div className="header container">
       <div className="mb-4">

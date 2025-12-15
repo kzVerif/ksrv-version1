@@ -147,6 +147,13 @@ model TopupBank {
   available      Boolean  @default(false)
 }
 
+// ---------------------------- TopupCode ----------------------------
+
+model TopupCode {
+  id             String   @id @default(cuid())
+  available      Boolean  @default(false)
+}
+
 // ---------------------------- Code ----------------------------
 model Code {
   id         String   @id @default(cuid())
