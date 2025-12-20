@@ -25,29 +25,29 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const validate = () => {
-    // Username 6-20 ตัว, ตัวอักษรและตัวเลข
-    const usernameRegex = /^[a-z]{6,20}$/;
-    if (!usernameRegex.test(username)) {
-      toast.error(
-        "Username ต้องมี 6-20 ตัวอักษร และใช้ตัวอักษร a-z เท่านั้น"
-      );
-      return false;
-    }
+  // const validate = () => {
+  //   // Username 6-20 ตัว, ตัวอักษรและตัวเลข
+  //   const usernameRegex = /^[a-z]{6,20}$/;
+  //   if (!usernameRegex.test(username)) {
+  //     toast.error(
+  //       "Username ต้องมี 6-20 ตัวอักษร และใช้ตัวอักษร a-z เท่านั้น"
+  //     );
+  //     return false;
+  //   }
 
-    // Confirm password ต้องตรงกับ password
-    if (password !== confirm) {
-      toast.error("รหัสผ่านไม่ตรงกัน");
-      return false;
-    }
+  //   // Confirm password ต้องตรงกับ password
+  //   if (password !== confirm) {
+  //     toast.error("รหัสผ่านไม่ตรงกัน");
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    // if (!validate()) return;
 
     toast.loading("กำลังสมัครสมาชิก...");
     const status = await createUser({ username, password });

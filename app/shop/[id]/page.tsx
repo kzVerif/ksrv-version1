@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import BuyForm from "@/components/Product/BuyForm";
 import { getWalletTopup } from "@/lib/database/wallettopup";
-import DetailProducts from "@/components/Product/DetailProducts";
 export default async function ProductPage({
   params,
 }: {

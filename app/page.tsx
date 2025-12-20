@@ -18,9 +18,10 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import Notice from "@/components/Notice";
+import test from "node:test";
 export default async function Home() {
   const data = await getHomepage();
-
+  
   return (
     <div className="header container">
       <Notice message={data.setting?.announcement ?? "ไม่พบข้อความประกาศ"} />

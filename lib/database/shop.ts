@@ -6,6 +6,7 @@ import { requireUser } from "../requireUser";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import { HTMLFilter } from "../htmlFilter";
+import { subDays } from "date-fns";
 // import DOMPurify from "isomorphic-dompurify";
 
 export interface productData {
@@ -285,4 +286,17 @@ export async function buyProducts(
       message: "เกิดข้อผิดพลากจากระบบ",
     };
   }
+}
+
+
+export async function test() {
+  const thirtyDaysAgo = subDays(new Date(), 30);
+
+const products = await prisma.products.findMany();
+
+
+
+  console.log("TEST FUNCTION DATA: ", products);
+
+  return products;
 }
