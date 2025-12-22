@@ -1,5 +1,5 @@
 import DailySalesChart from "@/components/Admin/DailySalesChart";
-import Top5Chart, { BestSeller } from "@/components/Admin/Top5Chart";
+import Top5Chart from "@/components/Admin/Top5Chart";
 import { getBestSellerProducts, getLast7DaysDailyRevenue, getSOLDForDashboard } from "@/lib/database/historybuy";
 import { getTopupForDashboard } from "@/lib/database/historytopup";
 import {

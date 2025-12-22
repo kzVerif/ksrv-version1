@@ -54,35 +54,54 @@ export async function getAllHistoryTopup() {
   }
 }
 
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 export async function getTopupForDashboard() {
   try {
-    await requireUser()
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // เริ่มต้นวัน
+    await requireUser();
+
+    // === วันนี้ (เวลาไทย) ===
+    const startTodayTH = dayjs()
+      .tz("Asia/Bangkok")
+      .startOf("day")
+      .utc()
+      .toDate();
+
+    const endTodayTH = dayjs()
+      .tz("Asia/Bangkok")
+      .endOf("day")
+      .utc()
+      .toDate();
+
+    // === ต้นเดือน (เวลาไทย) ===
+    const startMonthTH = dayjs()
+      .tz("Asia/Bangkok")
+      .startOf("month")
+      .utc()
+      .toDate();
 
     // ยอดเติมเงินวันนี้
     const todayTopup = await prisma.historyTopup.aggregate({
-      _sum: {
-        amount: true,
-      },
+      _sum: { amount: true },
       where: {
         createdAt: {
-          gte: today, // ตั้งแต่ 00:00 ของวันนี้
+          gte: startTodayTH,
+          lte: endTodayTH,
         },
       },
     });
 
-    // ยอดเติมเงินสัปดาห์นี้ (เริ่มจากวันจันทร์)
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    firstDayOfMonth.setHours(0, 0, 0, 0);
-
+    // ยอดเติมเงินเดือนนี้
     const monthlyTopup = await prisma.historyTopup.aggregate({
-      _sum: {
-        amount: true,
-      },
+      _sum: { amount: true },
       where: {
         createdAt: {
-          gte: firstDayOfMonth,
+          gte: startMonthTH,
         },
       },
     });
@@ -93,7 +112,51 @@ export async function getTopupForDashboard() {
     };
   } catch (error) {
     console.error("getTopupForDashboard Error:", error);
-    return { today: 0, week: 0 };
+    return { today: 0, monthly: 0 };
   }
 }
+
+
+// export async function getTopupForDashboard() {
+//   try {
+//     await requireUser()
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0); // เริ่มต้นวัน
+
+//     // ยอดเติมเงินวันนี้
+//     const todayTopup = await prisma.historyTopup.aggregate({
+//       _sum: {
+//         amount: true,
+//       },
+//       where: {
+//         createdAt: {
+//           gte: today, // ตั้งแต่ 00:00 ของวันนี้
+//         },
+//       },
+//     });
+
+//     // ยอดเติมเงินสัปดาห์นี้ (เริ่มจากวันจันทร์)
+//     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+//     firstDayOfMonth.setHours(0, 0, 0, 0);
+
+//     const monthlyTopup = await prisma.historyTopup.aggregate({
+//       _sum: {
+//         amount: true,
+//       },
+//       where: {
+//         createdAt: {
+//           gte: firstDayOfMonth,
+//         },
+//       },
+//     });
+
+//     return {
+//       today: todayTopup._sum.amount || 0,
+//       monthly: monthlyTopup._sum.amount || 0,
+//     };
+//   } catch (error) {
+//     console.error("getTopupForDashboard Error:", error);
+//     return { today: 0, week: 0 };
+//   }
+// }
 
