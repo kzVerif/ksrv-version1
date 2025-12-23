@@ -1,6 +1,12 @@
 "use server";
 import { requireUser } from "../requireUser";
 import prisma from "./conn";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export async function getHistoryBuyByUserId(id: string) {
   try {
@@ -81,25 +87,46 @@ export async function getAllHistoryBuy() {
 }
 
 export async function getSOLDForDashboard() {
+      // === วันนี้ (เวลาไทย) ===
+      const startTodayTH = dayjs()
+        .tz("Asia/Bangkok")
+        .startOf("day")
+        .utc()
+        .toDate();
+  
+      const endTodayTH = dayjs()
+        .tz("Asia/Bangkok")
+        .endOf("day")
+        .utc()
+        .toDate();
+  
+      // === ต้นเดือน (เวลาไทย) ===
+      const startMonthTH = dayjs()
+        .tz("Asia/Bangkok")
+        .startOf("month")
+        .utc()
+        .toDate();
+        
+      const endMonthTH = dayjs()
+        .tz("Asia/Bangkok")
+        .endOf("month")
+        .utc()
+        .toDate();
   try {
     await requireUser()
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    firstDayOfMonth.setHours(0, 0, 0, 0);
 
     const todaySOLD = await prisma.historyBuy.aggregate({
       _count: { _all: true },
       where: {
-        createdAt: { gte: today },
+        createdAt: { gte: startTodayTH, lte: endTodayTH },
       },
     });
 
     const monthlySOLD = await prisma.historyBuy.aggregate({
       _count: { _all: true },
       where: {
-        createdAt: { gte: firstDayOfMonth },
+        createdAt: { gte: startMonthTH, lte: endMonthTH },
       },
     });
 
