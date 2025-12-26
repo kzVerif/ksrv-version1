@@ -14,6 +14,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------- Slip ----------------------------
+model Slip {
+  id          String  @id @default(cuid())
+  ref         String
+}
+
 // ---------------------------- Users ----------------------------
 enum Role {
   ADMIN

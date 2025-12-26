@@ -221,7 +221,7 @@ export async function deleteUSer(id: string) {
 export async function TopupByWallet(id: string | undefined, url: string) {
   const topupStatus = await walletTopup(url);
   // console.log("TopupByWallet: ",topupStatus);
-  
+
   try {
     await requireUser();
     if (!topupStatus.status || !id) {
@@ -231,7 +231,6 @@ export async function TopupByWallet(id: string | undefined, url: string) {
       };
       // throw new Error(topupStatus.reason);
     }
-
 
     const user = await prisma.users.update({
       where: { id: id },
@@ -293,7 +292,21 @@ export async function TopupByWallet(id: string | undefined, url: string) {
 }
 
 export async function TopupByBank(id: string | undefined, qrCode: string) {
+  const isInSlip = await prisma.slip.findFirst({
+    where: {
+      ref: qrCode,
+    },
+  });
+
+  if (isInSlip) {
+    return {
+      status: false,
+      message: "สลิปนี้ถูกใช้งานแล้ว",
+    };
+  }
+
   const res = await TopupBank(qrCode);
+  console.log("TopupByBank: ", res);
 
   await requireUser();
 
@@ -310,6 +323,12 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
       message: res.message,
     };
   }
+
+  await prisma.slip.create({
+    data: {
+      ref: qrCode,
+    },
+  });
 
   try {
     const user = await prisma.users.update({
