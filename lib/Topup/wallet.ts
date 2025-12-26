@@ -24,8 +24,10 @@ export async function walletTopup(url: string) {
     const client = new Impit({
       browser: "chrome",
       timeout: 30000,
-      proxyUrl: "http://swiftserver:pL0qMm6w3sU4xb3@45.201.28.242:7778",
+      proxyUrl: "http://14aac8a8c3335:988d43abdd@91.124.169.248:12323",
+      // proxyUrl: "http://swiftserver:pL0qMm6w3sU@4xb3@45.201.28.242:7778",
     });
+    
 
     // const endpoint = `https://gift.truemoney.com/campaign/vouchers/${voucher}/redeem`;
     const endpoint = `https://gift.truemoney.com/campaign/vouchers/${voucher}/redeem`;
