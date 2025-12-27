@@ -8,7 +8,7 @@ export default async function Footer() {
       <div className="container mx-auto px-6 text-center">
         <p className="text-xs text-gray-400 mt-1">
           {setting?.shopName} |{" "}
-          <Link href={"https://discord.com/invite/YhUs3vnKxG"}>
+          <Link href={"https://discord.gg/MgDzESFPGg"} target="_blank" rel="noopener noreferrer">
             <span className="cursor-pointer transition-colors duration-300">
               แจ้งปัญหาติดต่อร้านค้าไม่ได้
             </span>
