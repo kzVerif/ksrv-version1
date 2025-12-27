@@ -8,8 +8,6 @@ import { CustomProviders } from "@/components/Auth/Provider";
 import { getShopSettings } from "@/lib/database/setting";
 import { UserProvider } from "@/contexts/UserContext";
 import ExpiredGuard from "@/components/ExpiredGuard";
-import FloatingButton from "@/components/FloatingButton";
-
 export const revalidate = 0;
 // export const dynamic = "force-dynamic";
 
@@ -77,6 +75,7 @@ export default async function RootLayout({
             <UserProvider>
               <NextTopLoader color="var(--color-primary)" />
               <Navbar setting={setting ?? null} />{" "}
+
               <Toaster position="bottom-center" />
               {children}
               {/* <FloatingButton /> */}
