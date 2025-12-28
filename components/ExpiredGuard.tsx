@@ -29,7 +29,7 @@ export default async function ExpiredGuard({ children }: Props) {
         {/* ปุ่ม */}
         <div className="flex gap-4">
           <a
-            href="https://discord.gg/YhUs3vnKxG"
+            href="https://discord.gg/MgDzESFPGg"
             className="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg shadow hover:bg-gray-400 transition ease-in-out duration-300"
           >
             ติดต่อผู้ดูแล
