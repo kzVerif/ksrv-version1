@@ -66,6 +66,11 @@ const items = [
     icon: Settings02Icon, // ตั้งค่าอื่นๆ
   },
   {
+    title: "ตั้งค่าปุ่ม ETC",
+    url: "/admin/etcbutton",
+    icon: Settings02Icon, // ตั้งค่าอื่นๆ
+  },
+  {
     title: "ประวัติการเติมเงิน",
     url: "/admin/historytopup",
     icon: TransactionHistoryIcon, // ประวัติการเงิน

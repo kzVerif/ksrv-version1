@@ -18,9 +18,10 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import Notice from "@/components/Notice";
-import test from "node:test";
+import { getAllEtcButton } from "@/lib/database/etcButton";
 export default async function Home() {
   const data = await getHomepage();
+  const etc = await getAllEtcButton();
   
   return (
     <div className="header container">
@@ -50,52 +51,32 @@ export default async function Home() {
       </div>
 
       {/* ETC BUTTON */}
-      {/* <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link href="/orders">
+      <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+        {etc.map((b: any, index: number) => (
+          <Link href={b.link} key={index}>
           <div className="focus max-w-[800px] max-h-[400px]">
             <Image
-              src={"https://placehold.co/800x400?text=Test"}
-              alt={""}
+              src={b.image || "https://placehold.co/400x200?text=400x200"}
+              alt={"ปุ่ม ETC"}
               width={400}
               height={200}
               className="object-cover"
             />
           </div>
         </Link>
-        <Link href="/categories">
+        ))}
+        {/* <Link href="/orders">
           <div className="focus max-w-[800px] max-h-[400px]">
             <Image
-              src={"https://placehold.co/800x400?text=Test"}
+              src={"https://media.discordapp.net/attachments/1212649373171847188/1454767109325197455/859e4241136d25a4.png?ex=695248f3&is=6950f773&hm=6ca12442cf4a75f32d5c35edad43873296b627aca38b6c8798f3373bc657fecf&=&format=webp&quality=lossless&width=1500&height=750"}
               alt={""}
               width={400}
               height={200}
-              className=" object-cover"
+              className="object-cover"
             />
           </div>
-        </Link>
-        <Link href="/shop">
-          <div className="focus max-w-[800px] max-h-[400px]">
-            <Image
-              src={"https://placehold.co/800x400?text=Test"}
-              alt={""}
-              width={400}
-              height={200}
-              className=" object-cover"
-            />
-          </div>
-        </Link>
-        <Link href="/members">
-          <div className="focus max-w-[800px] max-h-[400px]">
-            <Image
-              src={"https://placehold.co/800x400?text=Test"}
-              alt={""}
-              width={400}
-              height={200}
-              className=" object-cover"
-            />
-          </div>
-        </Link>
-      </div> */}
+        </Link> */}
+      </div>
 
       {/* สเตตัส */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">

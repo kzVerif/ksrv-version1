@@ -14,6 +14,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------- EtcButton ----------------------------
+model EtcButton {
+   id          String  @id @default(cuid())
+   image       String?  @db.Text
+   link        String?  @db.Text
+}
+
 // ---------------------------- Slip ----------------------------
 model Slip {
   id          String  @id @default(cuid())
