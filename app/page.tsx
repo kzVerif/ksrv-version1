@@ -53,7 +53,7 @@ export default async function Home() {
       {/* ETC BUTTON */}
       <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
         {etc.map((b: any, index: number) => (
-          <Link href={b.link} key={index}>
+          <Link href={b.link} key={index} target="_blank">
           <div className="focus max-w-[800px] max-h-[400px]">
             <Image
               src={b.image || "https://placehold.co/400x200?text=400x200"}
