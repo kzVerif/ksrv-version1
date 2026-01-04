@@ -18,6 +18,7 @@ export default async function Page() {
         <h2 className="text-sm text-gray-500">
           เลือกช่องทางการเติมเงินที่ต้องการได้เลย
         </h2>
+        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
