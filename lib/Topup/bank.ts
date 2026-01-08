@@ -7,13 +7,14 @@ export async function TopupBank(qrCode: string) {
     const bank = await getBankTopup();
 
     const endpoint = "https://connect.slip2go.com/api/verify-slip/qr-code/info";
+    const toDay = new Date()
 
     // --- 1. Payload ---
     const payload = {
       payload: {
         qrCode: qrCode,
         checkCondition: {
-          checkDuplicate: true,
+          // checkDuplicate: true,
           checkReceiver: [
             {
               accountType: bank.bankProvider,
@@ -21,6 +22,10 @@ export async function TopupBank(qrCode: string) {
               accountNumber: bank.bankAccount || undefined,
             },
           ],
+          checkDate: {
+            type: "gte",
+            date: toDay
+          }
         },
       },
     };
