@@ -18,11 +18,13 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import Notice from "@/components/Notice";
-import { getAllEtcButton } from "@/lib/database/etcButton";
+import { getAllEtcButton, getEtcButtonSetting } from "@/lib/database/etcButton";
 export default async function Home() {
   const data = await getHomepage();
   const etc = await getAllEtcButton();
-  
+  const etcButtonSetting = await getEtcButtonSetting();
+  console.log(etcButtonSetting)
+
   return (
     <div className="header container">
       <Notice message={data.setting?.announcement ?? "ไม่พบข้อความประกาศ"} />
@@ -51,32 +53,22 @@ export default async function Home() {
       </div>
 
       {/* ETC BUTTON */}
-      <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+      {etcButtonSetting.isOpen ? <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
         {etc.map((b: any, index: number) => (
           <Link href={b.link} key={index} target="_blank">
-          <div className="focus max-w-[800px] max-h-[400px]">
-            <Image
-              src={b.image || "https://placehold.co/400x200?text=400x200"}
-              alt={"ปุ่ม ETC"}
-              width={400}
-              height={200}
-              className="object-cover"
-            />
-          </div>
-        </Link>
+            <div className="focus max-w-[800px] max-h-[400px]">
+              <Image
+                src={b.image || "https://placehold.co/400x200?text=400x200"}
+                alt={"ปุ่ม ETC"}
+                width={400}
+                height={200}
+                className="object-cover"
+              />
+            </div>
+          </Link>
         ))}
-        {/* <Link href="/orders">
-          <div className="focus max-w-[800px] max-h-[400px]">
-            <Image
-              src={"https://media.discordapp.net/attachments/1212649373171847188/1454767109325197455/859e4241136d25a4.png?ex=695248f3&is=6950f773&hm=6ca12442cf4a75f32d5c35edad43873296b627aca38b6c8798f3373bc657fecf&=&format=webp&quality=lossless&width=1500&height=750"}
-              alt={""}
-              width={400}
-              height={200}
-              className="object-cover"
-            />
-          </div>
-        </Link> */}
-      </div>
+      </div> : null}
+
 
       {/* สเตตัส */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
