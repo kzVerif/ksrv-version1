@@ -14,7 +14,6 @@ export async function TopupBank(qrCode: string) {
       payload: {
         qrCode: qrCode,
         checkCondition: {
-          // checkDuplicate: true,
           checkReceiver: [
             {
               accountType: bank.bankProvider,
