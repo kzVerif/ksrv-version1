@@ -21,6 +21,11 @@ model EtcButton {
    link        String?  @db.Text
 }
 
+// ---------------------------- EtcButtonSetting ----------------------------
+model EtcButtonSetting{
+  id String @id @default(cuid())
+  isOpen Boolean @default(false)
+}
 // ---------------------------- Slip ----------------------------
 model Slip {
   id          String  @id @default(cuid())
