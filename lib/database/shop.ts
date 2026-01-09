@@ -114,7 +114,11 @@ export async function getAllProducts() {
 
 export async function updateProduct(data: updateProduct) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const safe = HTMLFilter(data.detail);
     data.detail = safe;
     await prisma.products.update({
@@ -140,7 +144,11 @@ export async function updateProduct(data: updateProduct) {
 
 export async function createProducts(data: productData) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const safe = HTMLFilter(data.detail);    
     data.detail = safe;
     await prisma.products.create({
@@ -165,7 +173,11 @@ export async function createProducts(data: productData) {
 
 export async function deleteProduct(id: string) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const product = await prisma.products.delete({
       where: { id: id },
     });

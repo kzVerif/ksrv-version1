@@ -22,7 +22,11 @@ export async function getTopupCode() {
 }
 
 export async function updateTopupCode(data: { available: boolean }) {
-  await requireAdmin()
+     const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
   const updatedCode = await prisma.topupCode.update({
     where: { id: "main" },
     data: {

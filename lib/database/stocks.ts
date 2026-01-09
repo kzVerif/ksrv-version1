@@ -23,7 +23,11 @@ export async function getStocksByProductId(id: string) {
 
 export async function updateStocksById(data: Stocks) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     await prisma.stocks.update({
       where: { id: data.id },
       data: {
@@ -57,7 +61,11 @@ export type UpdatedStocks = {
 
 export async function addStocks(data: UpdatedStocks[]) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     await prisma.stocks.createMany({
       data: data,
     });
@@ -75,7 +83,11 @@ export async function addStocks(data: UpdatedStocks[]) {
 
 export async function deleteStock(id: string) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const stock = await prisma.stocks.delete({
       where: {
         id: id

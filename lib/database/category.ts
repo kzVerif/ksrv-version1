@@ -34,7 +34,11 @@ export async function getCategories() {
 
 export async function createCategory(data: Categories) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const updated = await prisma.categories.create({
       data: {
         name: data.name,
@@ -54,7 +58,11 @@ export async function createCategory(data: Categories) {
 
 export async function deleteCategory(id: string) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const deleted = await prisma.categories.delete({
       where: { id: id },
     });
@@ -71,7 +79,11 @@ export async function deleteCategory(id: string) {
 
 export async function updateCategory(data: Categories) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const updated = await prisma.categories.update({
       where: { id: data.id },
       data: {

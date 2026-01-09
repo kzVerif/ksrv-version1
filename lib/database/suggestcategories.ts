@@ -6,7 +6,11 @@ import { requireAdmin } from "../requireAdmin";
 
 export async function addSuggestCategories(id: string) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     await prisma.suggestCategories.create({
       data: {
         categoriesId: id,
@@ -44,7 +48,11 @@ export async function getAllSuggestCategories() {
 
 export async function deleteSuggestCategories(id: string) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     await prisma.suggestCategories.delete({
       where: { id: id },
     });

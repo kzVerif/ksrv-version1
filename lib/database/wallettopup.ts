@@ -32,7 +32,11 @@ export async function getWalletTopup() {
 
 export async function updateWalletTopup(data: Wallet) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const wallet = await getWalletTopup();
     if (wallet.id === "") {
       throw new Error("ไม่พบการตั้งค่า");

@@ -20,7 +20,11 @@ export async function getAllCode() {
 }
 
 export async function createCode(data: any) {
-   await requireAdmin()
+      const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
   try {
     await prisma.code.create({
       data: {
@@ -50,7 +54,11 @@ export async function createCode(data: any) {
 }
 
 export async function updateCode(data: any) {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
   try {
     await prisma.code.update({where: {
       id: data.id
@@ -82,7 +90,11 @@ export async function updateCode(data: any) {
 }
 
 export async function deleteCode(id: string) {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
   try {
     await prisma.code.delete({
       where: {

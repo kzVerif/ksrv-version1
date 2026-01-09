@@ -190,7 +190,11 @@ interface updateUser {
 
 export async function updateUser(data: updateUser) {
   try {
-    await requireAdmin();
+    const canUse = await requireAdmin();
+    if (canUse) {
+      return null;
+    }
+
     await prisma.users.update({
       where: { id: data.id },
       data: {
@@ -208,7 +212,11 @@ export async function updateUser(data: updateUser) {
 
 export async function deleteUSer(id: string) {
   try {
-    await requireAdmin();
+    const canUse = await requireAdmin();
+    if (canUse) {
+      return null;
+    }
+
     await prisma.users.delete({
       where: { id: id },
     });

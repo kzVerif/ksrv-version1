@@ -45,7 +45,11 @@ export async function getShopSettings() {
 
 export async function updateShopSetting(data: any) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     await prisma.settings.update({
       where: {
         id: data.id,

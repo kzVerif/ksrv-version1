@@ -15,7 +15,11 @@ export interface Bank {
 
 export async function updateBankTopup(data: Bank) {
   try {
-    await requireAdmin()
+       const canUse =  await requireAdmin();
+   if (canUse) {
+    return null
+   }
+
     const bank = await prisma.topupBank.findFirst();
     await prisma.topupBank.update({
       where: { id: bank?.id },
