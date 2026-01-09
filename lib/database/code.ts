@@ -7,10 +7,7 @@ import { requireAdmin } from "../requireAdmin";
 export async function getAllCode() {
    const canUse = await requireAdmin();
   if (canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
-    }
+    return []
   }
   try {
     const codes = await prisma.code.findMany();
