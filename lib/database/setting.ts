@@ -2,6 +2,7 @@
 import prisma from "./conn";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "../requireUser";
+import { requireAdmin } from "../requireAdmin";
 
 export async function getShopSettings() {
   try {
@@ -43,10 +44,8 @@ export async function getShopSettings() {
 }
 
 export async function updateShopSetting(data: any) {
-  console.log(data);
-  
   try {
-    await requireUser()
+    await requireAdmin()
     await prisma.settings.update({
       where: {
         id: data.id,

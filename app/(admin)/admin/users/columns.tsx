@@ -2,9 +2,6 @@
 
 import { DeleteButton } from "@/components/Admin/Users/DeleteButton";
 import { EditButton } from "@/components/Admin/Users/EditButton";
-import { Button } from "@/components/ui/button";
-import { Delete02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { ColumnDef } from "@tanstack/react-table";
 
 // This type is used to define the shape of our data.
@@ -34,7 +31,7 @@ export const columns: ColumnDef<Users>[] = [
     id: "actions",
     header: "จัดการ",
     cell: ({ row }) => {
-      const user = row.original;
+      const user = row.original;      
       return (
         <div className="flex gap-2">
           <EditButton user={user} />

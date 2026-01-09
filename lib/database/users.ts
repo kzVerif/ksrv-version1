@@ -104,6 +104,7 @@ export async function Login(userData: any) {
 }
 
 import { requireUser } from "../requireUser";
+import { requireAdmin } from "../requireAdmin";
 
 export async function ChangePassword(userData: {
   userId: string; // เรามั่นใจแล้วว่ามีค่ามาจาก frontend
@@ -163,7 +164,7 @@ export async function ChangePassword(userData: {
 
 export async function getAllUsers() {
   try {
-    await requireUser();
+    await requireAdmin();
     const users = await prisma.users.findMany();
     if (!users) {
       return [];
@@ -189,7 +190,7 @@ interface updateUser {
 
 export async function updateUser(data: updateUser) {
   try {
-    await requireUser();
+    await requireAdmin();
     await prisma.users.update({
       where: { id: data.id },
       data: {
@@ -207,7 +208,7 @@ export async function updateUser(data: updateUser) {
 
 export async function deleteUSer(id: string) {
   try {
-    await requireUser();
+    await requireAdmin();
     await prisma.users.delete({
       where: { id: id },
     });
@@ -305,10 +306,8 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
     };
   }
 
-  const res = await TopupBank(qrCode);
-  console.log("TopupByBank: ", res);
-
   await requireUser();
+  const res = await TopupBank(qrCode);
 
   if (!res || !id) {
     return {

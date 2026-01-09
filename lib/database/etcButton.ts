@@ -1,6 +1,7 @@
 "use server"
 import { addYears } from "date-fns";
 import prisma from "./conn";
+import { requireAdmin } from "../requireAdmin";
 
 export async function getAllEtcButton() {
     const etc = await prisma.etcButton.findMany();
@@ -8,6 +9,7 @@ export async function getAllEtcButton() {
 }
 
 export async function updateEtcButton(data: any) {
+    await requireAdmin()
     const updatedEtc = await prisma.etcButton.updateMany({
         where: { id: data.id },
         data: { ...data },
@@ -38,6 +40,7 @@ export async function getEtcButtonSetting() {
 }
 
 export async function updatedEtcButtonSetting(data:any) {
+    await requireAdmin()
     try{
         const setting = await prisma.etcButtonSetting.update({
             where:{

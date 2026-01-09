@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import { HTMLFilter } from "../htmlFilter";
 import { subDays } from "date-fns";
+import { requireAdmin } from "../requireAdmin";
 // import DOMPurify from "isomorphic-dompurify";
 
 export interface productData {
@@ -113,7 +114,7 @@ export async function getAllProducts() {
 
 export async function updateProduct(data: updateProduct) {
   try {
-    await requireUser();
+    await requireAdmin()
     const safe = HTMLFilter(data.detail);
     data.detail = safe;
     await prisma.products.update({
@@ -139,7 +140,7 @@ export async function updateProduct(data: updateProduct) {
 
 export async function createProducts(data: productData) {
   try {
-    await requireUser();
+    await requireAdmin()
     const safe = HTMLFilter(data.detail);    
     data.detail = safe;
     await prisma.products.create({
@@ -164,7 +165,7 @@ export async function createProducts(data: productData) {
 
 export async function deleteProduct(id: string) {
   try {
-    await requireUser();
+    await requireAdmin()
     const product = await prisma.products.delete({
       where: { id: id },
     });

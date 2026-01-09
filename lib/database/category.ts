@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 import { requireUser } from "../requireUser";
+import { requireAdmin } from "../requireAdmin";
 export interface Categories {
   id: string;
   name: string;
@@ -33,7 +34,7 @@ export async function getCategories() {
 
 export async function createCategory(data: Categories) {
   try {
-    await requireUser()
+    await requireAdmin()
     const updated = await prisma.categories.create({
       data: {
         name: data.name,
@@ -53,7 +54,7 @@ export async function createCategory(data: Categories) {
 
 export async function deleteCategory(id: string) {
   try {
-    await requireUser()
+    await requireAdmin()
     const deleted = await prisma.categories.delete({
       where: { id: id },
     });
@@ -70,7 +71,7 @@ export async function deleteCategory(id: string) {
 
 export async function updateCategory(data: Categories) {
   try {
-    await requireUser()
+    await requireAdmin()
     const updated = await prisma.categories.update({
       where: { id: data.id },
       data: {

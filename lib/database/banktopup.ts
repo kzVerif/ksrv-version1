@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 import { getServerSession } from "next-auth";
+import { requireAdmin } from "../requireAdmin";
 
 export interface Bank {
   id: string
@@ -14,6 +15,7 @@ export interface Bank {
 
 export async function updateBankTopup(data: Bank) {
   try {
+    await requireAdmin()
     const bank = await prisma.topupBank.findFirst();
     await prisma.topupBank.update({
       where: { id: bank?.id },

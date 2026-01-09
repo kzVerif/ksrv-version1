@@ -2,10 +2,11 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 import { requireUser } from "../requireUser";
+import { requireAdmin } from "../requireAdmin";
 
 export async function addSuggestCategories(id: string) {
   try {
-    await requireUser()
+    await requireAdmin()
     await prisma.suggestCategories.create({
       data: {
         categoriesId: id,
@@ -43,7 +44,7 @@ export async function getAllSuggestCategories() {
 
 export async function deleteSuggestCategories(id: string) {
   try {
-    await requireUser()
+    await requireAdmin()
     await prisma.suggestCategories.delete({
       where: { id: id },
     });

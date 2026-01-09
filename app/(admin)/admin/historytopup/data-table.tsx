@@ -42,11 +42,9 @@ export function DataTable<TData, TValue>({
 
     return data.filter((item: any) =>
       item.id.toLowerCase().includes(lower) ||
-      item.refId.toLowerCase().includes(lower) ||
-      item.type.toLowerCase().includes(lower) ||
       item.reason.toLowerCase().includes(lower) ||
       item.topupType.toLowerCase().includes(lower) ||
-      item.owner.toLowerCase().includes(lower)
+      item.userId.toLowerCase().includes(lower)
     );
   }, [filterValue, data]);
 

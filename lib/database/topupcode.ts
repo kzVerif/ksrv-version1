@@ -1,5 +1,6 @@
 "use server";
 
+import { requireAdmin } from "../requireAdmin";
 import prisma from "./conn";
 
 export async function getTopupCode() {
@@ -21,6 +22,7 @@ export async function getTopupCode() {
 }
 
 export async function updateTopupCode(data: { available: boolean }) {
+  await requireAdmin()
   const updatedCode = await prisma.topupCode.update({
     where: { id: "main" },
     data: {

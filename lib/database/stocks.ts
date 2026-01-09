@@ -3,6 +3,7 @@ import { Stocks } from "@/app/(admin)/admin/products/[id]/columns";
 import prisma from "./conn";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "../requireUser";
+import { requireAdmin } from "../requireAdmin";
 
 export async function getStocksByProductId(id: string) {
   try {
@@ -22,7 +23,7 @@ export async function getStocksByProductId(id: string) {
 
 export async function updateStocksById(data: Stocks) {
   try {
-    await requireUser()
+    await requireAdmin()
     await prisma.stocks.update({
       where: { id: data.id },
       data: {
@@ -56,7 +57,7 @@ export type UpdatedStocks = {
 
 export async function addStocks(data: UpdatedStocks[]) {
   try {
-    await requireUser()
+    await requireAdmin()
     await prisma.stocks.createMany({
       data: data,
     });
@@ -74,7 +75,7 @@ export async function addStocks(data: UpdatedStocks[]) {
 
 export async function deleteStock(id: string) {
   try {
-    await requireUser()
+    await requireAdmin()
     const stock = await prisma.stocks.delete({
       where: {
         id: id
