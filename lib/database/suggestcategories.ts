@@ -7,7 +7,7 @@ import { requireAdmin } from "../requireAdmin";
 export async function addSuggestCategories(id: string) {
   try {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
@@ -52,7 +52,7 @@ export async function getAllSuggestCategories() {
 export async function deleteSuggestCategories(id: string) {
   try {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"

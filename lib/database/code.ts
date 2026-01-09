@@ -6,8 +6,8 @@ import { requireAdmin } from "../requireAdmin";
 
 export async function getAllCode() {
    const canUse = await requireAdmin();
-  if (canUse) {
-    return []
+  if (!canUse) {
+    return[]
   }
   try {
     const codes = await prisma.code.findMany();
@@ -23,8 +23,8 @@ export async function getAllCode() {
 }
 
 export async function createCode(data: any) {
-  const canUse = await requireAdmin();
-  if (canUse) {
+     const canUse = await requireAdmin();
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
@@ -60,8 +60,8 @@ export async function createCode(data: any) {
 }
 
 export async function updateCode(data: any) {
-    const canUse = await requireAdmin();
-  if (canUse) {
+     const canUse = await requireAdmin();
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
@@ -100,8 +100,8 @@ export async function updateCode(data: any) {
 }
 
 export async function deleteCode(id: string) {
-   const canUse = await requireAdmin();
-  if (canUse) {
+     const canUse = await requireAdmin();
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"

@@ -56,7 +56,7 @@ export async function getAllSuggestProducts() {
 export async function addSuggestProducts(id: string) {
   try {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
@@ -79,8 +79,8 @@ export async function addSuggestProducts(id: string) {
 
 export async function DeleteSuggestProduct(id: string) {
   try {
-   const canUse = await requireAdmin();
-  if (canUse) {
+    const canUse = await requireAdmin();
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"

@@ -24,7 +24,7 @@ export async function getStocksByProductId(id: string) {
 export async function updateStocksById(data: Stocks) {
   try {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
@@ -65,7 +65,7 @@ export type UpdatedStocks = {
 export async function addStocks(data: UpdatedStocks[]) {
   try {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
@@ -90,7 +90,7 @@ export async function addStocks(data: UpdatedStocks[]) {
 export async function deleteStock(id: string) {
   try {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"

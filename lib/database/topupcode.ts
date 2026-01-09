@@ -22,10 +22,13 @@ export async function getTopupCode() {
 }
 
 export async function updateTopupCode(data: { available: boolean }) {
-     const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+      const canUse = await requireAdmin();
+  if (!canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
   const updatedCode = await prisma.topupCode.update({
     where: { id: "main" },

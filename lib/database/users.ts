@@ -164,7 +164,13 @@ export async function ChangePassword(userData: {
 
 export async function getAllUsers() {
   try {
-    await requireAdmin();
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
+    }
     const users = await prisma.users.findMany();
     if (!users) {
       return [];
@@ -190,13 +196,13 @@ interface updateUser {
 
 export async function updateUser(data: updateUser) {
   try {
-      const canUse = await requireAdmin();
-  if (canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
     await prisma.users.update({
       where: { id: data.id },
@@ -215,13 +221,13 @@ export async function updateUser(data: updateUser) {
 
 export async function deleteUSer(id: string) {
   try {
-      const canUse = await requireAdmin();
-  if (canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
     await prisma.users.delete({
       where: { id: id },

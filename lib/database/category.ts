@@ -34,10 +34,13 @@ export async function getCategories() {
 
 export async function createCategory(data: Categories) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+      const canUse = await requireAdmin();
+  if (!canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const updated = await prisma.categories.create({
       data: {
@@ -58,10 +61,13 @@ export async function createCategory(data: Categories) {
 
 export async function deleteCategory(id: string) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+      const canUse = await requireAdmin();
+  if (!canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const deleted = await prisma.categories.delete({
       where: { id: id },
@@ -79,11 +85,13 @@ export async function deleteCategory(id: string) {
 
 export async function updateCategory(data: Categories) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
-
+     const canUse = await requireAdmin();
+  if (!canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
     const updated = await prisma.categories.update({
       where: { id: data.id },
       data: {

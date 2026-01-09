@@ -9,8 +9,8 @@ export async function getAllEtcButton() {
 }
 
 export async function updateEtcButton(data: any) {
-  const canUse = await requireAdmin();
-  if (canUse) {
+   const canUse = await requireAdmin();
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
@@ -48,7 +48,7 @@ export async function getEtcButtonSetting() {
 
 export async function updatedEtcButtonSetting(data:any) {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"

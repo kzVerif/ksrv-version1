@@ -6,13 +6,11 @@ export async function requireAdmin() {
 
   if (!session) {
     return false
-    throw new Error("UNAUTHENTICATED");
   }
 
   if (session.user.role !== "ADMIN") {
     return false
-    throw new Error("FORBIDDEN");
   }
 
-  return session;
+  return true;
 }

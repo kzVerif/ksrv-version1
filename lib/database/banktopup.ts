@@ -15,8 +15,8 @@ export interface Bank {
 
 export async function updateBankTopup(data: Bank) {
   try {
-  const canUse = await requireAdmin();
-  if (canUse) {
+    const canUse = await requireAdmin();
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"

@@ -46,7 +46,7 @@ export async function getShopSettings() {
 export async function updateShopSetting(data: any) {
   try {
    const canUse = await requireAdmin();
-  if (canUse) {
+  if (!canUse) {
     return {
       success: false,
       message: "ไม่สำเร็จ"
