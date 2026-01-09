@@ -27,9 +27,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-export function EditButton({ user }: { user: Users }) {
-  console.log(user.role);
-  
+export function EditButton({ user }: { user: Users }) {  
     // const [selectedRole, setSelectedRole] = useState<"USER" | "ADMIN">(user.role);
     const [selectedRole, setSelectedRole] = useState(user.role);
 
