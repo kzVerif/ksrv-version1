@@ -9,10 +9,13 @@ export async function getAllEtcButton() {
 }
 
 export async function updateEtcButton(data: any) {
-      const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+  const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const updatedEtc = await prisma.etcButton.updateMany({
         where: { id: data.id },
@@ -44,10 +47,13 @@ export async function getEtcButtonSetting() {
 }
 
 export async function updatedEtcButtonSetting(data:any) {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     try{
         const setting = await prisma.etcButtonSetting.update({

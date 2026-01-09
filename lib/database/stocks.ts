@@ -23,10 +23,13 @@ export async function getStocksByProductId(id: string) {
 
 export async function updateStocksById(data: Stocks) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     await prisma.stocks.update({
       where: { id: data.id },
@@ -61,10 +64,13 @@ export type UpdatedStocks = {
 
 export async function addStocks(data: UpdatedStocks[]) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     await prisma.stocks.createMany({
       data: data,
@@ -83,10 +89,13 @@ export async function addStocks(data: UpdatedStocks[]) {
 
 export async function deleteStock(id: string) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const stock = await prisma.stocks.delete({
       where: {

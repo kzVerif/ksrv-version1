@@ -39,7 +39,7 @@ export default function AddCodeButton() {
     const loadingToast = toast.loading("กำลังสร้างโค้ดใหม่...");
     const s = await createCode(data);
     toast.dismiss(loadingToast);
-    if (!s.success) {
+    if (!s.success ||s == null) {
       toast.error(s.message || "สร้างโค้ดไม่สำเร็จ");
       return;
     }

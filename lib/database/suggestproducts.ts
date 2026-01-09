@@ -55,10 +55,13 @@ export async function getAllSuggestProducts() {
 
 export async function addSuggestProducts(id: string) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     await prisma.suggestProducts.create({
       data: {
@@ -76,10 +79,13 @@ export async function addSuggestProducts(id: string) {
 
 export async function DeleteSuggestProduct(id: string) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     await prisma.suggestProducts.delete({
       where: {

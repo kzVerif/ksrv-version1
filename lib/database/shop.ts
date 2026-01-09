@@ -114,10 +114,13 @@ export async function getAllProducts() {
 
 export async function updateProduct(data: updateProduct) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const safe = HTMLFilter(data.detail);
     data.detail = safe;
@@ -144,10 +147,13 @@ export async function updateProduct(data: updateProduct) {
 
 export async function createProducts(data: productData) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const safe = HTMLFilter(data.detail);    
     data.detail = safe;
@@ -173,10 +179,13 @@ export async function createProducts(data: productData) {
 
 export async function deleteProduct(id: string) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const product = await prisma.products.delete({
       where: { id: id },

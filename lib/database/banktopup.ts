@@ -15,10 +15,13 @@ export interface Bank {
 
 export async function updateBankTopup(data: Bank) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+  const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const bank = await prisma.topupBank.findFirst();
     await prisma.topupBank.update({

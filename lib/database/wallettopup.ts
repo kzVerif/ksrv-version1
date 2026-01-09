@@ -32,10 +32,13 @@ export async function getWalletTopup() {
 
 export async function updateWalletTopup(data: Wallet) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+        const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     const wallet = await getWalletTopup();
     if (wallet.id === "") {

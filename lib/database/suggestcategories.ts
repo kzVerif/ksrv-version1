@@ -6,10 +6,13 @@ import { requireAdmin } from "../requireAdmin";
 
 export async function addSuggestCategories(id: string) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     await prisma.suggestCategories.create({
       data: {
@@ -48,10 +51,13 @@ export async function getAllSuggestCategories() {
 
 export async function deleteSuggestCategories(id: string) {
   try {
-       const canUse =  await requireAdmin();
-   if (canUse) {
-    return null
-   }
+   const canUse = await requireAdmin();
+  if (canUse) {
+    return {
+      success: false,
+      message: "ไม่สำเร็จ"
+    }
+  }
 
     await prisma.suggestCategories.delete({
       where: { id: id },
