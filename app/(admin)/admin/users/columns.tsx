@@ -11,7 +11,7 @@ export type Users = {
   username: string;
   points: number;
   totalPoints: number;
-  role: "USER" | "ADMIN"
+  role: "USER" | "ADMIN";
 };
 
 export const columns: ColumnDef<Users>[] = [
@@ -28,14 +28,27 @@ export const columns: ColumnDef<Users>[] = [
     header: "ยอดเติมสะสม",
   },
   {
+    accessorKey: "role",
+    header: "ยศ",
+    cell: ({ row }) => {
+      const user = row.original;
+      const role = user.role === "ADMIN" ? "แอดมิน" : "ผู้ใช้";
+      return (
+        <div className="flex gap-2">
+          <p>{role}</p>
+        </div>
+      );
+    },
+  },
+  {
     id: "actions",
     header: "จัดการ",
     cell: ({ row }) => {
-      const user = row.original;      
+      const user = row.original;
       return (
         <div className="flex gap-2">
           <EditButton user={user} />
-          <DeleteButton id={user.id}/>
+          <DeleteButton id={user.id} />
         </div>
       );
     },
