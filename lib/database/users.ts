@@ -166,10 +166,7 @@ export async function getAllUsers() {
   try {
     const canUse = await requireAdmin();
     if (!canUse) {
-      return {
-        success: false,
-        message: "ไม่สำเร็จ",
-      };
+      return []
     }
     const users = await prisma.users.findMany();
     if (!users) {
