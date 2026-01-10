@@ -3,6 +3,7 @@ import prisma from "./conn";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "../requireUser";
 import { requireAdmin } from "../requireAdmin";
+import { sendDiscordWebhook } from "../Discord/discord";
 
 export async function getShopSettings() {
   try {
@@ -13,6 +14,46 @@ export async function getShopSettings() {
       secondaryColor: setting?.secondaryColor,
       hoverColor: setting?.hoverColor,
       backgroundImage: setting?.backgroundImage,
+      shopName: setting?.shopName,
+      announcement: setting?.announcement,
+      icon: setting?.icon,
+      logo: setting?.logo,
+      detail: setting?.detail,
+      contact: setting?.contact,
+      banner: setting?.banner,
+    };
+  } catch (error) {
+    console.log("getShopSettings Error: ", error);
+    return {
+      id: "",
+      primaryColor: "",
+      secondaryColor: "",
+      hoverColor: "",
+      backgroundImage: "",
+      webhookDiscord: "",
+      shopName: "",
+      announcement: "",
+      icon: "",
+      logo: "",
+      detail: "",
+      contact: "",
+      createdAt: null,
+      updatedAt: null,
+      banner: ""
+    };
+  }
+}
+
+export async function getShopSettingsForAdmin() {
+    try {
+    const setting = await prisma.settings.findFirst();
+    return {
+      id: setting?.id,
+      primaryColor: setting?.primaryColor,
+      secondaryColor: setting?.secondaryColor,
+      hoverColor: setting?.hoverColor,
+      backgroundImage: setting?.backgroundImage,
+      webhookDiscord: setting?.webhookDiscord,
       shopName: setting?.shopName,
       announcement: setting?.announcement,
       icon: setting?.icon,

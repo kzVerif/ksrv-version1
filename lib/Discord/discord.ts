@@ -1,7 +1,7 @@
-import { getShopSettings } from "../database/setting";
+import { getShopSettingsForAdmin } from "../database/setting";
 export async function sendDiscordWebhook(data: Object) {
   try {
-    const setting = await getShopSettings();
+    const setting = await getShopSettingsForAdmin();
     const url = setting?.webhookDiscord;
     await fetch(url ?? "", {
       method: "POST",
