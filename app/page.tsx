@@ -23,7 +23,7 @@ export default async function Home() {
   const data = await getHomepage();
   const etc = await getAllEtcButton();
   const etcButtonSetting = await getEtcButtonSetting();
-  console.log(etcButtonSetting)
+  console.log(etcButtonSetting);
 
   return (
     <div className="header container">
@@ -53,22 +53,23 @@ export default async function Home() {
       </div>
 
       {/* ETC BUTTON */}
-      {etcButtonSetting.isOpen ? <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-        {etc.map((b: any, index: number) => (
-          <Link href={b.link} key={index} target="_blank">
-            <div className="focus max-w-[800px] max-h-[400px]">
-              <Image
-                src={b.image || "https://placehold.co/400x200?text=400x200"}
-                alt={"ปุ่ม ETC"}
-                width={400}
-                height={200}
-                className="object-cover"
-              />
-            </div>
-          </Link>
-        ))}
-      </div> : null}
-
+      {etcButtonSetting.isOpen ? (
+        <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          {etc.map((b: any, index: number) => (
+            <Link href={b.link} key={index} target="_blank">
+              <div className="focus max-w-[800px] max-h-[400px]">
+                <Image
+                  src={b.image || "https://placehold.co/400x200?text=400x200"}
+                  alt={"ปุ่ม ETC"}
+                  width={400}
+                  height={200}
+                  className="object-cover"
+                />
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : null}
 
       {/* สเตตัส */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -152,7 +153,7 @@ export default async function Home() {
           ))}
         </div>
         {/* สินค้า */}
-        <Carousel className="w-full">
+        {/* <Carousel className="w-full">
           <CarouselContent>
             {data.shop.map((s: any, index: number) => (
               <CarouselItem
@@ -205,7 +206,49 @@ export default async function Home() {
 
           <CarouselPrevious className="hidden md:flex shadow-xl" />
           <CarouselNext className="hidden md:flex shadow-xl" />
-        </Carousel>
+        </Carousel> */}
+        <div className="grid grid-col-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 ">
+          {data.shop.map((s: any, index: number) => (
+            <Link href={`/shop/${s.product.id}`} key={index}>
+              <Card className="focus rounded-xl border bg-white">
+                <CardContent className="flex flex-col items-start justify-center">
+                  <div className="w-full aspect-square rounded-lg overflow-hidden mb-3 bg-gray-50">
+                    <Image
+                      src={s.product.image}
+                      width={500}
+                      height={500}
+                      alt={`สินค้า ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-base font-semibold truncate w-full">
+                    {s.product.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <Badge className="font-bold">
+                      ราคา: {Number(s.product.price)}฿
+                    </Badge>
+                  </p>
+                  {s.product.stocks.length > 0 ? (
+                    <button className="btn-main mt-3 px-3 py-1 rounded-lg text-sm w-full">
+                      ดูรายละเอียด
+                    </button>
+                  ) : (
+                    <button
+                      disabled
+                      className="btn-main mt-3 px-3 py-1 rounded-lg text-sm w-full opacity-50"
+                    >
+                      สินค้าหมด
+                    </button>
+                  )}
+                  <h3 className="text-sm text-gray-500 mt-1 items-center">
+                    คงเหลือ {s.product.stocks.length} ชิ้น
+                  </h3>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
