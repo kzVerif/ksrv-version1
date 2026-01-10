@@ -20,7 +20,7 @@ export default async function page({ params }: { params: { id: string } }) {
         <h2 className="text-sm text-gray-500">เลือกสินค้าที่สนใจได้เลย</h2>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {data.map((s: any, index: number) => (
           <div className="cursor-pointer" key={s.id}>
             <Link href={`/shop/${s.id}`}>

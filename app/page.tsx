@@ -207,7 +207,7 @@ export default async function Home() {
           <CarouselPrevious className="hidden md:flex shadow-xl" />
           <CarouselNext className="hidden md:flex shadow-xl" />
         </Carousel> */}
-        <div className="grid grid-col-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 ">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 ">
           {data.shop.map((s: any, index: number) => (
             <Link href={`/shop/${s.product.id}`} key={index}>
               <Card className="focus rounded-xl border bg-white">
