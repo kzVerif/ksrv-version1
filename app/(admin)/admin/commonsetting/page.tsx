@@ -5,9 +5,6 @@ import { getShopSettings } from "@/lib/database/setting";
 export default async function Page() {
   // ดึงข้อมูลร้านจาก backend/database
   const settings = await getShopSettings();
-  console.log(settings);
-  
-
   return (
     <div className="header-admin">
       <h1 className="text-2xl font-bold text">ตั้งค่าร้านค้า</h1>
