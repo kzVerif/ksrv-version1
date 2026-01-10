@@ -36,17 +36,19 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const filteredData = React.useMemo(() => {
-    if (!filterValue) return data;
+  if (!filterValue) return data;
 
-    const lower = filterValue.toLowerCase();
+  const lower = filterValue.toLowerCase();
 
-    return data.filter((item: any) =>
-      item.id.toLowerCase().includes(lower) ||
-      item.reason.toLowerCase().includes(lower) ||
-      item.topupType.toLowerCase().includes(lower) ||
-      item.userId.toLowerCase().includes(lower)
-    );
-  }, [filterValue, data]);
+  return data.filter((item: any) =>
+    item.id?.toLowerCase().includes(lower) ||
+    item.user?.username?.toLowerCase().includes(lower) ||
+    item.reason?.toLowerCase().includes(lower) ||
+    item.topupType?.toLowerCase().includes(lower) ||
+    String(item.amount)?.includes(lower) ||
+    item.user?.userId?.toLowerCase().includes(lower)
+  );
+}, [filterValue, data]);
 
   const table = useReactTable({
     data: filteredData,
