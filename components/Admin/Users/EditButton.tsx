@@ -27,19 +27,17 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+type Role = "ADMIN" | "USER";
+
 export function EditButton({ user }: { user: Users }) {
-  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedRole, setSelectedRole] = useState<Role | "">("");
 
   async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const point = Number(formData.get("points") || 0);
     const totalTopup = Number(formData.get("totalPoints") || 0);
-    let role = selectedRole;
-
-    if (role === "") {
-      role = user.role;
-    }
+    const role: Role = selectedRole === "" ? (user.role as Role) : selectedRole;
 
     toast.promise(
       updateUser({

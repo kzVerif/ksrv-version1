@@ -184,14 +184,16 @@ export async function getAllUsers() {
   }
 }
 
+type Role = "ADMIN" | "USER";
+
 interface updateUser {
   id: string;
   points: number;
   totalPoints: number;
-  role: "ADMIN" | "USER";
+  role: Role;
 }
 
-export async function updateUser(data: updateUser) {
+export async function updateUser(data: updateUser) {  
   try {
     const canUse = await requireAdmin();
     if (!canUse) {
