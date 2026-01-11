@@ -27,17 +27,19 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-export function EditButton({ user }: { user: Users }) {  
-    // const [selectedRole, setSelectedRole] = useState<"USER" | "ADMIN">(user.role);
-    const [selectedRole, setSelectedRole] = useState(user.role);
+export function EditButton({ user }: { user: Users }) {
+  const [selectedRole, setSelectedRole] = useState("");
 
   async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-
     const point = Number(formData.get("points") || 0);
     const totalTopup = Number(formData.get("totalPoints") || 0);
-    const role = selectedRole;
+    let role = selectedRole;
+
+    if (role === "") {
+      role = user.role;
+    }
 
     toast.promise(
       updateUser({
@@ -98,14 +100,31 @@ export function EditButton({ user }: { user: Users }) {
           </div>
 
           <div className="grid gap-3">
-            <Label htmlFor="role">ตำแหน่งของผู้ใช้</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="role" className="text-sm">
+                ตำแหน่งของผู้ใช้
+              </Label>
+
+              <span className="text-xs text-muted-foreground">
+                ปัจจุบัน:{" "}
+                <span className="font-medium text-foreground">
+                  {user.role === "ADMIN" ? "แอดมิน" : "ผู้ใช้"}
+                </span>
+              </span>
+            </div>
+
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              หากไม่เลือกตำแหน่ง ระบบจะใช้ตำแหน่งปัจจุบันของผู้ใช้โดยอัตโนมัติ
+            </p>
+
             <Select
               value={selectedRole}
               onValueChange={(val: "USER" | "ADMIN") => setSelectedRole(val)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="role" className="w-full">
                 <SelectValue placeholder="เลือกตำแหน่งผู้ใช้" />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectItem value="ADMIN">แอดมิน</SelectItem>
                 <SelectItem value="USER">ผู้ใช้</SelectItem>
