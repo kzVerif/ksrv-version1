@@ -10,6 +10,8 @@ export default async function ProductPage({
 }) {
   const { id } = await params;
   const product = await getProductById(id);
+  console.log(product?.detail);
+  
   const wallet = await getWalletTopup();
 
   if (product === null) {
@@ -74,7 +76,7 @@ export default async function ProductPage({
             <h2 className="text-xl font-semibold mb-2">รายละเอียดสินค้า</h2>
             {/* <DetailProducts detail={product.detail} /> */}
             <div
-              className="prose"
+              // className="prose"
               dangerouslySetInnerHTML={{
                 __html: product.detail ?? "ไม่มีรายละเอียดสินค้า",
               }}
