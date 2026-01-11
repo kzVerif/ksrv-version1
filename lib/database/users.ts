@@ -336,11 +336,11 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
   }
 
   if (res.code !== "200200") {
-    await prisma.slip.create({
-      data: {
-        ref: qrCode,
-      },
-    });
+    // await prisma.slip.create({
+    //   data: {
+    //     ref: qrCode,
+    //   },
+    // });
     return {
       status: false,
       message: res.message,
