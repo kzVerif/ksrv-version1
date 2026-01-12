@@ -14,6 +14,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------- fake ----------------------------
+model Fake {
+   id          String  @id @default(cuid())
+   members      Int @default(0)
+   products     Int @default(0)
+   sell         Int @default(0)
+}
+
 // ---------------------------- EtcButton ----------------------------
 model EtcButton {
    id          String  @id @default(cuid())

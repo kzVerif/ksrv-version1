@@ -19,11 +19,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Notice from "@/components/Notice";
 import { getAllEtcButton, getEtcButtonSetting } from "@/lib/database/etcButton";
+import { getFake } from "@/lib/database/fake";
 export default async function Home() {
   const data = await getHomepage();
   const etc = await getAllEtcButton();
   const etcButtonSetting = await getEtcButtonSetting();
-  console.log(etcButtonSetting);
+  const fake = await getFake()
 
   return (
     <div className="header container">
@@ -81,7 +82,7 @@ export default async function Home() {
           <div className="flex flex-col">
             <h1 className="text-lg font-medium ">สมาชิกทั้งหมด</h1>
             <div className="flex items-end gap-1">
-              <span className="text-4xl font-bold ">{data.member}</span>
+              <span className="text-4xl font-bold ">{data.member + fake.members}</span>
               <span className="text-sm text-gray-500">คน</span>
             </div>
           </div>
@@ -95,7 +96,7 @@ export default async function Home() {
           <div className="flex flex-col">
             <h1 className="text-lg font-medium ">สินค้าทั้งหมด</h1>
             <div className="flex items-end gap-1">
-              <span className="text-4xl font-bold ">{data.allStock}</span>
+              <span className="text-4xl font-bold ">{data.allStock + fake.products}</span>
               <span className="text-sm text-gray-500">ชิ้น</span>
             </div>
           </div>
@@ -109,7 +110,7 @@ export default async function Home() {
           <div className="flex flex-col">
             <h1 className="text-lg font-medium ">สินค้าที่ขายไปแล้ว</h1>
             <div className="flex items-end gap-1">
-              <span className="text-4xl font-bold ">{data.soldStock}</span>
+              <span className="text-4xl font-bold ">{data.soldStock + fake.sell}</span>
               <span className="text-sm text-gray-500">ชิ้น</span>
             </div>
           </div>

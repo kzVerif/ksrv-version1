@@ -16,7 +16,7 @@ import {
 import toast from "react-hot-toast";
 import { Bank, updateBankTopup } from "@/lib/database/banktopup";
 
-export default function BankSettingForm({ data }: { data:  Bank }) {
+export default function BankSettingForm({ data }: { data:  any }) {
   const [enabled, setEnabled] = useState(data.available);
   const [selectedBank, setSelectedBank] = useState(data.bankProvider || "");
 

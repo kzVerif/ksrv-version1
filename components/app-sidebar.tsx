@@ -30,6 +30,11 @@ const items = [
     url: "/admin/dashboard",
     icon: DashboardSquare02Icon, // หน้าแรก, สรุปข้อมูล
   },
+    {
+    title: "ตั้งค่าทั่วไป",
+    url: "/admin/commonsetting",
+    icon: Settings02Icon, // ตั้งค่าอื่นๆ
+  },
   {
     title: "จัดการผู้ใช้",
     url: "/admin/users",
@@ -61,11 +66,6 @@ const items = [
     icon: SourceCodeIcon, // การตั้งค่าเฉพาะ
   },
   {
-    title: "ตั้งค่าทั่วไป",
-    url: "/admin/commonsetting",
-    icon: Settings02Icon, // ตั้งค่าอื่นๆ
-  },
-  {
     title: "ตั้งค่าปุ่ม ETC",
     url: "/admin/etcbutton",
     icon: Settings02Icon, // ตั้งค่าอื่นๆ
@@ -79,6 +79,11 @@ const items = [
     title: "ประวัติการสั่งซื้อ",
     url: "/admin/historybuy",
     icon: TransactionHistoryIcon, // ประวัติการสั่งซื้อ
+  },
+    {
+    title: "ปลอมยอดหน้าเว็ป",
+    url: "/admin/fake",
+    icon: Settings02Icon, // ประวัติการสั่งซื้อ
   },
 ];
 
