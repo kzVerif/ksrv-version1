@@ -1,4 +1,5 @@
 "use server"
+import { revalidatePath } from "next/cache";
 import prisma from "./conn";
 
 export async function getFake() {
@@ -28,6 +29,7 @@ export async function updateFake(data: any) {
         sell: data.sell,
       },
     });
+    revalidatePath("/")
   } catch (error) {
     console.log("Error updateFake:", error);
   }
