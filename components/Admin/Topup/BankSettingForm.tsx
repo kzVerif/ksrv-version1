@@ -90,7 +90,7 @@ export default function BankSettingForm({ data }: { data:  any }) {
           id="accountNumber"
           name="accountNumber"
           defaultValue={data.bankAccount}
-          placeholder="เช่น 123-456-7890"
+          placeholder="ห้ามเว้นวรรคหรือใส่สัญลักษณ์"
         />
       </div>
 
@@ -101,7 +101,7 @@ export default function BankSettingForm({ data }: { data:  any }) {
           id="accountName"
           name="accountName"
           defaultValue={data.bankName}
-          placeholder="ชื่อ-นามสกุล"
+          placeholder="ชื่อ-นามสกุล ห้ามมีคำนำหน้า "
         />
       </div>
 
