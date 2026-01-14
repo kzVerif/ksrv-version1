@@ -16,36 +16,32 @@ import {
 import toast from "react-hot-toast";
 import { Bank, updateBankTopup } from "@/lib/database/banktopup";
 
-export default function BankSettingForm({ data }: { data:  any }) {
+export default function BankSettingForm({ data }: { data: any }) {
   const [enabled, setEnabled] = useState(data.available);
   const [selectedBank, setSelectedBank] = useState(data.bankProvider || "");
 
- const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const formData = new FormData(e.currentTarget);
+    const formData = new FormData(e.currentTarget);
 
-  const accountNumber = String(formData.get("accountNumber") || "");
-  const accountName = String(formData.get("accountName") || "");
+    const accountNumber = String(formData.get("accountNumber") || "");
+    const accountName = String(formData.get("accountName") || "");
 
-  const updateData: Bank = {
-    id: data.id,
-    bankAccount: accountNumber,
-    bankName: accountName,
-    bankProvider: selectedBank || data.bankProvider,
-    available: enabled
-  };
+    const updateData: Bank = {
+      id: data.id,
+      bankAccount: accountNumber,
+      bankName: accountName,
+      bankProvider: selectedBank || data.bankProvider,
+      available: enabled,
+    };
 
-  toast.promise(
-    updateBankTopup(updateData),
-    {
+    toast.promise(updateBankTopup(updateData), {
       loading: "กำลังบันทึก...",
       success: "บันทึกการตั้งค่าการเติมเงินผ่านธนาคารสำเร็จ",
-      error:   "บันทึกไม่สำเร็จ กรุณาลองใหม่"
-    }
-  );
-};
-
+      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+    });
+  };
 
   return (
     <form
@@ -86,29 +82,38 @@ export default function BankSettingForm({ data }: { data:  any }) {
       {/* --- เลขบัญชี --- */}
       <div className="grid gap-3">
         <Label htmlFor="accountNumber">เลขที่บัญชี</Label>
+        <p className="text-xs text-red-400">
+          กรุณากรอกเฉพาะตัวเลขเท่านั้น (ไม่เว้นวรรค / ไม่ใส่สัญลักษณ์)
+        </p>
         <Input
           id="accountNumber"
           name="accountNumber"
           defaultValue={data.bankAccount}
-          placeholder="ห้ามเว้นวรรคหรือใส่สัญลักษณ์"
+          placeholder="เช่น 1234567890"
         />
       </div>
 
       {/* --- ชื่อบัญชี --- */}
       <div className="grid gap-3">
         <Label htmlFor="accountName">ชื่อผู้รับเงิน</Label>
+        <p className="text-xs text-red-400">
+          กรุณากรอกชื่อ-นามสกุลตามบัญชี (ไม่ต้องใส่คำนำหน้า)
+        </p>
         <Input
           id="accountName"
           name="accountName"
           defaultValue={data.bankName}
-          placeholder="ชื่อ-นามสกุล ห้ามมีคำนำหน้า "
+          placeholder="เช่น สมชาย ใจดี"
         />
       </div>
 
       {/* --- ธนาคาร Selector --- */}
       <div className="grid gap-3">
         <Label htmlFor="bank">ธนาคาร</Label>
-        <Select onValueChange={setSelectedBank} defaultValue={data.bankProvider}>
+        <Select
+          onValueChange={setSelectedBank}
+          defaultValue={data.bankProvider}
+        >
           <SelectTrigger id="bank">
             <SelectValue placeholder="เลือกธนาคาร" />
           </SelectTrigger>
