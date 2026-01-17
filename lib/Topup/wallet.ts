@@ -24,8 +24,7 @@ export async function walletTopup(url: string) {
     const client = new Impit({
       browser: "chrome",
       timeout: 30000,
-      proxyUrl: "http://14aac8a8c3335:988d43abdd@91.124.169.248:12323",
-      // proxyUrl: "http://swiftserver:pL0qMm6w3sU@4xb3@45.201.28.242:7778",
+      proxyUrl: "http://14ad6b3e8d8db:a67912ac8f@109.122.23.130:12323"
     });
     
 
@@ -50,7 +49,7 @@ export async function walletTopup(url: string) {
     });
 
     const res = await response.json();
-    // console.log("walletTopup: ",res);
+    console.log("walletTopup: ",res);
 
     // SUCCESS CHECK
     if (res.status?.code === "SUCCESS" && res.data?.voucher?.member === 1) {
