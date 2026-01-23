@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-   images: {
+  images: {
     unoptimized: true,
   },
+
+  // ✅ ย้ายออกจาก experimental
+  serverExternalPackages: ["impit"],
+
   experimental: {
     optimizeCss: false,
-    serverComponentsExternalPackages: ['impit'],
   },
 };
 

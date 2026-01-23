@@ -3,8 +3,6 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import BuyForm from "@/components/Product/BuyForm";
 import { getWalletTopup } from "@/lib/database/wallettopup";
-import Test from "@/components/Xss";
-import Xss from "@/components/Xss";
 export default async function ProductPage({
   params,
 }: {
@@ -76,7 +74,6 @@ export default async function ProductPage({
           {/* ✅ รายละเอียดสินค้า */}
           <div className="border-t pt-6 text-black leading-relaxed whitespace-pre-line text-sm sm:text-base">
             <h2 className="text-xl font-semibold mb-2">รายละเอียดสินค้า</h2>
-            {/* <Xss/> */}
             
             <div
               dangerouslySetInnerHTML={{
