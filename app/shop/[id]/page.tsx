@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import BuyForm from "@/components/Product/BuyForm";
 import { getWalletTopup } from "@/lib/database/wallettopup";
+import Test from "@/components/Xss";
+import Xss from "@/components/Xss";
 export default async function ProductPage({
   params,
 }: {
@@ -10,13 +12,13 @@ export default async function ProductPage({
 }) {
   const { id } = await params;
   const product = await getProductById(id);
-  console.log(product?.detail);
   
   const wallet = await getWalletTopup();
 
   if (product === null) {
     return <div>ไม่พบสินค้าที่ต้องการ</div>;
   }
+
 
   return (
     <div className="container header text-black">
@@ -74,9 +76,9 @@ export default async function ProductPage({
           {/* ✅ รายละเอียดสินค้า */}
           <div className="border-t pt-6 text-black leading-relaxed whitespace-pre-line text-sm sm:text-base">
             <h2 className="text-xl font-semibold mb-2">รายละเอียดสินค้า</h2>
-            {/* <DetailProducts detail={product.detail} /> */}
+            {/* <Xss/> */}
+            
             <div
-              // className="prose"
               dangerouslySetInnerHTML={{
                 __html: product.detail ?? "ไม่มีรายละเอียดสินค้า",
               }}
