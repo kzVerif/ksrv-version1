@@ -86,7 +86,7 @@ export function DataTable<TData, TValue>({
 
     // map ข้อมูล (Logic เดิมของคุณ แต่เปลี่ยนตัวแปรต้นทางเป็น sourceData)
     const exportData = sourceData.map((item: any) => ({
-      // รหัสคำสั่งซื้อ: item.stock.id,
+      วันที่สั่งซื้อ: item.createdAt,
       ชื่อสินค้า: item.product.name,
       รายละเอียด: item.stock.detail,
       ราคา: item.product.price,
