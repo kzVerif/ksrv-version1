@@ -25,6 +25,7 @@ import Papa from "papaparse";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
+import { format } from "date-fns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -86,7 +87,7 @@ export function DataTable<TData, TValue>({
 
     // map ข้อมูล (Logic เดิมของคุณ แต่เปลี่ยนตัวแปรต้นทางเป็น sourceData)
     const exportData = sourceData.map((item: any) => ({
-      วันที่สั่งซื้อ: item.createdAt,
+      วันที่สั่งซื้อ: format(item.createdAt, "dd/MM/yyyy HH:mm") ,
       ชื่อสินค้า: item.product.name,
       รายละเอียด: item.stock.detail,
       ราคา: item.product.price,
