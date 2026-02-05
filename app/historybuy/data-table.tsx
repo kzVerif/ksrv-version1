@@ -8,6 +8,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
+  RowSelectionState, // ✅ 1. เพิ่ม import นี้
 } from "@tanstack/react-table";
 
 import {
@@ -36,7 +37,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [filterValue, setFilterValue] = React.useState<string>("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const filteredData = React.useMemo(() => {
     if (!filterValue) return data;
 
@@ -45,7 +46,7 @@ export function DataTable<TData, TValue>({
       (item: any) =>
         item.id.toLowerCase().includes(lower) ||
         item.product.name.toLowerCase().includes(lower) ||
-        item.stock.detail.toLowerCase().includes(lower)
+        item.stock.detail.toLowerCase().includes(lower),
     );
   }, [filterValue, data]);
 
@@ -54,18 +55,38 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
-    // ✅ Sorting support
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    state: { sorting },
+
+    // ✅ 3. เพิ่ม Config สำหรับ Selection
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true, // เปิดใช้งานการเลือก
+    state: {
+      sorting,
+      rowSelection, // ส่ง state เข้าไป
+    },
   });
 
   /* Export CSV ด้วย PapaParse */
   const handleExportCSV = () => {
-    if (!filteredData.length) return;
-    const exportData = filteredData.map((item: any) => ({
-      รหัสคำสั่งซื้อ: item.stock.id,
+    // ✅ 4. ปรับ Logic การดึงข้อมูล
+    // ถ้ามีการเลือก Row ให้ดึงเฉพาะที่เลือก ถ้าไม่มีให้ดึงทั้งหมดที่ Filter อยู่
+    const selectedRowModel = table.getSelectedRowModel().rows;
+
+    // ตรวจสอบว่ามีการเลือกหรือไม่
+    const hasSelection = selectedRowModel.length > 0;
+
+    // ถ้ามีการเลือก ให้ดึง .original จาก row object
+    // ถ้าไม่มีการเลือก ให้ใช้ filteredData ตรงๆ
+    const sourceData = hasSelection
+      ? selectedRowModel.map((row) => row.original)
+      : filteredData;
+
+    if (!sourceData.length) return;
+
+    // map ข้อมูล (Logic เดิมของคุณ แต่เปลี่ยนตัวแปรต้นทางเป็น sourceData)
+    const exportData = sourceData.map((item: any) => ({
+      // รหัสคำสั่งซื้อ: item.stock.id,
       ชื่อสินค้า: item.product.name,
       รายละเอียด: item.stock.detail,
       ราคา: item.product.price,
@@ -83,23 +104,41 @@ export function DataTable<TData, TValue>({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "export.csv";
+    // เปลี่ยนชื่อไฟล์เล็กน้อยเพื่อให้รู้ว่าโหลดแบบไหน
+    a.download = hasSelection ? "selected_export.csv" : "export.csv";
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const downloadFile = () => {
-    const text = filteredData
-    .map((item: any) => item.stock.detail)
-    .join("\n"); // แยกบรรทัด
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "combo.txt"
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+    // 1. ดึงข้อมูลแถวที่ถูกเลือก (Check)
+    const selectedRowModel = table.getSelectedRowModel().rows;
+
+    // 2. ตรวจสอบว่ามีการเลือกหรือไม่
+    const hasSelection = selectedRowModel.length > 0;
+
+    // 3. ถ้ามีการเลือก ให้ดึงข้อมูลจากแถวที่เลือก (ต้อง .original)
+    // ถ้าไม่มี ให้ใช้ filteredData ทั้งหมด
+    const sourceData = hasSelection
+      ? selectedRowModel.map((row) => row.original)
+      : filteredData;
+
+    if (!sourceData.length) return; // กันไว้เผื่อไม่มีข้อมูลเลย
+
+    // 4. map ข้อมูลจาก sourceData ที่เราเตรียมไว้
+    const text = sourceData.map((item: any) => item.stock.detail).join("\n"); // แยกบรรทัด
+
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+
+    // เปลี่ยนชื่อไฟล์นิดหน่อยให้รู้ว่าโหลดแบบเลือกมา
+    a.download = hasSelection ? "selected_combo.txt" : "combo.txt";
+
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div>
@@ -112,11 +151,16 @@ export function DataTable<TData, TValue>({
         />
 
         <Button onClick={handleExportCSV} className="btn-main">
-          ดาวน์โหลด CSV
+          {/* เปลี่ยนข้อความปุ่มให้ User เข้าใจง่ายขึ้น (Optional) */}
+          {Object.keys(rowSelection).length > 0
+            ? `ดาวน์โหลดที่เลือก (${Object.keys(rowSelection).length})`
+            : "ดาวน์โหลด CSV ทั้งหมด"}
         </Button>
 
         <Button onClick={downloadFile} className="btn-main">
-          ดาวน์โหลด Combo
+          {Object.keys(rowSelection).length > 0
+            ? `ดาวน์โหลด Combo ที่เลือก (${Object.keys(rowSelection).length})`
+            : "ดาวน์โหลด Combo ทั้งหมด"}
         </Button>
       </div>
 
@@ -131,7 +175,7 @@ export function DataTable<TData, TValue>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -147,7 +191,7 @@ export function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
