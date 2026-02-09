@@ -24,7 +24,7 @@ export async function walletTopup(url: string) {
     const client = new Impit({
       browser: "chrome",
       timeout: 30000,
-      proxyUrl: "http://14ad6b3e8d8db:a67912ac8f@109.122.23.130:12323"
+      // proxyUrl: "http://14ad6b3e8d8db:a67912ac8f@109.122.23.130:12323"
     });
     
 
