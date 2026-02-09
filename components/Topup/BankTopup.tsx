@@ -1,12 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, CreditCard, QrCode } from "lucide-react";
 import toast from "react-hot-toast";
 import { TopupByBank } from "@/lib/database/users";
 import { useSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
 import jsQR from "jsqr";
+import {
+  MultiFormatReader,
+  BarcodeFormat,
+  DecodeHintType,
+  RGBLuminanceSource,
+  BinaryBitmap,
+  HybridBinarizer,
+} from "@zxing/library";
+import { decodeSlipQRCode } from "@/lib/QrReader";
 
 export default function BankTopup({ bank }: { bank: any }) {
   const { data: session } = useSession();
@@ -40,147 +49,231 @@ export default function BankTopup({ bank }: { bank: any }) {
     "04000": "True Money Wallet",
   };
 
+  // แก้ไข logic การเช็ค Array ให้ถูกต้อง
+  const isPromptPay = ["02001", "02003", "02004"].includes(bank.bankProvider);
+  const pp = "PromptPay พร้อมเพย์"
+
   const getBankName = (code?: string) =>
     code ? bankProviderMap[code] || code : "-";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
-
     if (!selected) return;
-
     if (selected.size > 1 * 1024 * 1024) {
       toast.error("ไฟล์มีขนาดใหญ่เกิน 1MB กรุณาอัปโหลดไฟล์ที่เล็กกว่านี้");
       return;
     }
-
     setFile(selected);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!session) {
-      toast.error("กรุณาเข้าสู่ระบบก่อนทำรายการ");
-      return;
+    if (!session) return toast.error("กรุณาเข้าสู่ระบบก่อนทำรายการ");
+    if (!file) return toast.error("กรุณาแนบสลิป");
+
+    const loading = toast.loading("กำลังตรวจสอบสลิป...");
+
+    try {
+      const qrData = await decodeSlipQRCode(file); // ✅ ตัวใหม่
+
+      const status = await TopupByBank(session.user.id, qrData);
+
+      if (status?.status) {
+        toast.success(status.message);
+        await refreshUser();
+        setFile(null);
+      } else {
+        toast.error(status?.message || "สลิปไม่ถูกต้อง");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("ยังไม่พบ QR ในสลิป (ลองใช้รูปชัดขึ้น/ไม่ครอป/ไม่เบลอ)");
+    } finally {
+      toast.dismiss(loading);
     }
-
-    if (!file) {
-      toast.error("กรุณาแนบสลิปมาด้วย");
-      return;
-    }
-
-    // 1) โหลดไฟล์เป็นรูปภาพ
-    const imageURL = URL.createObjectURL(file);
-    const img = new Image();
-    img.src = imageURL;
-
-    img.onload = async () => {
-      // 2) สร้าง canvas เพื่ออ่าน pixel
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      if (!ctx) {
-        toast.error("ไม่สามารถอ่านภาพได้");
-        return;
-      }
-
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      ctx.drawImage(img, 0, 0);
-
-      // 3) อ่านข้อมูลพิกเซล
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      // 4) decode QR Code
-      const qr = jsQR(imageData.data, canvas.width, canvas.height);
-
-      if (!qr) {
-        toast.error("ไม่พบ QR Code ในภาพนี้");
-        return;
-      }
-      const loading = toast.loading("กำลังเติมเงิน...");
-
-      const status = await TopupByBank(session.user.id, qr.data);
-      toast.dismiss(loading)
-      if (!status?.status) {
-        toast.error(status?.message || "เกิดข้อผิดพลาด");
-        setTimeout(() => toast.dismiss(), 1500);
-        return;
-      }
-
-      toast.success(`${status?.message}`);
-      await refreshUser();
-
-      URL.revokeObjectURL(imageURL);
-    };
   };
 
   return (
-    <div className="w-full bg-white rounded-2xl shadow-md border border-gray-200 p-6 space-y-5">
-      {/* Header */}
-      <div className="flex gap-2 mb-4">
-        <h1 className="text-xl text-left font-bold text-gray-800">
-          เติมเงินผ่าน ธนาคาร
-        </h1>
-      </div>
+    <div className="w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* ส่วนที่ 1: ข้อมูลการชำระเงิน */}
+        <div className="space-y-6">
+          {isPromptPay ? (
+            /* Layout เมื่อเป็น PromptPay (มี QR Code) */
+            <div className="grid grid-cols-1 lg:grid-cols-2 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
+              <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 mb-4 flex flex-col items-center justify-center">
+                {/* ส่วนหัว: จัดให้อยู่ตรงกลางด้วย flex-center */}
+                <div className="flex items-center justify-center gap-2 mb-6 text">
+                  <QrCode size={22} />
+                  <p className="text-sm font-bold uppercase tracking-widest">
+                    สแกนชำระเงินผ่าน PromptPay
+                  </p>
+                </div>
 
-      {/* Bank Info */}
-      <div className="bg-[var(--color-secondary)]/50 rounded-xl p-4 space-y-2">
-        <p className="text-sm text-gray-700">
-          <span className="font-semibold">ธนาคาร:</span>{" "}
-          {getBankName(bank.bankProvider)}
-        </p>
-        <p className="text-sm text-gray-700">
-          <span className="font-semibold">เลขบัญชี:</span>{" "}
-          <span className="font-bold">{bank.bankAccount || "-"}</span>
-        </p>
-        <p className="text-sm text-gray-700">
-          <span className="font-semibold">ชื่อบัญชี:</span>{" "}
-          {bank.bankName || "-"}
-        </p>
-      </div>
+                {/* ส่วนรูปภาพ QR: ใส่ Wrapper เพื่อคุมขนาดและเงาให้ดูเด่น */}
+                <div className="relative p-2 bg-white border-2 border-dashed border-gray-100 rounded-xl">
+                  <img
+                    src={`https://promptpay.io/${bank.bankAccount}`}
+                    alt="PromptPay QR"
+                    className="w-52 h-52 object-contain"
+                  />
+                </div>
 
-      {/* Upload Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-5 cursor-pointer hover:border-blue-400 transition">
-          <label
-            htmlFor="file-upload"
-            className="cursor-pointer flex flex-col items-center space-y-2"
-          >
-            <ImageIcon className="text-gray-400" size={40} />
-            <span className="text-gray-600 text-sm font-medium">
-              {file ? "เปลี่ยนรูปสลิป" : "คลิกเพื่อเลือกหรือวางรูปสลิปที่นี่"}
-            </span>
-            <span className="text-xs text-gray-400">
-              รองรับไฟล์ .jpg .png .jpeg (ไม่เกิน 1MB)
-            </span>
+                {/* ข้อมูลเพิ่มเติมด้านล่าง (ถ้ามี) */}
+                <div className="mt-4 text-center">
+                  <p className="text-xs text-gray-400">
+                    เลขพร้อมเพย์:{" "}
+                    <span className="font-semibold text-gray-700">
+                      {bank.bankAccount}
+                    </span>
+                  </p>
+                </div>
+              </div>
 
-            {file && (
-              <img
-                src={URL.createObjectURL(file)}
-                alt="Slip Preview"
-                className="mt-3 w-full max-w-xs object-contain rounded-md border"
-              />
-            )}
-          </label>
+              <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-5">
+                <div className="flex items-center gap-2 text-gray-700 pb-2 border-b border-gray-200">
+                  <CreditCard size={20} />
+                  <p className="text-sm font-bold uppercase tracking-wider">
+                    รายละเอียดการโอนเงิน
+                  </p>
+                </div>
 
-          <input
-            id="file-upload"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileChange}
-          />
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">ธนาคาร</p>
+                  <p className="font-bold text-gray-800 text-lg">
+                    {pp}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">เลขบัญชี</p>
+                  <p className="font-mono font-bold text-2xl text tracking-wider">
+                    {bank.bankAccount || "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">ชื่อบัญชี</p>
+                  <p className="font-bold text-gray-800">
+                    {bank.bankName || "-"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Layout เมื่อไม่ใช่ PromptPay (แสดงเฉพาะเลขบัญชี) */
+            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-5">
+              <div className="flex items-center gap-2 text-gray-700 pb-2 border-b border-gray-200">
+                <CreditCard size={20} />
+                <p className="text-sm font-bold uppercase tracking-wider">
+                  รายละเอียดการโอนเงิน
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">ธนาคาร</p>
+                  <p className="font-bold text-gray-800 text-lg">
+                    {getBankName(bank.bankProvider)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">เลขบัญชี</p>
+                  <p className="font-mono font-bold text-2xl text tracking-wider">
+                    {bank.bankAccount || "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">ชื่อบัญชี</p>
+                  <p className="font-bold text-gray-800">
+                    {bank.bankName || "-"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* แจ้งเตือนเล็กๆ ด้านล่างข้อมูลธนาคาร */}
+          <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
+            <p className="text-xs text-amber-700 leading-relaxed">
+              <strong>ข้อควรระวัง:</strong>{" "}
+              กรุณาตรวจสอบชื่อผู้รับและยอดเงินให้ถูกต้องก่อนกดยืนยันการโอนทุกครั้ง
+            </p>
+          </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full btn-main font-medium py-2.5 rounded-lg shadow-md transition-all"
-        >
-          ตรวจสอบสลิป
-        </button>
-      </form>
+        {/* ส่วนที่ 2: ฟอร์มการอัปโหลดสลิป (คงเดิม) */}
+        <div className="flex flex-col">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="w-2 h-6 bg-gray-800 rounded-full"></span>
+            อัปโหลดหลักฐานการโอน
+          </h3>
+
+          <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4">
+            <div
+              className={`relative flex-1 min-h-[250px] flex flex-col items-center justify-center border-2 border-dashed rounded-2xl transition-all duration-300 ${
+                file
+                  ? "border-green-400 bg-green-50/30"
+                  : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/30"
+              }`}
+            >
+              <label
+                htmlFor="file-upload"
+                className="absolute inset-0 cursor-pointer z-10"
+              >
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
+
+              {!file ? (
+                <div className="text-center p-5">
+                  <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ImageIcon size={32} />
+                  </div>
+                  <p className="font-semibold text-gray-700">เลือกรูปภาพสลิป</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    คลิกที่นี่เพื่ออัปโหลด
+                  </p>
+                </div>
+              ) : (
+                <div className="relative p-4 w-full h-full flex flex-col items-center justify-center">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt="Preview"
+                    className="max-h-[180px] rounded-lg shadow-sm"
+                  />
+                  <p className="mt-2 text-xs font-medium text-green-600">
+                    อัปโหลดภาพสำเร็จ
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setFile(null)}
+                    className="mt-2 text-xs text-red-500 underline z-20"
+                  >
+                    เปลี่ยนรูปภาพ
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={!file}
+              className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transform active:scale-[0.98] transition-all ${
+                file
+                  ? "btn-main"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              ยืนยันการตรวจสอบสลิป
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
