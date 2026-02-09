@@ -39,10 +39,6 @@ export type BuyProduct = {
 };
 
 export const columns: ColumnDef<BuyProduct>[] = [
-  // {
-  //   accessorKey: "id",
-  //   header: "รหัสคำสั่งซื้อ",
-  // },
   {
     id: "select",
     header: ({ table }) => (
