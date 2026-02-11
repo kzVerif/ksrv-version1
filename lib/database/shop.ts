@@ -114,13 +114,13 @@ export async function getAllProducts() {
 
 export async function updateProduct(data: updateProduct) {
   try {
-   const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
     const safe = HTMLFilter(data.detail);
     data.detail = safe;
@@ -147,15 +147,15 @@ export async function updateProduct(data: updateProduct) {
 
 export async function createProducts(data: productData) {
   try {
-   const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
-    const safe = HTMLFilter(data.detail);    
+    const safe = HTMLFilter(data.detail);
     data.detail = safe;
     await prisma.products.create({
       data: {
@@ -180,12 +180,12 @@ export async function createProducts(data: productData) {
 export async function deleteProduct(id: string) {
   try {
     const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
     const product = await prisma.products.delete({
       where: { id: id },
@@ -204,121 +204,133 @@ export async function deleteProduct(id: string) {
 export async function buyProducts(
   quantity: number,
   userId: string,
-  productId: string
+  productId: string,
 ) {
-  await requireUser();
-  const session = await getServerSession(authOptions);
-  if (userId !== session?.user.id) {
-    return {
-      status: false,
-      message: "ทำไรครับเนี่ย",
-    };
+  // 1. Basic Input Validation
+  if (!Number.isInteger(quantity) || quantity <= 0) {
+    return { status: false, message: "จำนวนสินค้าไม่ถูกต้อง" };
   }
+
   try {
-    const user = await prisma.users.findUnique({ where: { id: userId } });
-    const product = await prisma.products.findUnique({
-      where: { id: productId },
-    });
+    await requireUser();
+    const session = await getServerSession(authOptions);
 
-    if (!user || !product) {
-      return {
-        status: false,
-        message: "ไม่พบผู้ใช้หรือสินค้าที่ระบุ",
-      };
+    if (!session || userId !== session.user.id) {
+      return { status: false, message: "เซสชันไม่ถูกต้อง" };
     }
 
-    const totalPrice = Number(product.price) * quantity;
+    // 2. ใช้ Transaction เพื่อความปลอดภัยของข้อมูล
+    const result = await prisma.$transaction(async (tx) => {
+      // ดึงข้อมูลผู้ใช้และสินค้าภายใน Transaction
+      const user = await tx.users.findUnique({ where: { id: userId } });
+      const product = await tx.products.findUnique({
+        where: { id: productId },
+      });
 
-    if (totalPrice > Number(user.points)) {
-      return {
-        status: false,
-        message: "ยอดเงินของคุณไม่เพียงพอ กรุณาเติมเงิน",
-      };
-    }
+      if (!user || !product) {
+        throw new Error("ไม่พบผู้ใช้หรือสินค้าที่ระบุ");
+      }
 
-    // 1️⃣ ดึง stocks ที่ว่าง
-    const stocks = await prisma.stocks.findMany({
-      where: {
-        productId: productId,
-        status: "AVAILABLE",
-      },
-      take: quantity,
+      const totalPrice = Number(product.price) * quantity;
+
+      // ตรวจสอบยอดเงิน
+      if (totalPrice > Number(user.points)) {
+        throw new Error("ยอดเงินของคุณไม่เพียงพอ");
+      }
+
+      // ดึง stocks และ Lock แถวไว้ (ถ้า DB รองรับ) เพื่อป้องกันการซื้อซ้ำ
+      const stocks = await tx.stocks.findMany({
+        where: {
+          productId: productId,
+          status: "AVAILABLE",
+        },
+        take: quantity,
+      });
+
+      if (stocks.length < quantity) {
+        throw new Error("สินค้าหมดหรือมีไม่เพียงพอ");
+      }
+
+      const stockIds = stocks.map((s) => s.id);
+
+      // เริ่มการ Update ข้อมูล
+      // A: อัปเดตสถานะสต็อก
+      await tx.stocks.updateMany({
+        where: { id: { in: stockIds } },
+        data: { status: "SOLD" },
+      });
+
+      // B: สร้างประวัติการซื้อ
+      await tx.historyBuy.createMany({
+        data: stockIds.map((id) => ({
+          userId,
+          stockId: id,
+          productId,
+        })),
+      });
+
+      // C: ลด Points ผู้ใช้
+      const updatedUser = await tx.users.update({
+        where: { id: userId },
+        data: { points: { decrement: totalPrice } }, // ใช้ decrement เพื่อความแม่นยำ
+      });
+
+      // ตรวจสอบ Point อีกรอบหลังหัก (Double Check)
+      if (Number(updatedUser.points) < 0) {
+        throw new Error("ยอดเงินไม่เพียงพอหลังทำรายการ");
+      }
+
+      return { user, product, totalPrice };
     });
 
-    if (stocks.length < quantity) {
-      return {
-        status: false,
-        message: "จำนวนสินค้าที่ต้องการซื้อมีไม่เพียงพอ",
-      };
-    }
-
-    // 2️⃣ อัปเดต stocks เป็น SOLD
-    await prisma.stocks.updateMany({
-      where: { id: { in: stocks.map((s) => s.id) } },
-      data: { status: "SOLD" },
-    });
-
-    // 3️⃣ สร้าง historyBuy
-    await prisma.historyBuy.createMany({
-      data: stocks.map((s) => ({
-        userId,
-        stockId: s.id,
-        productId,
-      })),
-    });
-
-    // 4️⃣ ลด points ของ user
-    await prisma.users.update({
-      where: { id: userId },
-      data: { points: Number(user.points) - totalPrice },
-    });
-
+    // 3. แจ้งเตือน (ทำนอก Transaction เพื่อไม่ให้ DB รอ)
     await sendDiscordWebhook({
       username: "ระบบร้านค้า",
+
       embeds: [
         {
           title: "🛒 มีรายการสั่งซื้อสินค้า!",
+
           description: "มีผู้ใช้ทำการซื้อสินค้าในระบบ",
+
           color: 16312092,
+
           fields: [
-            { name: "👤 ผู้ใช้", value: `${user.username}`, inline: true },
-            { name: "🛍️ สินค้า", value: `${product.name}`, inline: true },
+            {
+              name: "👤 ผู้ใช้",
+              value: `${result.user.username}`,
+              inline: true,
+            },
+
+            {
+              name: "🛍️ สินค้า",
+              value: `${result.product.name}`,
+              inline: true,
+            },
+
             { name: "🔢 จำนวน", value: `${quantity}`, inline: true },
-            { name: "💵 ยอดชำระ", value: `${totalPrice} ฿` },
+
+            { name: "💵 ยอดชำระ", value: `${result.totalPrice} ฿` },
+
             { name: "⏳ เวลาทำรายการ", value: `${new Date()}` },
           ],
+
           footer: {
             text: "🛒 ระบบแจ้งเตือนการซื้อสินค้า",
           },
         },
       ],
     });
-    revalidatePath("/admin/products");
-    revalidatePath("/admin/suggestproducts");
-    revalidatePath(`/categories/${product.categoriesId}`);
-    revalidatePath("/products");
+    // Revalidate paths...
     revalidatePath("/");
-    return {
-      status: true,
-    };
+    // แนะนำให้ wrap revalidate ใน try/catch แยกหรือทำหลัง return
+
+    return { status: true };
   } catch (error: any) {
-    console.log("buyProducts Error:", error.message || error);
+    console.error("buyProducts Error:", error.message);
     return {
       status: false,
-      message: "เกิดข้อผิดพลากจากระบบ",
+      message: error.message || "เกิดข้อผิดพลาดจากระบบ",
     };
   }
-}
-
-
-export async function test() {
-  const thirtyDaysAgo = subDays(new Date(), 30);
-
-const products = await prisma.products.findMany();
-
-
-
-  console.log("TEST FUNCTION DATA: ", products);
-
-  return products;
 }
