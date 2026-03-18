@@ -7,7 +7,7 @@ import { requireAdmin } from "../requireAdmin";
 
 export async function getStocksByProductId(id: string) {
   try {
-    await requireUser()
+    await requireUser();
     const stocks = await prisma.stocks.findMany({
       where: { productId: id },
     });
@@ -23,13 +23,13 @@ export async function getStocksByProductId(id: string) {
 
 export async function updateStocksById(data: Stocks) {
   try {
-   const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
     await prisma.stocks.update({
       where: { id: data.id },
@@ -64,13 +64,13 @@ export type UpdatedStocks = {
 
 export async function addStocks(data: UpdatedStocks[]) {
   try {
-   const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
     await prisma.stocks.createMany({
       data: data,
@@ -89,19 +89,19 @@ export async function addStocks(data: UpdatedStocks[]) {
 
 export async function deleteStock(id: string) {
   try {
-   const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
 
     const stock = await prisma.stocks.delete({
       where: {
-        id: id
-      }
-    })
+        id: id,
+      },
+    });
     revalidatePath("/admin/products");
     revalidatePath("/admin/suggestproducts");
     revalidatePath(`/admin/products/${stock.productId}`);
@@ -109,14 +109,30 @@ export async function deleteStock(id: string) {
     revalidatePath("/");
     return {
       status: true,
-      message: ""
-    }
-
+      message: "",
+    };
   } catch (error) {
-    console.log("deleteStock: ",error);
+    console.log("deleteStock: ", error);
     return {
       status: false,
-      message: "เกิดข้อผิดพลาดจากระบบ"
-    }
+      message: "เกิดข้อผิดพลาดจากระบบ",
+    };
   }
+}
+
+export async function deleteManyStocks(ids: string[], id: string) {
+  const canUse = await requireAdmin();
+  if (!canUse) {
+    return;
+  }
+  await prisma.stocks.deleteMany({
+    where: {
+      id: { in: ids },
+    },
+  });
+  revalidatePath("/admin/products");
+  revalidatePath("/admin/suggestproducts");
+  revalidatePath(`/admin/products/${id}`);
+  revalidatePath("/products");
+  revalidatePath("/");
 }

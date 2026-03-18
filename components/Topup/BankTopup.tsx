@@ -6,15 +6,6 @@ import toast from "react-hot-toast";
 import { TopupByBank } from "@/lib/database/users";
 import { useSession } from "next-auth/react";
 import { useUser } from "@/contexts/UserContext";
-import jsQR from "jsqr";
-import {
-  MultiFormatReader,
-  BarcodeFormat,
-  DecodeHintType,
-  RGBLuminanceSource,
-  BinaryBitmap,
-  HybridBinarizer,
-} from "@zxing/library";
 import { decodeSlipQRCode } from "@/lib/QrReader";
 
 export default function BankTopup({ bank }: { bank: any }) {

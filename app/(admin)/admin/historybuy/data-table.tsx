@@ -69,6 +69,7 @@ export function DataTable<TData, TValue>({
           "รายละเอียด": item.stock.detail,
           "ราคา": item.product.price,
           "ผู้ซื้อ": item.user.username,
+          "วันที่ซื้อ": new Date(item.createdAt).toLocaleString(),
         }));
   
   

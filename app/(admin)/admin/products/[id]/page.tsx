@@ -1,13 +1,21 @@
-import { getStocksByProductId } from "@/lib/database/stocks";
+import { getStocksByProductId, deleteManyStocks } from "@/lib/database/stocks";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { getProductById } from "@/lib/database/shop";
 import { AddStockButton } from "@/components/Admin/Products/Stock/AddStockButton";
+import { revalidatePath } from "next/cache";
 
 export default async function page({ params }: { params: { id: string } }) {
   const { id } = await params;
   const stocks = await getStocksByProductId(id);
   const product: any = await getProductById(id);
+
+  // Server Action สำหรับลบหลายรายการ
+  async function handleDeleteSelected(ids: string[]) {
+    "use server";
+    await deleteManyStocks(ids,id);
+    revalidatePath(`/admin/products/${id}/stocks`);
+  }
 
   return (
     <div className="header-admin">
@@ -20,9 +28,13 @@ export default async function page({ params }: { params: { id: string } }) {
         </h2>
       </div>
       <div className="flex items-center justify-end">
-        <AddStockButton productId={id}/>
+        <AddStockButton productId={id} />
       </div>
-      <DataTable columns={columns} data={stocks} />
+      <DataTable
+        columns={columns}
+        data={stocks}
+        onDeleteSelected={handleDeleteSelected}
+      />
     </div>
   );
 }
