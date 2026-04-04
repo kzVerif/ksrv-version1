@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {useState } from "react";
-import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -48,7 +48,7 @@ export default function Navbar({ setting }: { setting: any }) {
         <Link href={"/"}>
           <div className="flex items-center gap-2 cursor-pointer">
             <Image
-              src={setting.logo}
+              src={setting.icon}
               width={60}
               height={60}
               alt="KSRV Logo"

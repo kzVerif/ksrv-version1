@@ -11,6 +11,22 @@ import ExpiredGuard from "@/components/ExpiredGuard";
 export const revalidate = 0;
 // export const dynamic = "force-dynamic";
 
+import sharp from "sharp"; // ติดตั้ง: npm install sharp
+
+async function getImageDimensions(url: string): Promise<{ width: number; height: number }> {
+  try {
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
+    const metadata = await sharp(Buffer.from(buffer)).metadata();
+    return {
+      width: metadata.width ?? 1200,
+      height: metadata.height ?? 630,
+    };
+  } catch {
+    return { width: 1200, height: 630 }; // fallback
+  }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const setting = await getShopSettings();
 
@@ -22,6 +38,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = setting?.detail || defaultDesc;
   const iconUrl = setting?.icon || defaultIcon;
   const logoUrl = setting?.logo || iconUrl;
+
+  // ดึงขนาดจริงของภาพ
+  const { width, height } = await getImageDimensions(logoUrl);
 
   return {
     title,
@@ -38,8 +57,8 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         {
           url: logoUrl,
-          width: 1050,
-          height: 1050,
+          width,   // ✅ ใช้ขนาดจริง
+          height,  // ✅ ใช้ขนาดจริง
         },
       ],
       locale: "th_TH",

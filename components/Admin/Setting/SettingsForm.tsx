@@ -142,7 +142,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
       {/* 🧩 Logo ร้าน */}
       <Card>
         <CardHeader>
-          <h2 className="font-semibold">ลิงก์ Logo ร้าน</h2>
+          <h2 className="font-semibold">ลิงก์แบนเนอร์ตอนแชร์</h2>
         </CardHeader>
         <CardContent>
           <Input
