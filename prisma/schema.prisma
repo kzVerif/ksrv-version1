@@ -16,28 +16,29 @@ datasource db {
 
 // ---------------------------- fake ----------------------------
 model Fake {
-   id          String  @id @default(cuid())
-   members      Int @default(0)
-   products     Int @default(0)
-   sell         Int @default(0)
+  id       String @id @default(cuid())
+  members  Int    @default(0)
+  products Int    @default(0)
+  sell     Int    @default(0)
 }
 
 // ---------------------------- EtcButton ----------------------------
 model EtcButton {
-   id          String  @id @default(cuid())
-   image       String?  @db.Text
-   link        String?  @db.Text
+  id    String  @id @default(cuid())
+  image String? @db.Text
+  link  String? @db.Text
 }
 
 // ---------------------------- EtcButtonSetting ----------------------------
-model EtcButtonSetting{
-  id String @id @default(cuid())
+model EtcButtonSetting {
+  id     String  @id @default(cuid())
   isOpen Boolean @default(false)
 }
+
 // ---------------------------- Slip ----------------------------
 model Slip {
-  id          String  @id @default(cuid())
-  ref         String
+  id  String @id @default(cuid())
+  ref String
 }
 
 // ---------------------------- Users ----------------------------
@@ -51,11 +52,11 @@ model Users {
   username    String  @unique
   password    String
   role        Role    @default(USER)
-  points      Decimal  @db.Decimal(10, 2) @default(0)
-  totalPoints Decimal  @db.Decimal(10, 2) @default(0)
+  points      Decimal @default(0) @db.Decimal(10, 2)
+  totalPoints Decimal @default(0) @db.Decimal(10, 2)
 
   historyTopups HistoryTopup[]
-  
+
   historyBuys HistoryBuy[]
 
   HistoryCode HistoryCode[]
@@ -63,14 +64,14 @@ model Users {
 
 // ---------------------------- Products ----------------------------
 model Products {
-  id       String   @id @default(cuid())
-  name     String   @default("ไม่ทราบชื่อสินค้า")
-  image    String?  @db.Text
-  detail   String?  @db.Text
-  price    Decimal  @db.Decimal(10, 2) @default(0)
+  id     String  @id @default(cuid())
+  name   String  @default("ไม่ทราบชื่อสินค้า")
+  image  String? @db.Text
+  detail String? @db.Text
+  price  Decimal @default(0) @db.Decimal(10, 2)
 
   categoriesId String
-  categories Categories @relation(fields:[categoriesId], references:[id], onDelete: Cascade)
+  categories   Categories @relation(fields: [categoriesId], references: [id], onDelete: Cascade)
 
   stocks Stocks[]
 
@@ -81,26 +82,26 @@ model Products {
 
 // ---------------------------- Stocks ----------------------------
 enum StatusStock {
-  AVAILABLE   @map("พร้อมจำหน่าย")
-  SOLD        @map("จำหน่ายแล้ว")
+  AVAILABLE @map("พร้อมจำหน่าย")
+  SOLD      @map("จำหน่ายแล้ว")
 }
 
 model Stocks {
-  id       String   @id @default(cuid())
-  detail   String  @db.LongText
-  status   StatusStock @default(AVAILABLE)
+  id     String      @id @default(cuid())
+  detail String      @db.LongText
+  status StatusStock @default(AVAILABLE)
 
-  productId String 
-  product Products @relation(fields:[productId], references: [id], onDelete: Cascade)
+  productId String
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   historyBuys HistoryBuy[]
 }
 
 // ---------------------------- Categories ----------------------------
 model Categories {
-  id       String   @id @default(cuid())
-  name     String   @default("ไม่ทราบชื่อหมวดหมู่")
-  image    String?  @db.Text  
+  id    String  @id @default(cuid())
+  name  String  @default("ไม่ทราบชื่อหมวดหมู่")
+  image String? @db.Text
 
   products Products[]
 
@@ -130,107 +131,107 @@ enum TopupType {
 }
 
 model HistoryTopup {
-  id           String     @id @default(cuid())
-  amount       Decimal    @db.Decimal(10, 2) @default(0)
-  reason       String     @default("เติมเงินจากระบบ")
-  topupType    TopupType  @default(Truemoney)
-  createdAt    DateTime   @default(now())
+  id        String    @id @default(cuid())
+  amount    Decimal   @default(0) @db.Decimal(10, 2)
+  reason    String    @default("เติมเงินจากระบบ")
+  topupType TopupType @default(Truemoney)
+  createdAt DateTime  @default(now())
 
-  userId       String
-  user         Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ---------------------------- HistoryBuy ----------------------------
 model HistoryBuy {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId    String
-  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  stockId   String
-  stock     Stocks   @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stockId String
+  stock   Stocks @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   productId String
   product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 // ---------------------------- TopupTruemoney ----------------------------
 model TopupTruemoney {
-  id             String   @id @default(cuid())
-  phone          String   @default("ไม่ทราบเบอร์รับเงิน")
-  available      Boolean  @default(false)
-  feeAvailable   Boolean  @default(false)  
+  id           String  @id @default(cuid())
+  phone        String  @default("ไม่ทราบเบอร์รับเงิน")
+  available    Boolean @default(false)
+  feeAvailable Boolean @default(false)
 }
 
 // ---------------------------- TopupBank ----------------------------
 model TopupBank {
-  id             String   @id @default(cuid())
-  bankAccount    String   @default("ไม่ทราบเลขที่บัญชี")
-  bankName       String   @default("ไม่ทราบชื่อบัญชี")
-  bankProvider   String   @default("ไม่ทราบธนาคาร")
-  available      Boolean  @default(false)
+  id           String  @id @default(cuid())
+  bankAccount  String  @default("ไม่ทราบเลขที่บัญชี")
+  bankName     String  @default("ไม่ทราบชื่อบัญชี")
+  bankNameEng  String  @default("ไม่ทราบชื่อบัญชี")
+  bankProvider String  @default("ไม่ทราบธนาคาร")
+  available    Boolean @default(false)
 }
 
 // ---------------------------- TopupCode ----------------------------
 
 model TopupCode {
-  id             String   @id @default(cuid())
-  available      Boolean  @default(false)
+  id        String  @id @default(cuid())
+  available Boolean @default(false)
 }
 
 // ---------------------------- Code ----------------------------
 model Code {
-  id         String   @id @default(cuid())
-  name       String   @default("ไม่ทราบชื่อcode")
-  key        String   @unique
-  reward     Decimal  @db.Decimal(10, 2) @default(0)
-  currentUse Int      @default(0)
-  maxUse     Int
-  canDuplicateUse Boolean @default(false)
-  createdAt  DateTime  @default(now())
-  expired    DateTime  @default(now())
+  id              String   @id @default(cuid())
+  name            String   @default("ไม่ทราบชื่อcode")
+  key             String   @unique
+  reward          Decimal  @default(0) @db.Decimal(10, 2)
+  currentUse      Int      @default(0)
+  maxUse          Int
+  canDuplicateUse Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  expired         DateTime @default(now())
 
   HistoryCode HistoryCode[]
 }
 
 // ---------------------------- HistoryCode ----------------------------
 model HistoryCode {
-  id         String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  codeId     String
-  code       Code     @relation(fields: [codeId], references: [id], onDelete: Cascade)
-  
-  userId    String
-  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeId String
+  code   Code   @relation(fields: [codeId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, codeId])
 }
 
 // ---------------------------- Settings ----------------------------
 model Settings {
-  id              String   @id @default(cuid())
-  primaryColor    String   @default("#ffffff")
-  secondaryColor  String   @default("#000000")
-  hoverColor      String   @default("#ff0000")
-  backgroundImage String?  @db.Text
-  webhookDiscord  String   @default("")
-  shopName        String   @default("ร้านค้าไม่ทราบชื่อ")
-  announcement    String   @default("")
-  icon            String?  @db.Text
-  logo            String?  @db.Text
-  detail          String?  @db.Text
-  contact         String?  @db.Text
-  banner          String?  @db.Text
-  
+  id              String  @id @default(cuid())
+  primaryColor    String  @default("#ffffff")
+  secondaryColor  String  @default("#000000")
+  hoverColor      String  @default("#ff0000")
+  backgroundImage String? @db.Text
+  webhookDiscord  String  @default("")
+  shopName        String  @default("ร้านค้าไม่ทราบชื่อ")
+  announcement    String  @default("")
+  icon            String? @db.Text
+  logo            String? @db.Text
+  detail          String? @db.Text
+  contact         String? @db.Text
+  banner          String? @db.Text
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ---------------------------- Expired ----------------------------
 model Expired {
-  id           String   @id @default(cuid())
-  timeExpire   DateTime @default(now())
+  id         String   @id @default(cuid())
+  timeExpire DateTime @default(now())
 }

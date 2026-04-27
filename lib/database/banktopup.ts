@@ -8,6 +8,7 @@ export interface Bank {
   id: string
   bankAccount: string
   bankName: string
+  bankNameEng: string
   bankProvider: string
   available: boolean
 }
@@ -29,6 +30,7 @@ export async function updateBankTopup(data: Bank) {
       data: {
         bankAccount: data.bankAccount,
         bankName: data.bankName,
+        bankNameEng: data.bankNameEng,
         bankProvider: data.bankProvider,
         available: data.available,
       },
@@ -53,6 +55,7 @@ export async function getBankTopup(): Promise<Bank> {
         bankName: "ไม่พบการตั้งค่า",
         bankProvider: "ไม่พบการตั้งค่า",
         available: false,
+        bankNameEng: "ไม่พบการตั้งค่า",
       };
     }
 
@@ -66,6 +69,7 @@ export async function getBankTopup(): Promise<Bank> {
       bankName: "ไม่พบการตั้งค่า",
       bankProvider: "ไม่พบการตั้งค่า",
       available: false,
+      bankNameEng: "ไม่พบการตั้งค่า",
     };
   }
 }

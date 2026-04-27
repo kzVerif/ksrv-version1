@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { Bank, updateBankTopup } from "@/lib/database/banktopup";
 
 export default function BankSettingForm({ data }: { data: any }) {
+  
   const [enabled, setEnabled] = useState(data.available);
   const [selectedBank, setSelectedBank] = useState(data.bankProvider || "");
 
@@ -27,11 +28,13 @@ export default function BankSettingForm({ data }: { data: any }) {
 
     const accountNumber = String(formData.get("accountNumber") || "");
     const accountName = String(formData.get("accountName") || "");
+    const accountNameEng = String(formData.get("accountNameEng") || "");
 
     const updateData: Bank = {
       id: data.id,
       bankAccount: accountNumber,
       bankName: accountName,
+      bankNameEng: accountNameEng,
       bankProvider: selectedBank || data.bankProvider,
       available: enabled,
     };
@@ -95,7 +98,7 @@ export default function BankSettingForm({ data }: { data: any }) {
 
       {/* --- ชื่อบัญชี --- */}
       <div className="grid gap-3">
-        <Label htmlFor="accountName">ชื่อผู้รับเงิน</Label>
+        <Label htmlFor="accountName">ชื่อผู้รับเงินภาษาไทย</Label>
         <p className="text-xs text-red-400">
           กรุณากรอกชื่อ-นามสกุลตามบัญชี (ไม่ต้องใส่คำนำหน้า)
         </p>
@@ -104,6 +107,19 @@ export default function BankSettingForm({ data }: { data: any }) {
           name="accountName"
           defaultValue={data.bankName}
           placeholder="เช่น สมชาย ใจดี"
+        />
+      </div>
+
+            <div className="grid gap-3">
+        <Label htmlFor="accountName">ชื่อผู้รับเงินภาษาอังกฤษ</Label>
+        <p className="text-xs text-red-400">
+          กรุณากรอกชื่อ-นามสกุลตามบัญชี (ไม่ต้องใส่คำนำหน้า)
+        </p>
+        <Input
+          id="accountNameEng"
+          name="accountNameEng"
+          defaultValue={data.bankNameEng}
+          placeholder="เช่น Somchai Jaidee"
         />
       </div>
 

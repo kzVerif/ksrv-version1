@@ -19,6 +19,7 @@ export async function TopupBank(qrCode: string) {
               accountType: bank.bankProvider,
               accountNameTH: bank.bankName || undefined,
               accountNumber: bank.bankAccount || undefined,
+              accountNameEN: bank.bankNameEng || undefined
             },
           ],
           checkDate: {
