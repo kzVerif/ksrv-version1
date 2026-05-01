@@ -35,7 +35,7 @@ export async function createUser(userData: authData) {
           fields: [
             { name: "📛 ชื่อผู้ใช้", value: `${user.username}`, inline: true },
             { name: "🆔 User ID", value: `${user.id}`, inline: true },
-            { name: "📅 วันที่", value: `${new Date()}` },
+            { name: "📅 วันที่", value: new Date().toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })  },
           ],
           footer: {
             text: "🚀 ระบบแจ้งเตือนสมาชิกใหม่",
@@ -289,7 +289,7 @@ export async function TopupByWallet(id: string | undefined, url: string) {
               value: `ทรูมันนี่วอลเลท(ซองอั่งเปา)`,
               inline: false,
             },
-            { name: "⏳ เวลาทำรายการ", value: `${new Date()}` },
+            { name: "⏳ เวลาทำรายการ", value: new Date().toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })  },
           ],
           footer: {
             text: "💸 ระบบแจ้งเตือนการเติมเงิน",
@@ -388,7 +388,7 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
               value: `ธนาคาร(เช็คสลิป)`,
               inline: false,
             },
-            { name: "⏳ เวลาทำรายการ", value: `${new Date()}` },
+            { name: "⏳ เวลาทำรายการ", value: new Date().toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })  },
           ],
           footer: {
             text: "💸 ระบบแจ้งเตือนการเติมเงิน",

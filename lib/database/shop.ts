@@ -312,7 +312,7 @@ export async function buyProducts(
 
             { name: "💵 ยอดชำระ", value: `${result.totalPrice} ฿` },
 
-            { name: "⏳ เวลาทำรายการ", value: `${new Date()}` },
+            { name: "⏳ เวลาทำรายการ", value: new Date().toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })  },
           ],
 
           footer: {
